@@ -15,12 +15,20 @@ export class PetsService {
     private ownersService: OwnersService,
   ) {}
 
-  async findAll(): Promise<Pet[]> {
+  findAll(): Promise<Pet[]> {
     return this.petsRepository.find();
   }
 
-  async findOne(id: number): Promise<Pet> {
+  findOne(id: number): Promise<Pet> {
     return this.petsRepository.findOneOrFail(id);
+  }
+
+  findByOwner(ownerId: number): Promise<Pet[]> {
+    return this.petsRepository.find({
+      where: {
+        ownerId,
+      },
+    });
   }
 
   createPet(createPetInput: CreatePetInput): Promise<Pet> {
