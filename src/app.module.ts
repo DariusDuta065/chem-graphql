@@ -13,8 +13,10 @@ import { OwnersModule } from './owners/owners.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: ':memory:',
+      type: 'mysql',
+      database: 'graphql',
+      username: 'root',
+      password: 'password',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
