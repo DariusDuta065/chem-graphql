@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "dist": true,
+    "node_modules": true,
+    "nest-cli.json": true,
+    "tsconfig.build.json": true,
+    "yarn.lock": true,
+    ".gitignore": true,
+    ".prettierrc": true,
+  }
+}

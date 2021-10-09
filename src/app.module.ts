@@ -18,6 +18,7 @@ import { OwnersModule } from './owners/owners.module';
       username: 'root',
       password: 'password',
       entities: ['dist/**/*.entity{.ts,.js}'],
+      // logging: true,
       synchronize: true,
     }),
     PetsModule,
