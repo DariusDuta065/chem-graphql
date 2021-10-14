@@ -16,7 +16,7 @@ type Owner {
   pets: [Pet!]
 }
 
-type LoginUserOutput {
+type TokenOutput {
   token: String!
   username: String!
 }
@@ -33,7 +33,7 @@ type Mutation {
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
   updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
   removeOwner(id: Int!): Owner!
-  login(loginUserInput: LoginUserInput!): LoginUserOutput!
+  login(loginUserInput: LoginUserInput!): TokenOutput!
 }
 
 input CreatePetInput {

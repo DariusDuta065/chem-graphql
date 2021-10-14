@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoginUserInput } from './dto/login-user.input';
-import { LoginUserOutput } from './dto/login-user.output';
+import { TokenOutput } from './dto/token.output';
 
 @Injectable()
 export class AuthService {
@@ -15,10 +15,11 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    const tokenData = new LoginUserOutput();
-    tokenData.token = '123.123.123';
-    tokenData.username = username;
+    const token = '123.456.789';
 
-    return tokenData;
+    return TokenOutput.fromUser({
+      token,
+      username,
+    });
   }
 }
