@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Command, Option } from 'nestjs-command';
 import { Owner } from 'src/owners/entities/owner.entity';
+import { Pet } from 'src/pets/pet.entity';
 import { Repository } from 'typeorm';
 import { OwnerFactory } from '../factories/owner.factory';
+import { PetFactory } from '../factories/pet.factory';
 
 @Injectable()
 export class SeedDBCommand {
   constructor(
     private ownerFactory: OwnerFactory,
+    private petFactory: PetFactory,
     @InjectRepository(Owner) private ownersRepository: Repository<Owner>,
-  ) {
-    console.log('Owner seeder');
-  }
+    @InjectRepository(Pet) private petsRepository: Repository<Pet>,
+  ) {}
 
   @Command({
     command: 'seed:db',
@@ -23,7 +25,7 @@ export class SeedDBCommand {
   }
 
   @Command({
-    command: 'seed:owner',
+    command: 'seed:owners',
     describe: 'seed owners table',
   })
   async seedOwners(
@@ -49,5 +51,41 @@ export class SeedDBCommand {
     }
 
     await this.ownersRepository.save(owners);
+  }
+
+  @Command({
+    command: 'seed:pets',
+    describe: 'seed pets table',
+  })
+  async seedPets(
+    @Option({
+      name: 'count',
+      describe: 'how many entities to be created',
+      type: 'number',
+      alias: 'n',
+      required: false,
+      default: 10,
+    })
+    count: number,
+  ) {
+    console.log('Seeding pets');
+
+    if (!Number.isInteger(count)) {
+      count = Math.round(count);
+    }
+
+    const owners = await this.ownersRepository.find();
+    console.log(owners);
+
+    const pets = [];
+    for (let i = 0; i < count; i++) {
+      pets.push(
+        this.petFactory.makePet({
+          owner: owners[Math.floor(Math.random() * owners.length - 1)],
+        }),
+      );
+    }
+
+    await this.petsRepository.save(pets);
   }
 }
