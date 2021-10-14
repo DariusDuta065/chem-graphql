@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConsoleLogger, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Command, Option } from 'nestjs-command';
 import { Owner } from 'src/owners/entities/owner.entity';
@@ -9,6 +9,8 @@ import { PetFactory } from '../factories/pet.factory';
 
 @Injectable()
 export class SeedDBCommand {
+  private readonly logger = new Logger(SeedDBCommand.name);
+
   constructor(
     private ownerFactory: OwnerFactory,
     private petFactory: PetFactory,
@@ -39,7 +41,7 @@ export class SeedDBCommand {
     })
     count: number,
   ) {
-    console.log('Seeding owners');
+    this.logger.warn('Seeding owners');
 
     if (!Number.isInteger(count)) {
       count = Math.round(count);
@@ -68,7 +70,7 @@ export class SeedDBCommand {
     })
     count: number,
   ) {
-    console.log('Seeding pets');
+    this.logger.log('Seeding pets');
 
     if (!Number.isInteger(count)) {
       count = Math.round(count);
