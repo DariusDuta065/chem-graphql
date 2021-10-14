@@ -5,7 +5,7 @@ import { TokenOutput } from './dto/token.output';
 @Injectable()
 export class AuthService {
   constructor() {
-    console.log('AuthService');
+    //
   }
 
   loginUser(loginUserInput: LoginUserInput) {
