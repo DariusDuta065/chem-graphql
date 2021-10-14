@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Command, Option } from 'nestjs-command';
+import { Owner } from 'src/owners/entities/owner.entity';
+import { Repository } from 'typeorm';
 import { OwnerFactory } from '../factories/owner.factory';
 
 @Injectable()
 export class SeedDBCommand {
-  constructor(private ownerFactory: OwnerFactory) {
+  constructor(
+    private ownerFactory: OwnerFactory,
+    @InjectRepository(Owner) private ownersRepository: Repository<Owner>,
+  ) {
     console.log('Owner seeder');
   }
 
@@ -37,9 +43,11 @@ export class SeedDBCommand {
       count = Math.round(count);
     }
 
+    const owners = [];
     for (let i = 0; i < count; i++) {
-      const owner = this.ownerFactory.makeOwner();
-      console.log('owner', owner);
+      owners.push(this.ownerFactory.makeOwner());
     }
+
+    await this.ownersRepository.save(owners);
   }
 }
