@@ -13,15 +13,7 @@ import { AuthModule } from './auth/auth.module';
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      database: 'graphql',
-      username: 'root',
-      password: 'password',
-      entities: ['dist/**/*.entity{.ts,.js}'],
-      // logging: true,
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(),
     PetsModule,
     OwnersModule,
     AuthModule,
