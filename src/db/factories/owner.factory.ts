@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Owner } from 'src/owners/entities/owner.entity';
+import { Owner } from 'src/owners/owner.entity';
 import * as faker from 'faker';
 
 @Injectable()

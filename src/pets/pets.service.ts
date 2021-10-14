@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Owner } from 'src/owners/entities/owner.entity';
+import { Owner } from 'src/owners/owner.entity';
 import { OwnersService } from 'src/owners/owners.service';
 import { Repository } from 'typeorm';
 import { CreatePetInput } from './dto/create-pet.input';

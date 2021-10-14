@@ -7,7 +7,7 @@ import {
   ResolveField,
 } from '@nestjs/graphql';
 import { Resolver } from '@nestjs/graphql';
-import { Owner } from 'src/owners/entities/owner.entity';
+import { Owner } from 'src/owners/owner.entity';
 import { CreatePetInput } from './dto/create-pet.input';
 import { Pet } from './pet.entity';
 import { PetsService } from './pets.service';

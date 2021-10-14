@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 import { PetsModule } from './pets/pets.module';
 import { OwnersModule } from './owners/owners.module';
 import { AuthModule } from './auth/auth.module';
-import { SeedDBModule } from './db/seeders/seed-db.module';
+import { SeedDBModule } from './db/seeders/seed.module';
 
 @Module({
   imports: [
