@@ -9,6 +9,7 @@ import { OwnersModule } from './owners/owners.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedDBModule } from './db/seeders/seed.module';
 import { UsersModule } from './users/users.module';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
