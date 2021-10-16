@@ -7,9 +7,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PetFactory } from '../factories/pet.factory';
 import { Pet } from 'src/pets/pet.entity';
 import { SeedDBService } from './seed.service';
+import { UserFactory } from '../factories/user.factory';
+import { User } from 'src/users/user.entity';
 
 @Module({
-  imports: [CommandModule, TypeOrmModule.forFeature([Owner, Pet])],
-  providers: [SeedDBCommand, OwnerFactory, PetFactory, SeedDBService],
+  imports: [CommandModule, TypeOrmModule.forFeature([Owner, Pet, User])],
+  providers: [
+    SeedDBCommand,
+    OwnerFactory,
+    PetFactory,
+    UserFactory,
+    SeedDBService,
+  ],
 })
 export class SeedDBModule {}

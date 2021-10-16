@@ -8,6 +8,7 @@ import { PetsModule } from './pets/pets.module';
 import { OwnersModule } from './owners/owners.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedDBModule } from './db/seeders/seed.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SeedDBModule } from './db/seeders/seed.module';
     OwnersModule,
     AuthModule,
     SeedDBModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

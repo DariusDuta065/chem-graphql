@@ -7,6 +7,8 @@ import { Pet } from 'src/pets/pet.entity';
 
 import { OwnerFactory } from '../factories/owner.factory';
 import { PetFactory } from '../factories/pet.factory';
+import { UserFactory } from '../factories/user.factory';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class SeedDBService {
@@ -15,9 +17,11 @@ export class SeedDBService {
   constructor(
     @InjectRepository(Owner) private ownersRepository: Repository<Owner>,
     @InjectRepository(Pet) private petsRepository: Repository<Pet>,
+    @InjectRepository(User) private usersRepository: Repository<User>,
 
     private ownerFactory: OwnerFactory,
     private petFactory: PetFactory,
+    private userFactory: UserFactory,
   ) {}
 
   async seedOwners(count: number) {
@@ -57,5 +61,20 @@ export class SeedDBService {
     }
 
     await this.petsRepository.save(pets);
+  }
+
+  async seedUsers(count: number) {
+    this.logger.log('Seeding usrs');
+
+    if (!Number.isInteger(count)) {
+      count = Math.round(count);
+    }
+
+    const users = [];
+    for (let i = 0; i < count; i++) {
+      users.push(this.userFactory.makeUser());
+    }
+
+    await this.usersRepository.save(users);
   }
 }

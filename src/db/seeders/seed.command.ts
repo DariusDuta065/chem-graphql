@@ -13,6 +13,7 @@ export class SeedDBCommand {
   async seedData() {
     await this.seedDbService.seedOwners(10);
     await this.seedDbService.seedPets(20);
+    await this.seedDbService.seedUsers(5);
   }
 
   @Command({
@@ -49,5 +50,23 @@ export class SeedDBCommand {
     count: number,
   ) {
     await this.seedDbService.seedPets(count);
+  }
+
+  @Command({
+    command: 'seed:users',
+    describe: 'seed users table',
+  })
+  async seedUsers(
+    @Option({
+      name: 'count',
+      describe: 'how many entities to be created',
+      type: 'number',
+      alias: 'n',
+      required: false,
+      default: 10,
+    })
+    count: number,
+  ) {
+    await this.seedDbService.seedUsers(count);
   }
 }
