@@ -1,39 +1,26 @@
 # NestJS GraphQL
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-npm install
-```
-
 ## Running the app
 
 ```bash
-# development
-$ npm run start
+# install dependencies
+yarn install
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# start app
+yarn start
+yarn start:dev
+yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
-
+yarn test
 # e2e tests
-$ npm run test:e2e
-
+yarn test:e2e
 # test coverage
-$ npm run test:cov
+yarn test:cov
 ```
 
 ## CLI commands
@@ -53,10 +40,20 @@ yarn build && npx nestjs-command seed:pets -n 5
 ## Quick start
 
 ```bash
+# create schema
 typeorm schema:drop
 typeorm migration:run
 
+# seed database
 export CLI_PATH=./dist/cli.js
 yarn build
 npx nestjs-command seed:db
 ```
+
+## ToDos
+
+- GraphQL auth
+- Environment configuration
+- Queues
+- Events
+- Deployment to production
