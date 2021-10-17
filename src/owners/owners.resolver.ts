@@ -24,6 +24,7 @@ export class OwnersResolver {
 
   @Query(() => [Owner], { name: 'owners' })
   findAll() {
+    console.log('returning');
     return this.ownersService.findAll();
   }
 

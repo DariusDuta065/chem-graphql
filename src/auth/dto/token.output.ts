@@ -1,17 +1,17 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { UserData } from './userData.output';
 
 @ObjectType()
 export class TokenOutput {
   @Field()
   token: string;
 
-  @Field()
-  username: string;
+  @Field(() => UserData, { nullable: true })
+  userData?: UserData;
 
-  static fromUser({ token, username }: { token: string; username: string }) {
+  static fromToken({ token }: { token: string }) {
     const tokenData = new TokenOutput();
     tokenData.token = token;
-    tokenData.username = username;
     return tokenData;
   }
 }

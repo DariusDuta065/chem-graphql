@@ -8,9 +8,14 @@ type User {
   password: String!
 }
 
+type UserData {
+  userId: Int!
+  username: String!
+}
+
 type TokenOutput {
   token: String!
-  username: String!
+  userData: UserData
 }
 
 type Pet {

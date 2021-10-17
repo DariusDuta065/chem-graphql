@@ -1,10 +1,10 @@
-import { ExecutionContext, Request, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import {
   Args,
-  Context,
-  GqlExecutionContext,
   Mutation,
+  Parent,
   Query,
+  ResolveField,
   Resolver,
 } from '@nestjs/graphql';
 
@@ -14,14 +14,13 @@ import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 
 import { CurrentUser } from './decorators/current-user.decorator';
-
 import { TokenOutput } from './dto/token.output';
-import { LoginUserInput } from './dto/login-user.input';
 
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
+import { UserData } from './dto/userData.output';
 
-@Resolver(() => User)
+@Resolver(() => TokenOutput)
 export class AuthResolver {
   //
 
@@ -38,16 +37,24 @@ export class AuthResolver {
     @CurrentUser() user: User,
   ) {
     const data = await this.authSevice.login(user);
-
-    const token = new TokenOutput();
-    token.token = data.access_token;
-    token.username = user.username;
-    return token;
+    return TokenOutput.fromToken({ token: data.access_token });
   }
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => User)
   profile(@CurrentUser() user: User): Promise<User | undefined> {
     return this.usersService.findOneByID(user.userId);
+  }
+
+  @ResolveField(() => UserData)
+  async userData(@Parent() token: TokenOutput): Promise<UserData> {
+    const userId: number | null = this.authSevice.decodeUserId(token.token);
+
+    const user: User | null = await this.usersService.findOneByID(userId);
+
+    const userData = new UserData();
+    userData.userId = user.userId;
+    userData.username = user.username;
+    return userData;
   }
 }
