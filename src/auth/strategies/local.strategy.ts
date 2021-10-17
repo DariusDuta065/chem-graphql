@@ -5,6 +5,8 @@ import { AuthService } from '../auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
+  //
+
   constructor(private authService: AuthService) {
     super();
   }
@@ -14,6 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+
+    console.log('User validated', user);
     return user;
   }
 }

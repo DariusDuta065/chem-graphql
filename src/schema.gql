@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  userId: Int!
+  username: String!
+  password: String!
+}
+
 type TokenOutput {
   token: String!
   username: String!
@@ -22,6 +28,7 @@ type Owner {
 }
 
 type Query {
+  profile: User!
   pets: [Pet!]!
   getPet(id: Int!): Pet!
   owners: [Owner!]!
@@ -29,11 +36,11 @@ type Query {
 }
 
 type Mutation {
+  login(password: String!, username: String!): TokenOutput!
   createPet(createPetInput: CreatePetInput!): Pet!
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
   updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
   removeOwner(id: Int!): Owner!
-  login(loginUserInput: LoginUserInput!): TokenOutput!
 }
 
 input CreatePetInput {
@@ -49,9 +56,4 @@ input CreateOwnerInput {
 input UpdateOwnerInput {
   name: String
   id: Int!
-}
-
-input LoginUserInput {
-  username: String!
-  password: String!
 }

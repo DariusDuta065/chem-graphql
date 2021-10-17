@@ -11,6 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
 import { jwtConstants } from './constants';
+import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
+import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 
 @Module({
   imports: [
@@ -21,7 +23,14 @@ import { jwtConstants } from './constants';
       signOptions: { expiresIn: '3600s' },
     }),
   ],
-  providers: [AuthService, AuthResolver, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    AuthResolver,
+    LocalStrategy,
+    JwtStrategy,
+    GqlJwtAuthGuard,
+    GqlLocalAuthGuard,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
