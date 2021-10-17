@@ -9,6 +9,7 @@ import { OwnerFactory } from '../factories/owner.factory';
 import { PetFactory } from '../factories/pet.factory';
 import { UserFactory } from '../factories/user.factory';
 import { User } from 'src/users/user.entity';
+import { CreateUserInput } from './dto/create-user.input';
 
 @Injectable()
 export class SeedDBService {
@@ -76,5 +77,9 @@ export class SeedDBService {
     }
 
     await this.usersRepository.save(users);
+  }
+
+  async createUser(userInput: CreateUserInput) {
+    await this.usersRepository.save(userInput);
   }
 }

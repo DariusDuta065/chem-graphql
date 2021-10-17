@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -50,7 +50,11 @@ export class AuthResolver {
   async userData(@Parent() token: TokenOutput): Promise<UserData> {
     const userId: number | null = this.authSevice.decodeUserId(token.token);
 
-    const user: User | null = await this.usersService.findOneByID(userId);
+    const user: User | undefined = await this.usersService.findOneByID(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('User data not found');
+    }
 
     const userData = new UserData();
     userData.userId = user.userId;
