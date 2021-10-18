@@ -18,7 +18,10 @@ import { TokenOutput } from './dto/token.output';
 
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
-import { UserData } from './dto/userData.output';
+import { UserData } from '../users/dto/userData.output';
+import { Roles } from './decorators/roles.decorator';
+import { Role } from './enums/role.enum';
+import { RolesGuard } from './guards/roles.guard';
 
 @Resolver(() => TokenOutput)
 export class AuthResolver {
@@ -34,31 +37,57 @@ export class AuthResolver {
   async login(
     @Args('username') username: string,
     @Args('password') password: string,
-    @CurrentUser() user: User,
+    @CurrentUser() user: UserData,
   ) {
-    const data = await this.authSevice.login(user);
-    return TokenOutput.fromToken({ token: data.access_token });
+    const token = await this.authSevice.login(user);
+    return TokenOutput.fromToken({ token });
   }
 
   @UseGuards(GqlJwtAuthGuard)
-  @Query(() => User)
-  profile(@CurrentUser() user: User): Promise<User | undefined> {
-    return this.usersService.findOneByID(user.userId);
+  @Query(() => UserData)
+  async profile(@CurrentUser() user: User): Promise<UserData | undefined> {
+    const userModel = await this.usersService.findOneByID(user.userId);
+
+    if (!userModel) {
+      throw new UnauthorizedException();
+    }
+
+    return UserData.fromUser(userModel);
   }
 
   @ResolveField(() => UserData)
   async userData(@Parent() token: TokenOutput): Promise<UserData> {
-    const userId: number | null = this.authSevice.decodeUserId(token.token);
+    const userId = this.authSevice.decodeUserId(token.token);
 
-    const user: User | undefined = await this.usersService.findOneByID(userId);
-
-    if (!user) {
-      throw new UnauthorizedException('User data not found');
+    if (!userId) {
+      throw new UnauthorizedException();
     }
 
-    const userData = new UserData();
-    userData.userId = user.userId;
-    userData.username = user.username;
-    return userData;
+    const user = await this.usersService.findOneByID(userId);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return UserData.fromUser(user);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Query(() => String)
+  sayHeyAdmin() {
+    return 'admin role';
+  }
+
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  @Query(() => String)
+  sayHeyUser() {
+    return 'user role';
+  }
+
+  @Query(() => String)
+  sayHeyUnauth() {
+    return 'public';
   }
 }

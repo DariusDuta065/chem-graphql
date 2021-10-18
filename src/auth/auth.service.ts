@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { UserData } from 'src/users/dto/userData.output';
 
 @Injectable()
 export class AuthService {
@@ -9,26 +10,29 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneByUsername(username);
+  async validateUser(username: string, pass: string): Promise<UserData | null> {
+    const user = await this.usersService.findOneByEmail(username);
+
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      return UserData.fromUser(user);
     }
     return null;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  /**
+   * Creates and signs a JWT token from UserData.
+   * @param {UserData} user
+   * @returns JWT token
+   */
+  async login(user: UserData): Promise<string> {
+    const payload = { sub: user.id, ...user };
+    return this.jwtService.sign(payload);
   }
 
   decodeUserId(token: string): number | null {
     const decoded = this.jwtService.decode(token);
 
-    if (typeof decoded === 'object' && decoded.sub) {
+    if (decoded && typeof decoded === 'object' && decoded.sub) {
       return Number(decoded.sub);
     }
 

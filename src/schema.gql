@@ -2,19 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  userId: Int!
-  email: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-}
-
 type UserData {
   id: Int!
   email: String!
   firstName: String!
   lastName: String!
+  role: String!
 }
 
 type TokenOutput {
@@ -37,10 +30,9 @@ type Owner {
 }
 
 type Query {
-  profile: User!
+  profile: UserData!
   sayHeyAdmin: String!
   sayHeyUser: String!
-  sayHeyAuthed: String!
   sayHeyUnauth: String!
   pets: [Pet!]!
   getPet(id: Int!): Pet!

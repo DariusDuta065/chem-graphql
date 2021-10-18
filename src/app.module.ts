@@ -12,6 +12,8 @@ import { PetsModule } from './pets/pets.module';
 import { UsersModule } from './users/users.module';
 import { OwnersModule } from './owners/owners.module';
 import { SeedDBModule } from './db/seeders/seed.module';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -27,6 +29,12 @@ import { SeedDBModule } from './db/seeders/seed.module';
     SeedDBModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
+  ],
 })
 export class AppModule {}
