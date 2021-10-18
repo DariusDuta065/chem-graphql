@@ -9,7 +9,7 @@ export class UserFactory {
   makeUser(userData?: UserData) {
     const user = new User();
     user.password = userData?.password ?? faker.lorem.word();
-    user.username = userData?.username ?? faker.internet.userName();
+    user.email = userData?.username ?? faker.internet.email();
 
     return user;
   }

@@ -10,8 +10,8 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  async findOneByUsername(username: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ username });
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({ email });
   }
 
   async findOneByID(userId: number | string): Promise<User | undefined> {

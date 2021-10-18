@@ -80,11 +80,11 @@ export class SeedDBCommand {
   })
   async createUser(
     @Option({
-      name: 'username',
-      alias: 'u',
+      name: 'email',
+      alias: 'e',
       required: true,
     })
-    username: string,
+    email: string,
     @Option({
       name: 'password',
       alias: 'p',
@@ -92,8 +92,20 @@ export class SeedDBCommand {
       required: true,
     })
     password: string,
+    @Option({
+      name: 'firstName',
+      alias: 'f',
+      required: true,
+    })
+    firstName: string,
+    @Option({
+      name: 'lastName',
+      alias: 'l',
+      required: true,
+    })
+    lastName: string,
   ) {
-    if (typeof username !== 'string') {
+    if (typeof email !== 'string') {
       this.logger.error('Invalid username');
       return;
     }
@@ -101,10 +113,20 @@ export class SeedDBCommand {
       this.logger.error('Invalid password');
       return;
     }
+    if (typeof firstName !== 'string') {
+      this.logger.error('Invalid first name');
+      return;
+    }
+    if (typeof lastName !== 'string') {
+      this.logger.error('Invalid last name');
+      return;
+    }
 
     const userInput = new CreateUserInput();
-    userInput.username = username;
+    userInput.email = email;
     userInput.password = password;
+    userInput.firstName = firstName;
+    userInput.lastName = lastName;
 
     try {
       const errs = await validate(userInput);
@@ -117,7 +139,7 @@ export class SeedDBCommand {
       return;
     }
 
-    this.logger.log(`Creating user: ${username}`);
+    this.logger.log(`Creating user: ${email}`);
     await this.seedDbService.createUser(userInput);
   }
 }

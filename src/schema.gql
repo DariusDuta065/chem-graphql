@@ -4,13 +4,17 @@
 
 type User {
   userId: Int!
-  username: String!
+  email: String!
   password: String!
+  firstName: String!
+  lastName: String!
 }
 
 type UserData {
-  userId: Int!
-  username: String!
+  id: Int!
+  email: String!
+  firstName: String!
+  lastName: String!
 }
 
 type TokenOutput {
@@ -34,6 +38,10 @@ type Owner {
 
 type Query {
   profile: User!
+  sayHeyAdmin: String!
+  sayHeyUser: String!
+  sayHeyAuthed: String!
+  sayHeyUnauth: String!
   pets: [Pet!]!
   getPet(id: Int!): Pet!
   owners: [Owner!]!
