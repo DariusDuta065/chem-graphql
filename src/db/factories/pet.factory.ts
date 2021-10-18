@@ -7,7 +7,7 @@ import { Owner } from 'src/owners/owner.entity';
 export class PetFactory {
   //
 
-  makePet(petData?: PetData) {
+  makePet(petData: PetData) {
     const pet = new Pet();
     pet.name = petData?.name ?? faker.name.firstName();
     pet.type = petData?.type ?? faker.random.arrayElement(['dog', 'cat']);

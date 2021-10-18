@@ -32,7 +32,7 @@ export class SeedDBService {
       count = Math.round(count);
     }
 
-    const owners = [];
+    const owners: Owner[] = [];
     for (let i = 0; i < count; i++) {
       owners.push(this.ownerFactory.makeOwner());
     }
@@ -51,7 +51,7 @@ export class SeedDBService {
     const randomInt = (min, max) =>
       Math.floor(Math.random() * (max - min + 1) + min);
 
-    const pets = [];
+    const pets: Pet[] = [];
     for (let i = 0; i < count; i++) {
       const ownerId = randomInt(1, owners.length - 1);
       pets.push(
@@ -71,7 +71,7 @@ export class SeedDBService {
       count = Math.round(count);
     }
 
-    const users = [];
+    const users: User[] = [];
     for (let i = 0; i < count; i++) {
       users.push(this.userFactory.makeUser());
     }

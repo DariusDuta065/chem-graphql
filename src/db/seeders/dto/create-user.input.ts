@@ -1,4 +1,11 @@
-import { IsAlphanumeric, IsEmail, MaxLength, MinLength } from 'class-validator';
+import {
+  IsAlphanumeric,
+  IsEmail,
+  IsEnum,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Role } from 'src/auth/enums/role.enum';
 
 export class CreateUserInput {
   @MinLength(3)
@@ -20,4 +27,7 @@ export class CreateUserInput {
   @MaxLength(30)
   @IsAlphanumeric()
   lastName: string;
+
+  @IsEnum(Role)
+  role: Role;
 }

@@ -3,6 +3,7 @@ import { Command, Option } from 'nestjs-command';
 import { CreateUserInput } from './dto/create-user.input';
 import { SeedDBService } from './seed.service';
 import { validate } from 'class-validator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Injectable()
 export class SeedDBCommand {
@@ -104,6 +105,13 @@ export class SeedDBCommand {
       required: true,
     })
     lastName: string,
+    @Option({
+      name: 'role',
+      alias: 'r',
+      required: true,
+      default: Role.User,
+    })
+    role: string,
   ) {
     if (typeof email !== 'string') {
       this.logger.error('Invalid username');
@@ -121,12 +129,17 @@ export class SeedDBCommand {
       this.logger.error('Invalid last name');
       return;
     }
+    if (!(<any>Object).values(Role).includes(role.toLowerCase())) {
+      this.logger.error('Invalid role; valid options:', Object.values(Role));
+      return;
+    }
 
     const userInput = new CreateUserInput();
     userInput.email = email;
     userInput.password = password;
     userInput.firstName = firstName;
     userInput.lastName = lastName;
+    userInput.role = role as Role;
 
     try {
       const errs = await validate(userInput);
