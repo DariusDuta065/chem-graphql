@@ -1,4 +1,13 @@
-import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpCode,
+  HttpStatus,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -13,20 +22,21 @@ import { User } from 'src/users/user.entity';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 
-import { CurrentUser } from './decorators/current-user.decorator';
 import { TokenOutput } from './dto/token.output';
+import { CurrentUser } from './decorators/current-user.decorator';
 
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
-import { UserData } from '../users/dto/userData.output';
-import { Roles } from './decorators/roles.decorator';
+
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
+import { Roles } from './decorators/roles.decorator';
+import { UserData } from '../users/dto/userData.output';
+import { UserRegisterInput } from './dto/user-register.input';
+import { UserRegisterOutput } from './dto/user-register.output';
 
 @Resolver(() => TokenOutput)
 export class AuthResolver {
-  //
-
   constructor(
     private authSevice: AuthService,
     private usersService: UsersService,
@@ -43,16 +53,32 @@ export class AuthResolver {
     return TokenOutput.fromToken({ token });
   }
 
-  @UseGuards(GqlJwtAuthGuard)
-  @Query(() => UserData)
-  async profile(@CurrentUser() user: User): Promise<UserData | undefined> {
-    const userModel = await this.usersService.findOneByID(user.userId);
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Mutation(() => User)
+  async register(
+    @Args('userRegisterInput') userRegisterInput: UserRegisterInput,
+  ): Promise<User> {
+    const user = await this.usersService.registerUser(userRegisterInput);
 
-    if (!userModel) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new BadRequestException();
     }
 
-    return UserData.fromUser(userModel);
+    return user;
+  }
+
+  @UseGuards(GqlJwtAuthGuard)
+  @Query(() => UserData)
+  async profile(
+    @CurrentUser() { userId }: User,
+  ): Promise<UserData | undefined> {
+    const user = await this.usersService.findOneByID(userId);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return UserData.fromUser(user);
   }
 
   @ResolveField(() => UserData)
@@ -68,7 +94,6 @@ export class AuthResolver {
     if (!user) {
       throw new UnauthorizedException();
     }
-
     return UserData.fromUser(user);
   }
 

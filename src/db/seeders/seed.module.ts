@@ -9,9 +9,14 @@ import { Pet } from 'src/pets/pet.entity';
 import { SeedDBService } from './seed.service';
 import { UserFactory } from '../factories/user.factory';
 import { User } from 'src/users/user.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [CommandModule, TypeOrmModule.forFeature([Owner, Pet, User])],
+  imports: [
+    UsersModule,
+    CommandModule,
+    TypeOrmModule.forFeature([Owner, Pet, User]),
+  ],
   providers: [
     SeedDBCommand,
     OwnerFactory,

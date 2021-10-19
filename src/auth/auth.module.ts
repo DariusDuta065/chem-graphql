@@ -26,8 +26,10 @@ import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
   providers: [
     AuthService,
     AuthResolver,
+
     LocalStrategy,
     JwtStrategy,
+
     GqlJwtAuthGuard,
     GqlLocalAuthGuard,
   ],

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -10,6 +10,7 @@ import { PetFactory } from '../factories/pet.factory';
 import { UserFactory } from '../factories/user.factory';
 import { User } from 'src/users/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class SeedDBService {
@@ -19,6 +20,7 @@ export class SeedDBService {
     @InjectRepository(Owner) private ownersRepository: Repository<Owner>,
     @InjectRepository(Pet) private petsRepository: Repository<Pet>,
     @InjectRepository(User) private usersRepository: Repository<User>,
+    private usersService: UsersService,
 
     private ownerFactory: OwnerFactory,
     private petFactory: PetFactory,
@@ -80,6 +82,14 @@ export class SeedDBService {
   }
 
   async createUser(userInput: CreateUserInput) {
-    await this.usersRepository.save(userInput);
+    try {
+      await this.usersService.registerUser(userInput);
+    } catch (err) {
+      if (err instanceof ConflictException) {
+        this.logger.error(err.message);
+      } else {
+        this.logger.error(err);
+      }
+    }
   }
 }

@@ -14,11 +14,6 @@ export class CreateUserInput {
   email: string;
 
   @MinLength(3)
-  @MaxLength(20)
-  @IsAlphanumeric()
-  password: string;
-
-  @MinLength(3)
   @MaxLength(30)
   @IsAlphanumeric()
   firstName: string;
@@ -30,4 +25,9 @@ export class CreateUserInput {
 
   @IsEnum(Role)
   role: Role;
+
+  @MinLength(3)
+  @MaxLength(20)
+  @IsAlphanumeric()
+  password: string;
 }

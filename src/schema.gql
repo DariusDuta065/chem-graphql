@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  userId: Int!
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  role: UserRole!
+}
+
+enum UserRole {
+  User
+  Admin
+}
+
 type UserData {
   id: Int!
   email: String!
@@ -42,10 +56,17 @@ type Query {
 
 type Mutation {
   login(password: String!, username: String!): TokenOutput!
+  register(userRegisterInput: UserRegisterInput!): User!
   createPet(createPetInput: CreatePetInput!): Pet!
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
   updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
   removeOwner(id: Int!): Owner!
+}
+
+input UserRegisterInput {
+  email: String!
+  firstName: String!
+  lastName: String!
 }
 
 input CreatePetInput {
