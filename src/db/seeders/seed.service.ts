@@ -2,15 +2,16 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Owner } from 'src/owners/owner.entity';
-import { Pet } from 'src/pets/pet.entity';
+import { Pet } from '../../pets/pet.entity';
+import { User } from '../../users/user.entity';
+import { Owner } from '../../owners/owner.entity';
 
-import { OwnerFactory } from '../factories/owner.factory';
 import { PetFactory } from '../factories/pet.factory';
 import { UserFactory } from '../factories/user.factory';
-import { User } from 'src/users/user.entity';
+import { OwnerFactory } from '../factories/owner.factory';
+
+import { UsersService } from '../../users/users.service';
 import { CreateUserInput } from './dto/create-user.input';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class SeedDBService {

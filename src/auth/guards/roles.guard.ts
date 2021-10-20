@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { UserData } from 'src/users/dto/userData.output';
+import { UserData } from '../../users/dto/userData.output';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Role } from '../enums/role.enum';

@@ -10,13 +10,11 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
-    const existingConfig = await getConnectionOptions();
-
     const envConfig: TypeOrmConfig = this.configService.get<TypeOrmConfig>(
       TypeOrmConfig.CONFIG_KEY,
       { infer: true },
     );
 
-    return Object.assign(existingConfig, envConfig);
+    return Object.assign({}, await getConnectionOptions(), envConfig);
   }
 }

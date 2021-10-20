@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as faker from 'faker';
-import { User } from 'src/users/user.entity';
+import { User } from '../../users/user.entity';
 
 @Injectable()
 export class UserFactory {

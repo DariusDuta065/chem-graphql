@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Pet } from 'src/pets/pet.entity';
 import * as faker from 'faker';
-import { Owner } from 'src/owners/owner.entity';
+import { Injectable } from '@nestjs/common';
+
+import { Pet } from '../../pets/pet.entity';
+import { Owner } from '../../owners/owner.entity';
 
 @Injectable()
 export class PetFactory {

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/graphql';
 
 import { Owner } from './owner.entity';
-import { Pet } from 'src/pets/pet.entity';
+import { Pet } from '../pets/pet.entity';
 
 import { OwnersService } from './owners.service';
 

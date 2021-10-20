@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Owner } from 'src/owners/owner.entity';
 import * as faker from 'faker';
+import { Injectable } from '@nestjs/common';
+
+import { Owner } from '../../owners/owner.entity';
 
 @Injectable()
 export class OwnerFactory {

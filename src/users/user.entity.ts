@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Role } from 'src/auth/enums/role.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Role } from '../auth/enums/role.enum';
 
 registerEnumType(Role, {
   name: 'UserRole',

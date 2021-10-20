@@ -1,10 +1,11 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PetsService } from 'src/pets/pets.service';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+
+import { Owner } from './owner.entity';
+import { PetsService } from '../pets/pets.service';
 import { CreateOwnerInput } from './dto/create-owner.input';
 import { UpdateOwnerInput } from './dto/update-owner.input';
-import { Owner } from './owner.entity';
 
 @Injectable()
 export class OwnersService {

@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
-import { SeedDBCommand } from './seed.command';
 import { CommandModule } from 'nestjs-command';
-import { OwnerFactory } from '../factories/owner.factory';
-import { Owner } from 'src/owners/owner.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PetFactory } from '../factories/pet.factory';
-import { Pet } from 'src/pets/pet.entity';
+
+import { UsersModule } from '../../users/users.module';
+
+import { Owner } from '../../owners/owner.entity';
+import { Pet } from '../../pets/pet.entity';
+import { User } from '../../users/user.entity';
+
+import { SeedDBCommand } from './seed.command';
 import { SeedDBService } from './seed.service';
+
+import { PetFactory } from '../factories/pet.factory';
 import { UserFactory } from '../factories/user.factory';
-import { User } from 'src/users/user.entity';
-import { UsersModule } from 'src/users/users.module';
+import { OwnerFactory } from '../factories/owner.factory';
 
 @Module({
   imports: [

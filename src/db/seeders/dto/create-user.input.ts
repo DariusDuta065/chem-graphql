@@ -5,7 +5,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Role } from 'src/auth/enums/role.enum';
+import { Role } from '../../../auth/enums/role.enum';
 
 export class CreateUserInput {
   @MinLength(3)

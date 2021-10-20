@@ -17,10 +17,10 @@ import {
 
 import { Cache } from 'cache-manager';
 
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 
 import { AuthService } from './auth.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 import { TokenOutput } from './dto/token.output';
 import { CurrentUser } from './decorators/current-user.decorator';

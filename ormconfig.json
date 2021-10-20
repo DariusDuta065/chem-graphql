@@ -1,6 +1,4 @@
 {  
-  "synchronize": false,
-
   "entities": [
     "dist/**/*.entity{.ts,.js}"
   ],

@@ -3,8 +3,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './user.entity';
-import { UserRegisterInput } from 'src/auth/dto/user-register.input';
-import { Role } from 'src/auth/enums/role.enum';
+import { Role } from '../auth/enums/role.enum';
+import { UserRegisterInput } from '../auth/dto/user-register.input';
 
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';

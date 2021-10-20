@@ -3,7 +3,7 @@ import { Command, Option } from 'nestjs-command';
 import { CreateUserInput } from './dto/create-user.input';
 import { SeedDBService } from './seed.service';
 import { validate } from 'class-validator';
-import { Role } from 'src/auth/enums/role.enum';
+import { Role } from '../../auth/enums/role.enum';
 
 @Injectable()
 export class SeedDBCommand {
