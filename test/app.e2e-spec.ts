@@ -5,10 +5,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
+  let moduleFixture;
   let app: INestApplication;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
@@ -18,5 +19,9 @@ describe('AppController (e2e)', () => {
 
   it('/ (GET)', () => {
     return request(app.getHttpServer()).get('/').expect(200).expect('ok');
+  });
+
+  it('/ping (GET)', () => {
+    return request(app.getHttpServer()).get('/ping').expect(200).expect('pong');
   });
 });
