@@ -28,8 +28,16 @@ async function bootstrap() {
   const httpConfig = getHttpConfig(config);
 
   await app.listen(httpConfig.port, httpConfig.host, () => {
-    const msg = chalk`🚀 {blue API is running on:} {cyan ${httpConfig.host}:${httpConfig.port}}`;
-    Logger.log(msg);
+    const link = `http://${httpConfig.host}:${httpConfig.port}`;
+
+    Logger.log(
+      chalk`🚀 {white API is running on:} {bold {cyan ${link}}}`,
+      'Main',
+    );
+    Logger.log(
+      chalk`🚀 {white GraphQL playground:} {bold {cyan ${link + '/graphql'}}}`,
+      'Main',
+    );
   });
 }
 
