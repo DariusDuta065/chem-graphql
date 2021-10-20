@@ -1,11 +1,5 @@
-{
-  "type": "mysql",
-  "database": "graphql",
-  "username": "root",
-  "password": "password",
-
+{  
   "synchronize": false,
-  "logging": false,
 
   "entities": [
     "dist/**/*.entity{.ts,.js}"
