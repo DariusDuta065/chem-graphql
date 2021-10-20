@@ -1,8 +1,10 @@
 import { join } from 'path';
 
-import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule, Module } from '@nestjs/common';
+
+import * as redisStore from 'cache-manager-redis-store';
 
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -12,8 +14,6 @@ import { PetsModule } from './pets/pets.module';
 import { UsersModule } from './users/users.module';
 import { OwnersModule } from './owners/owners.module';
 import { SeedDBModule } from './db/seeders/seed.module';
-import { RolesGuard } from './auth/guards/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -21,6 +21,13 @@ import { APP_GUARD } from '@nestjs/core';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     TypeOrmModule.forRoot(),
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+      ttl: 0,
+    }),
 
     AuthModule,
     PetsModule,
@@ -29,12 +36,6 @@ import { APP_GUARD } from '@nestjs/core';
     SeedDBModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

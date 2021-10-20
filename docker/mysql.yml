@@ -1,9 +1,9 @@
 version: '3.1'
 
 services:
-
-  db:
+  mysql:
     image: mysql
+    container_name: graphql-api-mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:

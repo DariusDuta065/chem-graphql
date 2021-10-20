@@ -1,21 +1,21 @@
 import {
-  BadRequestException,
-  ConflictException,
-  HttpCode,
-  HttpStatus,
-  Res,
-  UnauthorizedException,
+  Inject,
   UseGuards,
-  UsePipes,
+  CACHE_MANAGER,
+  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
+
 import {
   Args,
-  Mutation,
-  Parent,
   Query,
-  ResolveField,
+  Parent,
+  Mutation,
   Resolver,
+  ResolveField,
 } from '@nestjs/graphql';
+
+import { Cache } from 'cache-manager';
 
 import { User } from 'src/users/user.entity';
 
@@ -33,13 +33,14 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
-import { UserRegisterOutput } from './dto/user-register.output';
 
 @Resolver(() => TokenOutput)
 export class AuthResolver {
   constructor(
     private authSevice: AuthService,
     private usersService: UsersService,
+
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   @UseGuards(GqlLocalAuthGuard)
@@ -50,6 +51,18 @@ export class AuthResolver {
     @CurrentUser() user: UserData,
   ) {
     const token = await this.authSevice.login(user);
+
+    const key = 'myKey';
+
+    const res = await this.cacheManager.get<string>(key);
+    if (res) {
+      console.log('Key', key, ' - value', res);
+    } else {
+      await this.cacheManager.set<string>(key, 'value');
+      const res = await this.cacheManager.get<string>(key);
+      console.log('Saved. Key', key, ' - value', res);
+    }
+
     return TokenOutput.fromToken({ token });
   }
 
