@@ -10,6 +10,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
+  /**
+   * This data will be attached to req.user by passport.
+   *
+   * See AuthResolver.login(), which uses the CurrentUser decorator,
+   * which in turn uses ctx.getContext().req.user - that contains
+   * the data returned from here.
+   */
   async validate(username: string, password: string): Promise<UserData> {
     const user = await this.authService.validateUser(username, password);
 

@@ -13,14 +13,14 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 
-import { AuthConfigService } from '../config/services/authConfigService';
+import { JwtConfigService } from '../config/services/jwtConfigService';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({
-      useClass: AuthConfigService,
+      useClass: JwtConfigService,
     }),
   ],
   providers: [
@@ -33,7 +33,7 @@ import { AuthConfigService } from '../config/services/authConfigService';
     GqlJwtAuthGuard,
     GqlLocalAuthGuard,
 
-    AuthConfigService,
+    JwtConfigService,
   ],
   exports: [AuthService],
 })

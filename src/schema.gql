@@ -25,7 +25,8 @@ type UserData {
 }
 
 type TokenOutput {
-  token: String!
+  accesstoken: String!
+  refreshToken: String
   userData: UserData
 }
 

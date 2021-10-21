@@ -35,9 +35,19 @@ export class AuthService {
    * @param {UserData} user
    * @returns JWT token
    */
-  async login(user: UserData): Promise<string> {
-    const payload = { sub: user.id, ...user };
-    return this.jwtService.sign(payload);
+  async login(user: UserData): Promise<{
+    accessToken: string;
+    refreshToken?: string;
+  }> {
+    return {
+      accessToken: this.jwtService.sign(
+        { sub: user.id, ...user },
+        { expiresIn: '15m' },
+      ),
+      refreshToken: Buffer.from(
+        this.jwtService.sign({ sub: user.id }, { expiresIn: '30d' }),
+      ).toString('base64'),
+    };
   }
 
   decodeUserId(token: string): number | null {

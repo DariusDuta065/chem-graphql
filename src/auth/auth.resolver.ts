@@ -50,8 +50,7 @@ export class AuthResolver {
     @Args('password') password: string,
     @CurrentUser() user: UserData,
   ) {
-    const token = await this.authSevice.login(user);
-
+    const tokens = await this.authSevice.login(user);
     const key = 'myKey';
 
     const res = await this.cacheManager.get<string>(key);
@@ -63,7 +62,7 @@ export class AuthResolver {
       console.log('Saved. Key', key, ' - value', res);
     }
 
-    return TokenOutput.fromToken({ token });
+    return TokenOutput.fromTokens(tokens);
   }
 
   @Roles(Role.Admin)
@@ -96,7 +95,7 @@ export class AuthResolver {
 
   @ResolveField(() => UserData)
   async userData(@Parent() token: TokenOutput): Promise<UserData> {
-    const userId = this.authSevice.decodeUserId(token.token);
+    const userId = this.authSevice.decodeUserId(token.accesstoken);
 
     if (!userId) {
       throw new UnauthorizedException();

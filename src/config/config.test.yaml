@@ -2,8 +2,10 @@ http:
   host: 127.0.0.1
   port: 3000
 
-auth:
-  jwtSecret: secretKey
+jwt:
+  secret: secretKey
+  signOptions:
+    expiresIn: 15m
 
 db:
   typeorm:
@@ -13,11 +15,11 @@ db:
     password: password
 
     entities:
-      - src/**/*.entity{.ts,.js}
+      - dist/**/*.entity{.ts,.js}
     migrations:
-      - src/db/migrations/*{.ts,.js}
+      - dist/db/migrations/*{.ts,.js}
     subscribers:
-      - src/db/subscribers/*{.ts,.js}
+      - dist/db/subscribers/*{.ts,.js}
     cli:
       entitiesDir: src/**/*.entity{.ts,.js},
       migrationsDir: src/db/migrations,

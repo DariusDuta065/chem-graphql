@@ -4,14 +4,24 @@ import { UserData } from '../../users/dto/userData.output';
 @ObjectType()
 export class TokenOutput {
   @Field()
-  token: string;
+  accesstoken: string;
+
+  @Field({ nullable: true })
+  refreshToken?: string;
 
   @Field(() => UserData, { nullable: true })
   userData?: UserData;
 
-  static fromToken({ token }: { token: string }) {
+  static fromTokens({
+    accessToken,
+    refreshToken,
+  }: {
+    accessToken: string;
+    refreshToken?: string;
+  }) {
     const tokenData = new TokenOutput();
-    tokenData.token = token;
+    tokenData.accesstoken = accessToken;
+    tokenData.refreshToken = refreshToken;
     return tokenData;
   }
 }
