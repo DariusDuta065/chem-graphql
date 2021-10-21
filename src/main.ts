@@ -35,7 +35,9 @@ async function bootstrap() {
       'Main',
     );
     Logger.log(
-      chalk`🚀 {white GraphQL playground:} {bold {cyan ${link + '/graphql'}}}`,
+      chalk`🪀 {white Apollo GraphQL Studio:} {bold {cyan ${
+        link + '/graphql'
+      }}}`,
       'Main',
     );
   });

@@ -17,6 +17,7 @@ import { SeedDBModule } from './db/seeders/seed.module';
 import configuration from './config/configuration';
 import { CacheConfigService } from './config/services/cacheConfigService';
 import { TypeOrmConfigService } from './config/services/typeOrmConfigService';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 @Module({
   imports: [
@@ -27,7 +28,10 @@ import { TypeOrmConfigService } from './config/services/typeOrmConfigService';
     }),
 
     GraphQLModule.forRoot({
+      sortSchema: true,
+      playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
 
     TypeOrmModule.forRootAsync({

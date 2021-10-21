@@ -2,40 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  userId: Int!
-  email: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  role: UserRole!
-}
-
-enum UserRole {
-  User
-  Admin
-}
-
-type UserData {
-  id: Int!
-  email: String!
-  firstName: String!
-  lastName: String!
-  role: String!
-}
-
-type TokenOutput {
-  accesstoken: String!
-  refreshToken: String
-  userData: UserData
-}
-
-type Pet {
-  id: Int!
+input CreateOwnerInput {
   name: String!
-  type: String
+}
+
+input CreatePetInput {
+  name: String!
   ownerId: Int!
-  owner: Owner!
+  type: String
+}
+
+type Mutation {
+  createOwner(createOwnerInput: CreateOwnerInput!): Owner!
+  createPet(createPetInput: CreatePetInput!): Pet!
+  login(password: String!, username: String!): TokenOutput!
+  refreshToken(refreshToken: String!): TokenOutput!
+  register(userRegisterInput: UserRegisterInput!): User!
+  removeOwner(id: Int!): Owner!
+  updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
 }
 
 type Owner {
@@ -44,25 +28,51 @@ type Owner {
   pets: [Pet!]
 }
 
-type Query {
-  profile: UserData!
-  sayHeyAdmin: String!
-  sayHeyUser: String!
-  sayHeyUnauth: String!
-  pets: [Pet!]!
-  getPet(id: Int!): Pet!
-  owners: [Owner!]!
-  owner(id: Int!): Owner!
+type Pet {
+  id: Int!
+  name: String!
+  owner: Owner!
+  ownerId: Int!
+  type: String
 }
 
-type Mutation {
-  login(password: String!, username: String!): TokenOutput!
-  refreshToken(refreshToken: String!): TokenOutput!
-  register(userRegisterInput: UserRegisterInput!): User!
-  createPet(createPetInput: CreatePetInput!): Pet!
-  createOwner(createOwnerInput: CreateOwnerInput!): Owner!
-  updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
-  removeOwner(id: Int!): Owner!
+type Query {
+  getPet(id: Int!): Pet!
+  owner(id: Int!): Owner!
+  owners: [Owner!]!
+  pets: [Pet!]!
+  profile: UserData!
+  sayHeyAdmin: String!
+  sayHeyUnauth: String!
+  sayHeyUser: String!
+}
+
+type TokenOutput {
+  accesstoken: String!
+  refreshToken: String
+  userData: UserData
+}
+
+input UpdateOwnerInput {
+  id: Int!
+  name: String
+}
+
+type User {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  role: UserRole!
+  userId: Int!
+}
+
+type UserData {
+  email: String!
+  firstName: String!
+  id: Int!
+  lastName: String!
+  role: String!
 }
 
 input UserRegisterInput {
@@ -71,17 +81,7 @@ input UserRegisterInput {
   lastName: String!
 }
 
-input CreatePetInput {
-  name: String!
-  type: String
-  ownerId: Int!
-}
-
-input CreateOwnerInput {
-  name: String!
-}
-
-input UpdateOwnerInput {
-  name: String
-  id: Int!
+enum UserRole {
+  Admin
+  User
 }
