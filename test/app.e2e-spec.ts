@@ -1,15 +1,14 @@
 import * as request from 'supertest';
+import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
-  let moduleFixture;
   let app: INestApplication;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
+    const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
@@ -23,5 +22,9 @@ describe('AppController (e2e)', () => {
 
   it('/ping (GET)', () => {
     return request(app.getHttpServer()).get('/ping').expect(200).expect('pong');
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });

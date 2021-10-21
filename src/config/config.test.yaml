@@ -15,11 +15,11 @@ db:
     password: password
 
     entities:
-      - dist/**/*.entity{.ts,.js}
+      - src/**/*.entity{.ts,.js}
     migrations:
-      - dist/db/migrations/*{.ts,.js}
+      - src/db/migrations/*{.ts,.js}
     subscribers:
-      - dist/db/subscribers/*{.ts,.js}
+      - src/db/subscribers/*{.ts,.js}
     cli:
       entitiesDir: src/**/*.entity{.ts,.js},
       migrationsDir: src/db/migrations,

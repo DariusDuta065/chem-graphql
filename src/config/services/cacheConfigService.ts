@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as redisStore from 'cache-manager-redis-store';
+import * as redisStore from 'cache-manager-redis';
 
 import { RedisConfig } from '../interfaces/RedisConfig';
 
