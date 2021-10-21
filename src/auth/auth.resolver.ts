@@ -1,4 +1,5 @@
 import {
+  Logger,
   Inject,
   UseGuards,
   CACHE_MANAGER,
@@ -36,6 +37,8 @@ import { UserRegisterInput } from './dto/user-register.input';
 
 @Resolver(() => TokenOutput)
 export class AuthResolver {
+  private readonly logger = new Logger(AuthResolver.name);
+
   constructor(
     private authSevice: AuthService,
     private usersService: UsersService,
@@ -50,19 +53,28 @@ export class AuthResolver {
     @Args('password') password: string,
     @CurrentUser() user: UserData,
   ) {
-    const tokens = await this.authSevice.login(user);
-    const key = 'myKey';
-
-    const res = await this.cacheManager.get<string>(key);
-    if (res) {
-      console.log('Key', key, ' - value', res);
-    } else {
-      await this.cacheManager.set<string>(key, 'value');
-      const res = await this.cacheManager.get<string>(key);
-      console.log('Saved. Key', key, ' - value', res);
+    try {
+      return TokenOutput.fromTokens(await this.authSevice.login(user));
+    } catch (err) {
+      if (err instanceof Error) {
+        this.logger.error(err.message);
+      }
+      throw new UnauthorizedException();
     }
+  }
 
-    return TokenOutput.fromTokens(tokens);
+  @Mutation(() => TokenOutput)
+  async refreshToken(@Args('refreshToken') refreshToken: string) {
+    try {
+      return TokenOutput.fromTokens(
+        await this.authSevice.refreshTokens(refreshToken),
+      );
+    } catch (err) {
+      if (err instanceof Error) {
+        this.logger.error(err.message);
+      }
+      throw new UnauthorizedException();
+    }
   }
 
   @Roles(Role.Admin)
@@ -82,9 +94,7 @@ export class AuthResolver {
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => UserData)
-  async profile(
-    @CurrentUser() { userId }: User,
-  ): Promise<UserData | undefined> {
+  async profile(@CurrentUser() { userId }: User): Promise<UserData> {
     const user = await this.usersService.findOneByID(userId);
 
     if (!user) {
@@ -94,19 +104,15 @@ export class AuthResolver {
   }
 
   @ResolveField(() => UserData)
-  async userData(@Parent() token: TokenOutput): Promise<UserData> {
-    const userId = this.authSevice.decodeUserId(token.accesstoken);
-
-    if (!userId) {
+  async userData(@Parent() tokens: TokenOutput): Promise<UserData> {
+    try {
+      return await this.authSevice.fetchUserInfo(tokens);
+    } catch (err) {
+      if (err instanceof Error) {
+        this.logger.error(err.message);
+      }
       throw new UnauthorizedException();
     }
-
-    const user = await this.usersService.findOneByID(userId);
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return UserData.fromUser(user);
   }
 
   @Roles(Role.Admin)

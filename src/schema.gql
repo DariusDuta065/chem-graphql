@@ -57,6 +57,7 @@ type Query {
 
 type Mutation {
   login(password: String!, username: String!): TokenOutput!
+  refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   createPet(createPetInput: CreatePetInput!): Pet!
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
