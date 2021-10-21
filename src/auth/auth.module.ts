@@ -10,17 +10,17 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
-import { jwtConstants } from './constants';
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
+
+import { AuthConfigService } from '../config/services/authConfigService';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
+    JwtModule.registerAsync({
+      useClass: AuthConfigService,
     }),
   ],
   providers: [
@@ -32,6 +32,8 @@ import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 
     GqlJwtAuthGuard,
     GqlLocalAuthGuard,
+
+    AuthConfigService,
   ],
   exports: [AuthService],
 })
