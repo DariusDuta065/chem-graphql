@@ -83,7 +83,7 @@ export class AuthResolver {
   async register(
     @Args('userRegisterInput') userRegisterInput: UserRegisterInput,
   ): Promise<User> {
-    const user = await this.usersService.registerUser(userRegisterInput);
+    const user = await this.authSevice.register(userRegisterInput);
 
     if (!user) {
       throw new BadRequestException();

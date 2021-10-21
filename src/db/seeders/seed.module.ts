@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CommandModule } from 'nestjs-command';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthModule } from '../../auth/auth.module';
 import { UsersModule } from '../../users/users.module';
 
 import { Owner } from '../../owners/owner.entity';
@@ -18,6 +19,7 @@ import { OwnerFactory } from '../factories/owner.factory';
 @Module({
   imports: [
     UsersModule,
+    AuthModule,
     CommandModule,
     TypeOrmModule.forFeature([Owner, Pet, User]),
   ],

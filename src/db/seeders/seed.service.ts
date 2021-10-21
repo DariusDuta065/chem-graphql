@@ -11,6 +11,8 @@ import { UserFactory } from '../factories/user.factory';
 import { OwnerFactory } from '../factories/owner.factory';
 
 import { UsersService } from '../../users/users.service';
+import { AuthService } from '../../auth/auth.service';
+
 import { CreateUserInput } from './dto/create-user.input';
 
 @Injectable()
@@ -22,6 +24,7 @@ export class SeedDBService {
     @InjectRepository(Pet) private petsRepository: Repository<Pet>,
     @InjectRepository(User) private usersRepository: Repository<User>,
     private usersService: UsersService,
+    private authService: AuthService,
 
     private ownerFactory: OwnerFactory,
     private petFactory: PetFactory,
@@ -84,7 +87,7 @@ export class SeedDBService {
 
   async createUser(userInput: CreateUserInput) {
     try {
-      await this.usersService.registerUser(userInput);
+      await this.authService.register(userInput);
     } catch (err) {
       if (err instanceof ConflictException) {
         this.logger.error(err.message);

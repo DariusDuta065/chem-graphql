@@ -6,9 +6,6 @@ import { User } from './user.entity';
 import { Role } from '../auth/enums/role.enum';
 import { UserRegisterInput } from '../auth/dto/user-register.input';
 
-import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -23,7 +20,11 @@ export class UsersService {
     return this.usersRepository.findOne({ userId: Number(userId) });
   }
 
-  async registerUser(input: UserRegisterInput): Promise<User> {
+  async registerUser(
+    input: UserRegisterInput,
+    cleartextPass: string,
+    hashedPass: string,
+  ): Promise<User> {
     // Check for duplicate users
     const userExists = await this.findOneByEmail(input.email);
     if (userExists) {
@@ -35,26 +36,10 @@ export class UsersService {
     user.lastName = input.lastName;
     user.firstName = input.firstName;
     user.role = input.role ?? Role.User;
-
-    // Handle password
-    const clearTextPass = input.password ?? this.generatePassword();
-    user.password = this.hashPassword(clearTextPass);
+    user.password = hashedPass;
 
     const resUser = await this.usersRepository.save(user);
-    resUser.password = clearTextPass;
+    resUser.password = cleartextPass;
     return resUser;
-  }
-
-  generatePassword(
-    length = 8,
-    wishlist = '0123456789abcdefghijklmnopqrstuvwxyz',
-  ) {
-    return Array.from(crypto.randomFillSync(new Uint32Array(length)))
-      .map((x) => wishlist[x % wishlist.length])
-      .join('');
-  }
-
-  hashPassword(password: string): string {
-    return bcrypt.hashSync(password, 10);
   }
 }

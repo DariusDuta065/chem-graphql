@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
@@ -6,6 +7,7 @@ import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UserData } from '../users/dto/userData.output';
 import { TokenOutput } from './dto/token.output';
+import { UserRegisterInput } from './dto/user-register.input';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +55,17 @@ export class AuthService {
     // Save [refreshToken, userID] in Redis
     this.saveRefreshToken(tokens.refreshToken, user.id);
     return tokens;
+  }
+
+  async register(userRegisterInput: UserRegisterInput) {
+    const cleartextPass = this.generatePassword();
+    const hashedPass = this.hashPassword(cleartextPass);
+
+    return await this.usersService.registerUser(
+      userRegisterInput,
+      cleartextPass,
+      hashedPass,
+    );
   }
 
   /**
@@ -189,5 +202,24 @@ export class AuthService {
     }
 
     throw new Error('Could not decode userID from token');
+  }
+
+  /**
+   * Generates a random password from the alphabet.
+   */
+  private generatePassword(
+    length = 8,
+    wishlist = '0123456789abcdefghijklmnopqrstuvwxyz',
+  ) {
+    return Array.from(crypto.randomFillSync(new Uint32Array(length)))
+      .map((x) => wishlist[x % wishlist.length])
+      .join('');
+  }
+
+  /**
+   * Uses bcrypt to hash a password.
+   */
+  private hashPassword(password: string): string {
+    return bcrypt.hashSync(password, 10);
   }
 }
