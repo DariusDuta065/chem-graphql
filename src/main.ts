@@ -1,5 +1,6 @@
 import * as chalk from 'chalk';
 import * as helmet from 'helmet';
+import * as compression from 'compression';
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -23,6 +24,7 @@ async function bootstrap() {
 
   if ((process.env.NODE_ENV ?? 'dev') === 'prod') {
     app.use(helmet());
+    app.use(compression());
   }
 
   const httpConfig = getHttpConfig(config);
