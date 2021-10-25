@@ -13,6 +13,7 @@ db:
     database: graphql
     username: root
     password: password
+    keepConnectionAlive: false
 
     entities:
       - src/**/*.entity{.ts,.js}
