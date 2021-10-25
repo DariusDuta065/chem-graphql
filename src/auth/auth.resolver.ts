@@ -1,8 +1,6 @@
 import {
   Logger,
-  Inject,
   UseGuards,
-  CACHE_MANAGER,
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,8 +13,6 @@ import {
   Resolver,
   ResolveField,
 } from '@nestjs/graphql';
-
-import { Cache } from 'cache-manager';
 
 import { User } from '../users/user.entity';
 
@@ -40,10 +36,8 @@ export class AuthResolver {
   private readonly logger = new Logger(AuthResolver.name);
 
   constructor(
-    private authSevice: AuthService,
+    private authService: AuthService,
     private usersService: UsersService,
-
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   @UseGuards(GqlLocalAuthGuard)
@@ -52,9 +46,9 @@ export class AuthResolver {
     @Args('username') username: string,
     @Args('password') password: string,
     @CurrentUser() user: UserData,
-  ) {
+  ): Promise<TokenOutput> {
     try {
-      return TokenOutput.fromTokens(await this.authSevice.login(user));
+      return TokenOutput.fromTokens(await this.authService.login(user));
     } catch (err) {
       if (err instanceof Error) {
         this.logger.error(err.message);
@@ -63,11 +57,26 @@ export class AuthResolver {
     }
   }
 
+  @Mutation(() => String)
+  async logout(@Args('refreshToken') refreshToken: string): Promise<string> {
+    try {
+      await this.authService.logout(refreshToken);
+      return 'ok';
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(error.message);
+      }
+      throw new UnauthorizedException();
+    }
+  }
+
   @Mutation(() => TokenOutput)
-  async refreshToken(@Args('refreshToken') refreshToken: string) {
+  async refreshToken(
+    @Args('refreshToken') refreshToken: string,
+  ): Promise<TokenOutput> {
     try {
       return TokenOutput.fromTokens(
-        await this.authSevice.refreshTokens(refreshToken),
+        await this.authService.refreshTokens(refreshToken),
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -83,7 +92,7 @@ export class AuthResolver {
   async register(
     @Args('userRegisterInput') userRegisterInput: UserRegisterInput,
   ): Promise<User> {
-    const user = await this.authSevice.register(userRegisterInput);
+    const user = await this.authService.register(userRegisterInput);
 
     if (!user) {
       throw new BadRequestException();
@@ -106,7 +115,7 @@ export class AuthResolver {
   @ResolveField(() => UserData)
   async userData(@Parent() tokens: TokenOutput): Promise<UserData> {
     try {
-      return await this.authSevice.fetchUserInfo(tokens);
+      return await this.authService.fetchUserInfo(tokens);
     } catch (err) {
       if (err instanceof Error) {
         this.logger.error(err.message);

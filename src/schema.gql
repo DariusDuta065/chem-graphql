@@ -16,6 +16,7 @@ type Mutation {
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
   createPet(createPetInput: CreatePetInput!): Pet!
   login(password: String!, username: String!): TokenOutput!
+  logout(refreshToken: String!): String!
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   removeOwner(id: Int!): Owner!
