@@ -5,8 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
-import { UserData } from '../users/dto/userData.output';
+
 import { TokenOutput } from './dto/token.output';
+import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 @Injectable()
@@ -44,9 +45,12 @@ export class AuthService {
   /**
    * Creates and signs a JWT token from UserData.
    * @param {UserData} user
+   * @throws {Error}
    * @returns JWT token
    */
-  async login(user: UserData) {
+  async login(
+    user: UserData,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const tokens = {
       accessToken: this.generateAccessToken(user),
       refreshToken: this.generateRefreshToken(user),
@@ -55,6 +59,21 @@ export class AuthService {
     // Save [refreshToken, userID] in Redis
     this.saveRefreshToken(tokens.refreshToken, user.id);
     return tokens;
+  }
+
+  /**
+   * Deletes the session's refreshToken from Cache.
+   * @param {string} refreshToken
+   * @throws {Error}
+   */
+  async logout(refreshToken: string) {
+    const userID = await this.cacheManager.get<number>(refreshToken);
+
+    if (!userID) {
+      throw Error('refresh token not found');
+    }
+
+    this.deleteRefreshToken(refreshToken);
   }
 
   async register(userRegisterInput: UserRegisterInput) {
