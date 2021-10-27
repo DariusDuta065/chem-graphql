@@ -4,20 +4,19 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule, Module } from '@nestjs/common';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
 
-import { AuthModule } from './auth/auth.module';
-import { PetsModule } from './pets/pets.module';
-import { UsersModule } from './users/users.module';
-import { OwnersModule } from './owners/owners.module';
-import { SeedDBModule } from './db/seeders/seed.module';
+import { AuthModule } from '../auth/auth.module';
+import { PetsModule } from '../pets/pets.module';
+import { UsersModule } from '../users/users.module';
+import { OwnersModule } from '../owners/owners.module';
+import { SeedDBModule } from '../db/seeders/seed.module';
 
-import configuration from './config/configuration';
-import { CacheConfigService } from './config/services/cacheConfigService';
-import { TypeOrmConfigService } from './config/services/typeOrmConfigService';
-import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import configuration from '../config/configuration';
+import { CacheConfigService } from '../config/services/cacheConfigService';
+import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
 
 @Module({
   imports: [
@@ -50,6 +49,5 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
     SeedDBModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

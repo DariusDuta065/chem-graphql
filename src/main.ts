@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { HttpConfig } from './config/interfaces/HttpConfig';
 
@@ -30,16 +30,15 @@ async function bootstrap() {
   const httpConfig = getHttpConfig(config);
 
   await app.listen(httpConfig.port, httpConfig.host, () => {
-    const link = `http://${httpConfig.host}:${httpConfig.port}`;
+    const api = `http://${httpConfig.host}:${httpConfig.port}`;
+    const graphQL = `${api}/graphql`;
 
     Logger.log(
-      chalk`🚀 {white API is running on:} {bold {cyan ${link}}}`,
+      chalk`🚀 {white API is running on:} {bold {cyan ${api}}}`,
       'Main',
     );
     Logger.log(
-      chalk`🪀 {white Apollo GraphQL Studio:} {bold {cyan ${
-        link + '/graphql'
-      }}}`,
+      chalk`🪀 {white Apollo GraphQL Studio:} {bold {cyan ${graphQL}}}`,
       'Main',
     );
   });

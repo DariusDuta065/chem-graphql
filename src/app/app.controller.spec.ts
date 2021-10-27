@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -9,7 +8,6 @@ describe('AppController', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
     }).compile();
 
     appController = module.get<AppController>(AppController);
@@ -20,8 +18,10 @@ describe('AppController', () => {
   });
 
   describe('AppController', () => {
-    it('index should return "ok"', () => {
-      expect(appController.index()).toBe('ok');
+    describe('index', () => {
+      it(`should return 'ok'`, () => {
+        expect(appController.index()).toBe('ok');
+      });
     });
   });
 });
