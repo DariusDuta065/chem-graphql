@@ -4,12 +4,18 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+
+    "cli": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
+    "cli:dev": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
+    "cli:prod": "NODE_ENV=prod CLI_PATH=./dist/cli.js npx nestjs-command",
+
     "start": "NODE_ENV=dev nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
     "start:debug": "NODE_ENV=dev nest start --debug --watch",
     "start:prod": "NODE_ENV=prod node dist/main",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -92,8 +98,15 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s",
+      "!**/main.(t|j)s",
+      "!**/cli.(t|j)s",
+
       "!**/*.module.(t|j)s",
-      "!**/migrations/*.(t|j)s"
+      "!**/migrations/*.(t|j)s",
+
+      "!**/db/**",
+      "!**/owners/**",
+      "!**/pets/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

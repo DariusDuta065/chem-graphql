@@ -23,5 +23,11 @@ describe('AppController', () => {
         expect(appController.index()).toBe('ok');
       });
     });
+
+    describe('ping', () => {
+      it(`should return 'pong'`, () => {
+        expect(appController.ping()).toBe('pong');
+      });
+    });
   });
 });
