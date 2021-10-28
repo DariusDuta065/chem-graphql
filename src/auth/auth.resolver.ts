@@ -127,19 +127,19 @@ export class AuthResolver {
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Query(() => String)
-  sayHeyAdmin() {
-    return 'admin role';
+  adminRoute() {
+    return 'admin';
   }
 
   @Roles(Role.User)
   @UseGuards(RolesGuard)
   @Query(() => String)
-  sayHeyUser() {
-    return 'user role';
+  userRoute() {
+    return 'user';
   }
 
   @Query(() => String)
-  sayHeyUnauth() {
+  publicRoute() {
     return 'public';
   }
 }

@@ -91,15 +91,19 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": ".",
+    "testRegex": ".*\\.(e2e-)?spec\\.ts",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s",
+      "src/**/*.(t|j)s",
+
+      "!**/*rc.(t|j)s",
       "!**/main.(t|j)s",
       "!**/cli.(t|j)s",
+      "!**/dist/**",
+      "!**/node_modules/**",
 
       "!**/*.module.(t|j)s",
       "!**/migrations/*.(t|j)s",
@@ -108,7 +112,7 @@
       "!**/owners/**",
       "!**/pets/**"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   }
 }

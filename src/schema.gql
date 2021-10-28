@@ -38,14 +38,14 @@ type Pet {
 }
 
 type Query {
+  adminRoute: String!
   getPet(id: Int!): Pet!
   owner(id: Int!): Owner!
   owners: [Owner!]!
   pets: [Pet!]!
   profile: UserData!
-  sayHeyAdmin: String!
-  sayHeyUnauth: String!
-  sayHeyUser: String!
+  publicRoute: String!
+  userRoute: String!
 }
 
 type TokenOutput {
