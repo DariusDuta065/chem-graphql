@@ -38,8 +38,7 @@ export class UsersService {
     user.role = input.role ?? Role.User;
     user.password = hashedPass;
 
-    const resUser = await this.usersRepository.save(user);
-    resUser.password = cleartextPass;
-    return resUser;
+    const newUser = await this.usersRepository.save(user);
+    return { ...newUser, password: cleartextPass };
   }
 }
