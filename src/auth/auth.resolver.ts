@@ -92,13 +92,17 @@ export class AuthResolver {
   async register(
     @Args('userRegisterInput') userRegisterInput: UserRegisterInput,
   ): Promise<User> {
-    const user = await this.authService.register(userRegisterInput);
+    try {
+      const user = await this.authService.register(userRegisterInput);
 
-    if (!user) {
+      if (!user) {
+        throw new BadRequestException();
+      }
+
+      return user;
+    } catch (error) {
       throw new BadRequestException();
     }
-
-    return user;
   }
 
   @UseGuards(GqlJwtAuthGuard)

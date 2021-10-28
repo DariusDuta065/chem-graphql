@@ -1,12 +1,12 @@
+import { Repository } from 'typeorm';
+
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
-import { UserRegisterInput } from 'src/auth/dto/user-register.input';
 import { Role } from '../auth/enums/role.enum';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { UserRegisterInput } from 'src/auth/dto/user-register.input';
 
 describe('UsersService', () => {
   let module: TestingModule;
@@ -106,7 +106,7 @@ describe('UsersService', () => {
 
       expect(
         usersService.registerUser(userRegisterInput, cleartextPass, hashedPass),
-      ).rejects.toThrowError(ConflictException);
+      ).rejects.toThrowError(Error);
     });
   });
 });

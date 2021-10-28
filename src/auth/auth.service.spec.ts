@@ -118,8 +118,6 @@ describe('AuthService', () => {
       jest.mock('bcrypt', () => {
         return {
           isMatching() {
-            console.log('Salutare');
-
             return false;
           },
         };
@@ -135,9 +133,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should generate pair of tokens', async () => {
-      cacheManager.set = jest.fn(async (key: string, value: string) => {
-        return;
-      });
+      cacheManager.set = jest.fn();
       jwtService.sign = jest
         .fn()
         .mockReturnValueOnce('accessToken')
@@ -170,9 +166,7 @@ describe('AuthService', () => {
     });
 
     it('should save refresh token into cache', async () => {
-      cacheManager.set = jest.fn(async (key: string, value: string) => {
-        return;
-      });
+      cacheManager.set = jest.fn();
       jwtService.sign = jest
         .fn()
         .mockReturnValueOnce('accessToken')
@@ -202,12 +196,8 @@ describe('AuthService', () => {
       const refreshToken = 'refreshToken';
       const userID = 1;
 
-      cacheManager.del = jest.fn(async (key: string) => {
-        return;
-      });
-      cacheManager.get = jest.fn(async (key: string) => {
-        return userID;
-      });
+      cacheManager.del = jest.fn();
+      cacheManager.get = jest.fn(async () => userID);
 
       await authService.logout(refreshToken);
 
@@ -218,12 +208,8 @@ describe('AuthService', () => {
     it('should throw an error if token is not found in cache', async () => {
       const refreshToken = 'refreshToken';
 
-      cacheManager.del = jest.fn(async (key: string) => {
-        return;
-      });
-      cacheManager.get = jest.fn(async (key: string) => {
-        return undefined;
-      });
+      cacheManager.del = jest.fn();
+      cacheManager.get = jest.fn(async () => undefined);
 
       await expect(authService.logout(refreshToken)).rejects.toThrowError();
 

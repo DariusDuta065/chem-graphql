@@ -6,6 +6,7 @@ import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
 
+import { User } from '../users/user.entity';
 import { TokenOutput } from './dto/token.output';
 import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
@@ -76,7 +77,17 @@ export class AuthService {
     this.deleteRefreshToken(refreshToken);
   }
 
-  async register(userRegisterInput: UserRegisterInput) {
+  /**
+   * Registers a new user.
+   * Throws an error if input email is not unique.
+   *
+   * @param userRegisterInput
+   * @returns {Promise<User|undefined>}
+   * @throws {Error}
+   */
+  async register(
+    userRegisterInput: UserRegisterInput,
+  ): Promise<User | undefined> {
     const cleartextPass = this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 

@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './user.entity';
@@ -20,6 +20,16 @@ export class UsersService {
     return this.usersRepository.findOne({ userId: Number(userId) });
   }
 
+  /**
+   * Ensures provided email is unique,
+   * then saves the user to DB.
+   *
+   * @param input
+   * @param cleartextPass
+   * @param hashedPass
+   * @returns {User}
+   * @throws {Error}
+   */
   async registerUser(
     input: UserRegisterInput,
     cleartextPass: string,
@@ -28,7 +38,7 @@ export class UsersService {
     // Check for duplicate users
     const userExists = await this.findOneByEmail(input.email);
     if (userExists) {
-      throw new ConflictException('User already exists');
+      throw new Error('User already exists');
     }
 
     const user = new User();
