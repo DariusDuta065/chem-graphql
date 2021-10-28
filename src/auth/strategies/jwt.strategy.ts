@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 }
 
-class TokenData {
+export class TokenData {
   sub: number;
   iat: number;
   exp: number;
