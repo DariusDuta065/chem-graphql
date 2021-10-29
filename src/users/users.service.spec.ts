@@ -19,15 +19,13 @@ describe('UsersService', () => {
         UsersService,
         {
           provide: getRepositoryToken(User),
-          useValue: {},
+          useClass: Repository,
         },
       ],
     }).compile();
 
-    usersService = await module.get<UsersService>(UsersService);
-    usersRepository = await module.get<Repository<User>>(
-      getRepositoryToken(User),
-    );
+    usersService = module.get<UsersService>(UsersService);
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   afterAll(async () => {

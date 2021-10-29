@@ -1,12 +1,4 @@
-import {
-  CacheModule,
-  BadRequestException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AuthResolver } from './auth.resolver';
@@ -14,54 +6,32 @@ import { AuthService } from './auth.service';
 
 import { Role } from './enums/role.enum';
 import { User } from '../users/user.entity';
-import { UsersModule } from '../users/users.module';
+import { TokenOutput } from './dto/token.output';
 import { UsersService } from '../users/users.service';
 import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
-import { TokenOutput } from './dto/token.output';
-
-import configuration from '../config/configuration';
-import { JwtConfigService } from '../config/services/jwtConfigService';
-import { CacheConfigService } from '../config/services/cacheConfigService';
-import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
-
-const authModule = {
-  imports: [
-    ConfigModule.forRoot({
-      cache: true,
-      isGlobal: true,
-      load: [configuration],
-    }),
-
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
-
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useClass: CacheConfigService,
-    }),
-
-    PassportModule,
-    UsersModule,
-
-    JwtModule.registerAsync({
-      useClass: JwtConfigService,
-    }),
-
-    TypeOrmModule.forFeature([User]),
-  ],
-  providers: [AuthService, AuthResolver],
-};
 
 describe('AuthResolver', () => {
-  let authResolver: AuthResolver;
-  let usersService: UsersService;
-  let authService: AuthService;
   let module: TestingModule;
 
+  let authService: AuthService;
+  let authResolver: AuthResolver;
+  let usersService: UsersService;
+
   beforeAll(async () => {
-    module = await Test.createTestingModule(authModule).compile();
+    module = await Test.createTestingModule({
+      providers: [
+        AuthResolver,
+        {
+          provide: AuthService,
+          useValue: {},
+        },
+        {
+          provide: UsersService,
+          useValue: {},
+        },
+      ],
+    }).compile();
     module.useLogger(false);
 
     authResolver = module.get<AuthResolver>(AuthResolver);
@@ -136,11 +106,11 @@ describe('AuthResolver', () => {
 
     it('should throw 401 if authService throws an error', async () => {
       const refreshToken = 'refreshToken';
-      authService.logout = jest
-        .fn()
-        .mockRejectedValue(new Error('refresh token not found'));
+      authService.logout = jest.fn(async () => {
+        throw new Error('refresh token not found');
+      });
 
-      await expect(authResolver.logout(refreshToken)).rejects.toThrowError(
+      expect(authResolver.logout(refreshToken)).rejects.toThrowError(
         UnauthorizedException,
       );
 
@@ -268,9 +238,7 @@ describe('AuthResolver', () => {
         email: 'email@test.com',
       } as UserData;
 
-      authService.fetchUserInfo = jest.fn(async () => {
-        return userData;
-      });
+      authService.fetchUserInfo = jest.fn(async () => userData);
 
       const res = await authResolver.userData(tokens);
 

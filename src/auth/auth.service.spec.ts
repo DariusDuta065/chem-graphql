@@ -1,54 +1,16 @@
 import { Cache } from 'cache-manager';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { CacheModule, CACHE_MANAGER } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
+
+import { JwtService } from '@nestjs/jwt';
+import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Role } from './enums/role.enum';
 import { User } from '../users/user.entity';
 import { AuthService } from './auth.service';
-import { AuthResolver } from './auth.resolver';
-import { UsersModule } from '../users/users.module';
+import { TokenOutput } from './dto/token.output';
 import { UsersService } from '../users/users.service';
 import { UserData } from '../users/dto/userData.output';
-
-import configuration from '../config/configuration';
-import { JwtConfigService } from '../config/services/jwtConfigService';
-import { CacheConfigService } from '../config/services/cacheConfigService';
-import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
 import { UserRegisterInput } from './dto/user-register.input';
-import { TokenOutput } from './dto/token.output';
-
-const authModule = {
-  imports: [
-    ConfigModule.forRoot({
-      cache: true,
-      isGlobal: true,
-      load: [configuration],
-    }),
-
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
-
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useClass: CacheConfigService,
-    }),
-
-    PassportModule,
-    UsersModule,
-
-    JwtModule.registerAsync({
-      useClass: JwtConfigService,
-    }),
-
-    TypeOrmModule.forFeature([User]),
-  ],
-  providers: [AuthService, AuthResolver],
-};
 
 describe('AuthService', () => {
   let module: TestingModule;
@@ -58,7 +20,29 @@ describe('AuthService', () => {
   let cacheManager: Cache;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule(authModule).compile();
+    module = await Test.createTestingModule({
+      providers: [
+        {
+          provide: UsersService,
+          useFactory: () => {
+            return {};
+          },
+        },
+        {
+          provide: JwtService,
+          useFactory: () => {
+            return {};
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useFactory: () => {
+            return {};
+          },
+        },
+        AuthService,
+      ],
+    }).compile();
     module.useLogger(false);
 
     authService = module.get<AuthService>(AuthService);
@@ -87,7 +71,7 @@ describe('AuthService', () => {
           '$2b$10$lBOAfXRo/D/82DrNP2ZgG.8fU5z1BBsSZKJ5Yt.ekSmxoA7yEJsl2', // 'password'
       } as User;
 
-      usersService.findOneByEmail = jest.fn().mockReturnValue(user);
+      usersService.findOneByEmail = jest.fn(async () => user);
 
       const res = await authService.validateUser(user.email, 'password');
 
@@ -96,7 +80,7 @@ describe('AuthService', () => {
     });
 
     it(`should return null if user does not exist`, async () => {
-      usersService.findOneByEmail = jest.fn().mockReturnValue(undefined);
+      usersService.findOneByEmail = jest.fn(async () => undefined);
 
       const res = await authService.validateUser('email@email.com', 'password');
       expect(res).toStrictEqual(null);
@@ -113,15 +97,7 @@ describe('AuthService', () => {
           '$2b$10$lBOAfXRo/D/82DrNP2ZgG.8fU5z1BBsSZKJ5Yt.ekSmxoA7yEJsl2', // 'password'
       } as User;
 
-      usersService.findOneByEmail = jest.fn().mockReturnValue(user);
-
-      jest.mock('bcrypt', () => {
-        return {
-          isMatching() {
-            return false;
-          },
-        };
-      });
+      usersService.findOneByEmail = jest.fn(async () => user);
 
       const res = await authService.validateUser(
         'email@email.com',
