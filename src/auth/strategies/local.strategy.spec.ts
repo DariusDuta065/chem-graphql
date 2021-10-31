@@ -1,60 +1,28 @@
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CacheModule, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 
 import { Strategy } from 'passport-local';
 
 import { AuthService } from '../auth.service';
-import { User } from '../../users/user.entity';
-import { AuthResolver } from '../auth.resolver';
 import { LocalStrategy } from './local.strategy';
-import { UsersModule } from '../../users/users.module';
-import configuration from '../../config/configuration';
 
 import { Role } from '../enums/role.enum';
 import { UserData } from 'src/users/dto/userData.output';
-import { JwtConfigService } from '../../config/services/jwtConfigService';
-import { CacheConfigService } from '../../config/services/cacheConfigService';
-import { TypeOrmConfigService } from '../../config/services/typeOrmConfigService';
-
-const authModule = {
-  imports: [
-    ConfigModule.forRoot({
-      cache: true,
-      isGlobal: true,
-      load: [configuration],
-    }),
-
-    TypeOrmModule.forRootAsync({
-      useClass: TypeOrmConfigService,
-    }),
-
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useClass: CacheConfigService,
-    }),
-
-    PassportModule,
-    UsersModule,
-
-    JwtModule.registerAsync({
-      useClass: JwtConfigService,
-    }),
-
-    TypeOrmModule.forFeature([User]),
-  ],
-  providers: [AuthService, AuthResolver],
-};
 
 describe('LocalStrategy', () => {
   let module: TestingModule;
   let authService: AuthService;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule(authModule).compile();
+    module = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: AuthService,
+          useValue: () => ({}),
+        },
+      ],
+    }).compile();
     module.useLogger(false);
 
     authService = module.get<AuthService>(AuthService);
