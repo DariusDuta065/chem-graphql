@@ -88,7 +88,7 @@ export class AuthService {
   async register(
     userRegisterInput: UserRegisterInput,
   ): Promise<User | undefined> {
-    const cleartextPass = this.generatePassword();
+    const cleartextPass = userRegisterInput.password ?? this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 
     return await this.usersService.registerUser(
