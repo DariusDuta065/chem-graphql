@@ -1,9 +1,16 @@
 import { join } from 'path';
+import { Cache } from 'cache-manager';
 
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CacheModule, Module } from '@nestjs/common';
+import {
+  Inject,
+  Module,
+  CacheModule,
+  CACHE_MANAGER,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 import { AppController } from './app.controller';
@@ -50,4 +57,14 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule implements OnModuleDestroy {
+  //
+
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+
+  onModuleDestroy() {
+    // Manually close Redis client, to not have TCP handle leak
+    const client = (this.cacheManager.store as any).getClient();
+    client.quit();
+  }
+}
