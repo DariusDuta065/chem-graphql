@@ -6,16 +6,15 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-
     "cli": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:dev": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
+    "cli:test": "NODE_ENV=test CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:prod": "NODE_ENV=prod CLI_PATH=./dist/cli.js npx nestjs-command",
-
     "start": "NODE_ENV=dev nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
+    "start:test": "NODE_ENV=test nest start --watch",
     "start:debug": "NODE_ENV=dev nest start --debug --watch",
     "start:prod": "NODE_ENV=prod node dist/main",
-
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -34,7 +33,7 @@
     "apollo-server-express": "^3.3.0",
     "bcrypt": "^5.0.1",
     "cache-manager": "^3.4.4",
-    "cache-manager-redis": "^0.6.0",
+    "cache-manager-redis-store": "^2.0.0",
     "chalk": "^4.1.2",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
@@ -77,6 +76,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "faker-es6": "^7.0.0",
     "jest": "^27.0.6",
+    "leaked-handles": "^5.2.0",
     "prettier": "^2.3.2",
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3",
@@ -98,16 +98,13 @@
     },
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
-
       "!**/*rc.(t|j)s",
       "!**/main.(t|j)s",
       "!**/cli.(t|j)s",
       "!**/dist/**",
       "!**/node_modules/**",
-
       "!**/*.module.(t|j)s",
       "!**/migrations/*.(t|j)s",
-
       "!**/db/**",
       "!**/owners/**",
       "!**/pets/**"
