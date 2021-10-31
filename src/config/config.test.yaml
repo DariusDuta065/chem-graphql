@@ -5,14 +5,16 @@ http:
 jwt:
   secret: secretKey
   signOptions:
-    expiresIn: 15m
+    expiresIn: 10m
 
 db:
   typeorm:
     type: mysql
-    database: graphql
+    database: graphql-test
     username: root
     password: password
+
+    synchronize: true
     keepConnectionAlive: false
 
     entities:

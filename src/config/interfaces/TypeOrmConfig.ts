@@ -5,6 +5,8 @@ export class TypeOrmConfig {
   database: string;
   username: string;
   password: string;
+
+  synchronize: boolean;
   keepConnectionAlive: boolean;
 
   entities: string[];

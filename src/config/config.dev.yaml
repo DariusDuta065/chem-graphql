@@ -13,6 +13,8 @@ db:
     database: graphql
     username: root
     password: password
+
+    synchronize: false
     keepConnectionAlive: false
 
     entities:
