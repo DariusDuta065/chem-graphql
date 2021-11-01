@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsAlpha, IsEmail } from 'class-validator';
+import { IsEmail, Matches } from 'class-validator';
 import { Role } from '../enums/role.enum';
 
 @InputType()
@@ -9,11 +9,11 @@ export class UserRegisterInput {
   email: string;
 
   @Field()
-  @IsAlpha()
+  @Matches(/^[a-z ]+$/i)
   firstName: string;
 
   @Field()
-  @IsAlpha()
+  @Matches(/^[a-z ]+$/i)
   lastName: string;
 
   role?: Role = Role.User;

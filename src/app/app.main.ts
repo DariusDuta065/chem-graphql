@@ -13,7 +13,7 @@ import { HttpConfig } from '../config/interfaces/HttpConfig';
 const configureApp = (app: INestApplication) => {
   app.useGlobalPipes(new ValidationPipe());
 
-  if ((process.env.NODE_ENV ?? 'dev') === 'prod') {
+  if (process.env.NODE_ENV === 'prod') {
     app.use(helmet());
     app.use(compression());
   }

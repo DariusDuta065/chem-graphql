@@ -116,7 +116,7 @@ export class AuthResolver {
     return UserData.fromUser(user);
   }
 
-  @ResolveField(() => UserData)
+  @ResolveField()
   async userData(@Parent() tokens: TokenOutput): Promise<UserData> {
     try {
       return await this.authService.fetchUserInfo(tokens);
