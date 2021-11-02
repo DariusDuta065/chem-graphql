@@ -224,6 +224,12 @@ describe('AuthService', () => {
     });
   });
 
+  describe('resetPassword', () => {
+    it('', async () => {
+      //
+    });
+  });
+
   describe('refreshTokens', () => {
     it('should refresh the pair of tokens', async () => {
       const userData = new UserData({

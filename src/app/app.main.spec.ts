@@ -43,6 +43,7 @@ describe('app.main.ts', () => {
       } as HttpConfig;
 
       const useGlobalPipes = jest.fn();
+      const useGlobalFilters = jest.fn();
       const use = jest.fn();
       const listen = jest.fn((p, h, cb) => {
         cb();
@@ -56,6 +57,7 @@ describe('app.main.ts', () => {
       NestFactory.create = jest.fn(async () => {
         return {
           useGlobalPipes,
+          useGlobalFilters,
           use,
           listen,
           get,
@@ -79,6 +81,7 @@ describe('app.main.ts', () => {
     it('should set up the validation pipe', () => {
       const app = {} as INestApplication;
       app.useGlobalPipes = jest.fn();
+      app.useGlobalFilters = jest.fn();
       app.use = jest.fn();
 
       configureApp(app);
@@ -89,6 +92,7 @@ describe('app.main.ts', () => {
     it('should not use helmet & compression in dev', () => {
       const app = {} as INestApplication;
       app.useGlobalPipes = jest.fn();
+      app.useGlobalFilters = jest.fn();
       app.use = jest.fn();
 
       process.env.NODE_ENV = 'dev';
@@ -97,12 +101,13 @@ describe('app.main.ts', () => {
       expect(app.use).toBeCalledTimes(0);
     });
 
-    it('should use helmet & compression in prod', () => {
+    it('should use helmet & compression in production', () => {
       const app = {} as INestApplication;
       app.useGlobalPipes = jest.fn(() => app);
+      app.useGlobalFilters = jest.fn();
       app.use = jest.fn(() => app);
 
-      process.env.NODE_ENV = 'prod';
+      process.env.NODE_ENV = 'production';
       configureApp(app);
 
       const {

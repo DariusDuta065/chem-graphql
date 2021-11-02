@@ -9,7 +9,7 @@ yarn install
 # start app
 yarn start
 yarn start:dev
-yarn start:prod
+yarn start:production
 ```
 
 ## Test
@@ -56,4 +56,4 @@ npx nestjs-command seed:db
 - Environment configuration
 - Queues
 - Events
-- Deployment to production
+- Deployment to productionuction

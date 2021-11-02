@@ -2,7 +2,12 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
 
@@ -10,6 +15,7 @@ import { User } from '../users/user.entity';
 import { TokenOutput } from './dto/token.output';
 import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
+import { EntityNotFoundError } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -91,11 +97,33 @@ export class AuthService {
     const cleartextPass = userRegisterInput.password ?? this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 
-    return await this.usersService.registerUser(
+    return this.usersService.registerUser(
       userRegisterInput,
       cleartextPass,
       hashedPass,
     );
+  }
+
+  /**
+   * Generates a new password for a user, saves its hash in DB
+   * and returns it as cleartext to the calling user (admin).
+   *
+   * @param {number} userID
+   * @returns {User}
+   * @throws {Error}
+   */
+  async resetPassword(userID: number): Promise<User> {
+    const cleartextPass = this.generatePassword();
+    const hashedPass = this.hashPassword(cleartextPass);
+
+    const updatedUser = await this.usersService.updateUserPassword(
+      userID,
+      hashedPass,
+    );
+    return {
+      ...updatedUser,
+      password: cleartextPass,
+    };
   }
 
   /**

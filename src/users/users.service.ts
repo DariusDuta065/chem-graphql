@@ -51,4 +51,9 @@ export class UsersService {
     const newUser = await this.usersRepository.save(user);
     return { ...newUser, password: cleartextPass };
   }
+
+  async updateUserPassword(userID: number, password: string): Promise<User> {
+    await this.usersRepository.update(userID, { password });
+    return this.usersRepository.findOneOrFail(userID);
+  }
 }

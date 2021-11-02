@@ -20,6 +20,7 @@ type Mutation {
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   removeOwner(id: Int!): Owner!
+  resetPassword(userID: Int!): User!
   updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
 }
 

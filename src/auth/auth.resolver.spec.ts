@@ -183,6 +183,34 @@ describe('AuthResolver', () => {
     });
   });
 
+  describe('resetPassword', () => {
+    it('should call the auth service to generate a new password for the user', async () => {
+      const userID = 1;
+      authService.resetPassword = jest.fn();
+
+      await authResolver.resetPassword(userID);
+
+      expect(authService.resetPassword).toBeCalledWith(userID);
+    });
+
+    it('should return the user entity with its new cleartext password', async () => {
+      const user = {
+        userId: 1,
+        email: 'email@test.com',
+        password: 'password',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+      } as User;
+      authService.resetPassword = jest.fn().mockReturnValue(user);
+
+      const res = await authResolver.resetPassword(user.userId);
+
+      expect(authService.resetPassword).toBeCalledWith(user.userId);
+      expect(res).toStrictEqual(user);
+    });
+  });
+
   describe('profile', () => {
     it('should call the users service to fetch details about the user', async () => {
       const user = {

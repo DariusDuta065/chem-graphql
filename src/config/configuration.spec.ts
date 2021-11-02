@@ -9,7 +9,7 @@ describe('configuration', () => {
     envType
     ${'test'}
     ${'dev'}
-    ${'prod'}
+    ${'production'}
   `(
     `should be defined for $envType env`,
     ({ envType }: { envType: string }) => {
@@ -43,7 +43,7 @@ describe('configuration', () => {
     }
   });
 
-  it(`should throw an error if NODE_ENV is not ['test', 'dev', 'prod']`, () => {
+  it(`should throw an error if NODE_ENV is not ['test', 'dev', 'production']`, () => {
     process.env.NODE_ENV = 'another';
 
     try {

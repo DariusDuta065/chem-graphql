@@ -9,7 +9,7 @@ export default () => {
     throw new Error('NODE_ENV is not defined');
   }
 
-  if (!['test', 'dev', 'prod'].includes(process.env.NODE_ENV)) {
+  if (!['test', 'dev', 'production'].includes(process.env.NODE_ENV)) {
     throw new Error('NODE_ENV value is not accepted');
   }
 

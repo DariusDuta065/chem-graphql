@@ -9,11 +9,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 import { HttpConfig } from '../config/interfaces/HttpConfig';
+import { TypeORMExceptionFilter } from '../shared/filters/typeorm-filter';
 
 const configureApp = (app: INestApplication) => {
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new TypeORMExceptionFilter());
 
-  if (process.env.NODE_ENV === 'prod') {
+  if (process.env.NODE_ENV === 'production') {
     app.use(helmet());
     app.use(compression());
   }

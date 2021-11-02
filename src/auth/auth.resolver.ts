@@ -12,6 +12,7 @@ import {
   Mutation,
   Resolver,
   ResolveField,
+  Int,
 } from '@nestjs/graphql';
 
 import { User } from '../users/user.entity';
@@ -103,6 +104,15 @@ export class AuthResolver {
     } catch (error) {
       throw new BadRequestException();
     }
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Mutation(() => User)
+  async resetPassword(
+    @Args('userID', { type: () => Int }) userID: number,
+  ): Promise<User> {
+    return this.authService.resetPassword(userID);
   }
 
   @UseGuards(GqlJwtAuthGuard)
