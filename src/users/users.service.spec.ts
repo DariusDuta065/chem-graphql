@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -105,6 +105,48 @@ describe('UsersService', () => {
       expect(
         usersService.registerUser(userRegisterInput, cleartextPass, hashedPass),
       ).rejects.toThrowError(Error);
+    });
+  });
+
+  describe('updateUserPassword', () => {
+    it('should save the new password for user', async () => {
+      const user = {
+        userId: 1,
+        email: 'email@test.com',
+        password: 'old password',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+      } as User;
+      usersRepository.findOneOrFail = jest.fn(async () => user);
+      usersRepository.save = jest.fn();
+
+      await usersService.updateUserPassword(user.userId, 'new password');
+
+      expect(usersRepository.findOneOrFail).toBeCalledWith(user.userId);
+      expect(usersRepository.save).toBeCalledWith({
+        ...user,
+        password: 'new password',
+      });
+    });
+
+    it('should throw error if userID not found', async () => {
+      const user = {
+        userId: 1,
+        email: 'email@test.com',
+        password: 'old password',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+      } as User;
+      usersRepository.findOneOrFail = jest.fn(async () => {
+        throw new EntityNotFoundError({ type: User, name: User.name }, '');
+      });
+      usersRepository.save = jest.fn();
+
+      expect(
+        usersService.updateUserPassword(user.userId, 'new password'),
+      ).rejects.toThrowError(EntityNotFoundError);
     });
   });
 });

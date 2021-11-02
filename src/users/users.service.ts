@@ -52,8 +52,18 @@ export class UsersService {
     return { ...newUser, password: cleartextPass };
   }
 
+  /**
+   * Updates password for users and returns the entity.
+   *
+   * @param userID
+   * @param password
+   * @returns {User}
+   * @throws {EntityNotFoundError}
+   */
   async updateUserPassword(userID: number, password: string): Promise<User> {
-    await this.usersRepository.update(userID, { password });
-    return this.usersRepository.findOneOrFail(userID);
+    const user = await this.usersRepository.findOneOrFail(userID);
+    user.password = password;
+
+    return this.usersRepository.save(user);
   }
 }

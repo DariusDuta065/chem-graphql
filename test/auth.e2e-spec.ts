@@ -239,6 +239,31 @@ describe('AuthResolver (e2e)', () => {
     });
   });
 
+  describe('resetPassword', () => {
+    it(`allows admins to reset user's password & returns the new cleartext password`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
+      const oldPassword = user.password;
+
+      const variables = {
+        userID: user.userId,
+      };
+
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...mutations.resetPassword,
+          variables,
+        });
+
+      const { password: newPassword } = body.data.resetPassword;
+      expect(newPassword).toEqual(expect.any(String));
+      expect(newPassword).not.toEqual(oldPassword);
+    });
+  });
+
   describe('profile', () => {
     it(`returns user data of auth'ed user`, async () => {
       const { accessToken, user } = await authUtils.getTokens();

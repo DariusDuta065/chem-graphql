@@ -63,6 +63,21 @@ const mutations: {
       }
     `,
   },
+  resetPassword: {
+    operationName: `ResetPasswordMutation`,
+    query: `
+      mutation ResetPasswordMutation($userID: Int!) {
+        resetPassword(userID: $userID) {
+          userId
+          email
+          password
+          firstName
+          lastName
+          role
+        }
+      }
+    `,
+  },
 };
 
 export default mutations;

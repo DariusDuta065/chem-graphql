@@ -2,12 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
-import {
-  CACHE_MANAGER,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
 
@@ -15,7 +10,6 @@ import { User } from '../users/user.entity';
 import { TokenOutput } from './dto/token.output';
 import { UserData } from '../users/dto/userData.output';
 import { UserRegisterInput } from './dto/user-register.input';
-import { EntityNotFoundError } from 'typeorm';
 
 @Injectable()
 export class AuthService {

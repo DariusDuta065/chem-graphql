@@ -225,8 +225,34 @@ describe('AuthService', () => {
   });
 
   describe('resetPassword', () => {
-    it('', async () => {
-      //
+    it('generates a new password & calls users service to update user entity', async () => {
+      jest
+        .spyOn(AuthService.prototype as any, 'generatePassword')
+        .mockImplementation(() => 'cleartext new password');
+      jest
+        .spyOn(AuthService.prototype as any, 'hashPassword')
+        .mockImplementation(() => 'hashed new password');
+
+      const user = {
+        userId: 1,
+        email: 'email@test.com',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+        password: 'old password',
+      } as User;
+
+      usersService.updateUserPassword = jest.fn(async () => ({
+        ...user,
+      }));
+
+      const res = await authService.resetPassword(user.userId);
+
+      expect(res.password).toBe('cleartext new password');
+      expect(usersService.updateUserPassword).toBeCalledWith(
+        user.userId,
+        'hashed new password',
+      );
     });
   });
 
