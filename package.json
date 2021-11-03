@@ -30,6 +30,7 @@
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.2",
+    "@notionhq/client": "^0.4.5",
     "apollo-server-express": "^3.3.0",
     "bcrypt": "^5.0.1",
     "cache-manager": "^3.4.4",

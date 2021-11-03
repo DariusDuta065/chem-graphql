@@ -20,6 +20,7 @@ import { PetsModule } from '../pets/pets.module';
 import { UsersModule } from '../users/users.module';
 import { OwnersModule } from '../owners/owners.module';
 import { SeedDBModule } from '../db/seeders/seed.module';
+import { NotionModule } from '../notion/notion.module';
 
 import configuration from '../config/configuration';
 import { CacheConfigService } from '../config/services/cacheConfigService';
@@ -53,6 +54,9 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
     PetsModule,
     UsersModule,
     OwnersModule,
+
+    NotionModule,
+
     SeedDBModule,
   ],
   controllers: [AppController],
