@@ -1,24 +1,14 @@
-require('dotenv').config({ path: `env/${process.env.NODE_ENV}.env` });
+const { readFileSync } = require('fs');
+const yaml = require('js-yaml');
+const { join } = require('path');
 const { SnakeNamingStrategy } = require('typeorm-naming-strategies');
 
-const entitiesDir = process.env.NODE_ENV === 'test' ? 'src' : 'dist';
+require('dotenv').config({ path: `env/${process.env.NODE_ENV}.env` });
+
+const YAML_CONFIG_FILENAME = `src/config/files/config.${process.env.NODE_ENV}.yaml`;
+const config = yaml.load(readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8'));
 
 module.exports = {
-  type: process.env.TYPEORM_TYPE,
-  database: process.env.TYPEORM_DATABASE,
-  username: process.env.TYPEORM_USERNAME,
-  password: process.env.TYPEORM_PASSWORD,
-  synchronize: process.env.TYPEORM_SYNCHRONIZE,
-
+  ...config.db.typeorm,
   namingStrategy: new SnakeNamingStrategy(),
-
-  entities: [`${entitiesDir}/**/*.entity{.ts,.js}`],
-  migrations: [`${entitiesDir}/db/migrations/*{.ts,.js}`],
-  subscribers: [`${entitiesDir}/db/subscribers/*{.ts,.js}`],
-
-  cli: {
-    entitiesDir: 'src/**/*.entity{.ts,.js}',
-    migrationsDir: 'src/db/migrations',
-    subscribersDir: 'src/db/subscribers',
-  },
 };

@@ -8,6 +8,26 @@ jwt:
     expiresIn: 10m
 
 db:
+  typeorm:
+    type: mysql
+    database: graphql
+    username: root
+    password: password
+
+    synchronize: false
+    keepConnectionAlive: false
+
+    entities:
+      - dist/**/*.entity{.ts,.js}
+    migrations:
+      - dist/db/migrations/*{.ts,.js}
+    subscribers:
+      - dist/db/subscribers/*{.ts,.js}
+    cli:
+      entitiesDir: src/**/*.entity{.ts,.js}
+      migrationsDir: src/db/migrations
+      subscribersDir: src/db/subscribers
+
   redis:
     host: localhost
     port: 6379
