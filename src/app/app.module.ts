@@ -16,9 +16,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { AppController } from './app.controller';
 
 import { AuthModule } from '../auth/auth.module';
-import { PetsModule } from '../pets/pets.module';
 import { UsersModule } from '../users/users.module';
-import { OwnersModule } from '../owners/owners.module';
 import { SeedDBModule } from '../db/seeders/seed.module';
 import { NotionModule } from '../notion/notion.module';
 
@@ -32,6 +30,7 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
       cache: true,
       isGlobal: true,
       load: [configuration],
+      envFilePath: `env/${process.env.NODE_ENV}.env`,
     }),
 
     GraphQLModule.forRoot({
@@ -51,9 +50,7 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
     }),
 
     AuthModule,
-    PetsModule,
     UsersModule,
-    OwnersModule,
 
     NotionModule,
 

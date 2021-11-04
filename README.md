@@ -57,3 +57,4 @@ npx nestjs-command seed:db
 - Queues
 - Events
 - Deployment to productionuction
+- Add explicit `public` access modifiers

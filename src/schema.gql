@@ -2,48 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input CreateOwnerInput {
-  name: String!
-}
-
-input CreatePetInput {
-  name: String!
-  ownerId: Int!
-  type: String
-}
-
 type Mutation {
-  createOwner(createOwnerInput: CreateOwnerInput!): Owner!
-  createPet(createPetInput: CreatePetInput!): Pet!
   login(password: String!, username: String!): TokenOutput!
   logout(refreshToken: String!): String!
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
-  removeOwner(id: Int!): Owner!
   resetPassword(userID: Int!): User!
-  updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
-}
-
-type Owner {
-  id: Int!
-  name: String!
-  pets: [Pet!]
-}
-
-type Pet {
-  id: Int!
-  name: String!
-  owner: Owner!
-  ownerId: Int!
-  type: String
 }
 
 type Query {
   adminRoute: String!
-  getPet(id: Int!): Pet!
-  owner(id: Int!): Owner!
-  owners: [Owner!]!
-  pets: [Pet!]!
   profile: UserData!
   publicRoute: String!
   userRoute: String!
@@ -53,11 +21,6 @@ type TokenOutput {
   accesstoken: String!
   refreshToken: String
   userData: UserData
-}
-
-input UpdateOwnerInput {
-  id: Int!
-  name: String
 }
 
 type User {

@@ -6,15 +6,22 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+
     "cli": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:dev": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:test": "NODE_ENV=test CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:production": "NODE_ENV=production CLI_PATH=./dist/cli.js npx nestjs-command",
+    
+    "typeorm:dev": "NODE_ENV=dev node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
+    "typeorm:test": "NODE_ENV=test node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
+    "typeorm:production": "NODE_ENV=production node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
+
     "start": "NODE_ENV=dev nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
     "start:test": "NODE_ENV=test nest start --watch",
     "start:debug": "NODE_ENV=dev nest start --debug --watch",
     "start:production": "NODE_ENV=production node dist/main",
+
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -53,6 +60,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "typeorm": "^0.2.38",
+    "typeorm-naming-strategies": "^2.0.0",
     "yargs": "^17.2.1"
   },
   "devDependencies": {
@@ -106,9 +114,7 @@
       "!**/node_modules/**",
       "!**/*.module.(t|j)s",
       "!**/migrations/*.(t|j)s",
-      "!**/db/**",
-      "!**/owners/**",
-      "!**/pets/**"
+      "!**/db/**"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"

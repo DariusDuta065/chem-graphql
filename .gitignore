@@ -1,8 +1,9 @@
 # compiled output
 /dist
 /node_modules
-*.production.env
+**/*.production.env
 *.production.yaml
+env/production.env
 
 # Logs
 logs

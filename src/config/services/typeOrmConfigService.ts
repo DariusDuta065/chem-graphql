@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { getConnectionOptions } from 'typeorm';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
-import { TypeOrmConfig } from '../interfaces/TypeOrmConfig';
-
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {}
-
   async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
-    const envConfig: TypeOrmConfig = this.configService.get<TypeOrmConfig>(
-      TypeOrmConfig.CONFIG_KEY,
-      { infer: true },
-    );
+    if (!process.env.NODE_ENV) {
+      throw new Error('NODE_ENV is not defined');
+    }
 
-    return Object.assign({}, await getConnectionOptions(), envConfig);
+    if (!['test', 'dev', 'production'].includes(process.env.NODE_ENV)) {
+      throw new Error('NODE_ENV value is not accepted');
+    }
+
+    const config = Object.assign({}, await getConnectionOptions(), {
+      type: process.env.TYPEORM_TYPE,
+      database: process.env.TYPEORM_DATABASE,
+      username: process.env.TYPEORM_USERNAME,
+      password: process.env.TYPEORM_PASSWORD,
+      synchronize: process.env.TYPEORM_SYNCHRONIZE,
+    });
+
+    return config;
   }
 }

@@ -21,43 +21,31 @@ export class NotionService {
     this.client = this.getClient();
   }
 
-  getConfig(): NotionConfig {
-    const config: NotionConfig = this.configService.get<NotionConfig>(
-      NotionConfig.CONFIG_KEY,
-      {
-        infer: true,
-      },
-    );
-
-    if (
-      typeof config.databaseID !== 'string' ||
-      typeof config.integrationToken !== 'string'
-    ) {
-      throw new Error('Invalid NotionConfig');
-    }
-
-    return config;
+  public getConfig(): NotionConfig {
+    return this.configService.get<NotionConfig>(NotionConfig.CONFIG_KEY, {
+      infer: true,
+    });
   }
 
-  getClient(): NotionClient {
+  public getClient(): NotionClient {
     if (this.client) {
       return this.client;
     }
     return new NotionClient({ auth: this.config.integrationToken });
   }
 
-  async getDatabase(): Promise<GetDatabaseResponse> {
+  public async getDatabase(): Promise<GetDatabaseResponse> {
     return this.client.databases.retrieve({
       database_id: this.config.databaseID,
     });
   }
 
-  async getLessons(): Promise<PageDetails[]> {
+  public async getLessons(): Promise<PageDetails[]> {
     const lessons = await this.getPagesByType('lesson');
     return this.parsePageResults(lessons);
   }
 
-  async getExercises(): Promise<PageDetails[]> {
+  public async getExercises(): Promise<PageDetails[]> {
     const exercises = await this.getPagesByType('exercise');
     return this.parsePageResults(exercises);
   }
@@ -69,7 +57,7 @@ export class NotionService {
    * @param pageID - block ID (i.e. pageID, a page is a block)
    * @returns {Promise<Block[]>}
    */
-  async getPageBlocks(pageID: string): Promise<Block[]> {
+  public async getPageBlocks(pageID: string): Promise<Block[]> {
     const blocks: Block[] = [];
 
     let start_cursor: string | undefined = undefined;

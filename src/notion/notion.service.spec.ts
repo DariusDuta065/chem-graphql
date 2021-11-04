@@ -61,50 +61,31 @@ describe(`NotionService`, () => {
     });
   });
 
-  // describe(`getPages`, () => {
-  //   it(`calls notion sdk to query database for pages`, async () => {
-  //     const notionClient = notionService.getClient();
-  //     notionClient.databases.query = jest.fn();
+  describe(`getLessons`, () => {
+    it(`calls getPages() w/ filter of type 'lesson'`, async () => {
+      const pageResults = ['page 1', 'page 2'];
 
-  //     await notionService.getPages();
+      // Mock notionClient.databases.query
+      // - check filter applied
+      // - mock result then check result of getLessons() to match !final res
+      // which goes through a parsePageResults() call...
 
-  //     expect(notionClient.databases.query).toBeCalledWith({
-  //       database_id: expect.any(String),
-  //     });
-  //   });
+      const frsSpy = jest
+        .spyOn(NotionService.prototype as any, 'getPagesByType')
+        .mockReturnValue(pageResults);
 
-  //   it(`applies the provided filter to the query`, async () => {
-  //     const notionClient = notionService.getClient();
-  //     notionClient.databases.query = jest.fn();
-  //     const filter = {
-  //       property: 'Type',
-  //       select: {
-  //         equals: 'lesson',
-  //       },
-  //     };
+      const scnSpy = jest
+        .spyOn(NotionService.prototype as any, 'parsePageResults')
+        .mockReturnValue(pageResults);
+      // notionService.getPagesByType = jest.fn().mockReturnValue(pageResults);
+      // notionService.parsePageResults = jest.fn();
 
-  //     await notionService.getPages(filter);
+      await notionService.getLessons();
 
-  //     expect(notionClient.databases.query).toBeCalledWith({
-  //       database_id: expect.any(String),
-  //       filter,
-  //     });
-  //   });
-  // });
-
-  // describe(`getLessons`, () => {
-  //   it(`calls getPages() w/ filter of type 'lesson'`, async () => {
-  //     const pageResults = ['page 1', 'page 2'];
-
-  //     notionService.getPagesByType = jest.fn().mockReturnValue(pageResults);
-  //     notionService.parsePageResults = jest.fn();
-
-  //     await notionService.getLessons();
-
-  //     expect(notionService.getPagesByType).toBeCalledWith('lesson');
-  //     expect(notionService.parsePageResults).toBeCalledWith(pageResults);
-  //   });
-  // });
+      expect(frsSpy).toBeCalledWith('lesson');
+      expect(scnSpy).toBeCalledWith(pageResults);
+    });
+  });
 
   // describe(`getExercises`, () => {
   //   it(`calls getPages() w/ filter of type 'exercise'`, async () => {
