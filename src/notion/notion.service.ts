@@ -13,13 +13,9 @@ import { Block, NotionBlock, PageDetails, isBlock } from './types';
 
 @Injectable()
 export class NotionService {
-  private config: NotionConfig;
   private client: NotionClient;
 
-  constructor(private configService: ConfigService) {
-    this.config = this.getConfig();
-    this.client = this.getClient();
-  }
+  constructor(private configService: ConfigService) {}
 
   public getConfig(): NotionConfig {
     return this.configService.get<NotionConfig>(NotionConfig.CONFIG_KEY, {
@@ -28,15 +24,17 @@ export class NotionService {
   }
 
   public getClient(): NotionClient {
-    if (this.client) {
-      return this.client;
+    if (!this.client) {
+      this.client = new NotionClient({
+        auth: this.getConfig().integrationToken,
+      });
     }
-    return new NotionClient({ auth: this.config.integrationToken });
+    return this.client;
   }
 
   public async getDatabase(): Promise<GetDatabaseResponse> {
-    return this.client.databases.retrieve({
-      database_id: this.config.databaseID,
+    return this.getClient().databases.retrieve({
+      database_id: this.getConfig().databaseID,
     });
   }
 
@@ -78,18 +76,18 @@ export class NotionService {
 
       blocks.push(...(results as Block[]));
 
+      start_cursor = next_cursor ?? undefined;
       if (!has_more) {
         break;
       }
-      start_cursor = next_cursor;
     }
 
     return blocks;
   }
 
   private async getPages(filter?): Promise<QueryDatabaseResponse> {
-    return this.client.databases.query({
-      database_id: this.config.databaseID,
+    return this.getClient().databases.query({
+      database_id: this.getConfig().databaseID,
       filter,
     });
   }
@@ -109,13 +107,16 @@ export class NotionService {
     const parsedPages = pages.results.map((page) => {
       const pg = {
         id: page.id,
+        lastEditedAt: page.last_edited_time,
       } as PageDetails;
 
       for (const [k, v] of Object.entries(page.properties)) {
-        if (v.type === 'title') {
-          pg.title = v.title[0].plain_text;
+        if (k.toLowerCase().includes('content_title')) {
+          if (v.type === 'title' && v.title) {
+            pg.title = v.title[0].plain_text;
+          }
         }
-        if (k.toLowerCase().includes('type')) {
+        if (k.toLowerCase().includes('content_type')) {
           if (v.type === 'select' && v.select) {
             pg.type = v.select.name;
           }
@@ -132,7 +133,7 @@ export class NotionService {
     blockID: string,
     start_cursor?: string,
   ): Promise<ListBlockChildrenResponse> {
-    return this.client.blocks.children.list({
+    return this.getClient().blocks.children.list({
       block_id: blockID,
       start_cursor,
     });
