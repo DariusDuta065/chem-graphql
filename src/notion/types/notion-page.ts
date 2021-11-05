@@ -1,4 +1,4 @@
-export interface PageDetails {
+export interface NotionPage {
   id: string;
   title: string;
   type: string;

@@ -3,13 +3,12 @@ import { ConfigService } from '@nestjs/config';
 
 import { Client as NotionClient } from '@notionhq/client';
 import {
-  GetDatabaseResponse,
   ListBlockChildrenResponse,
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 
 import { NotionConfig } from '../config/interfaces/NotionConfig';
-import { Block, NotionBlock, PageDetails, isBlock } from './types';
+import { Block, NotionBlock, NotionPage, isBlock } from './types';
 
 @Injectable()
 export class NotionService {
@@ -32,20 +31,21 @@ export class NotionService {
     return this.client;
   }
 
-  public async getDatabase(): Promise<GetDatabaseResponse> {
-    return this.getClient().databases.retrieve({
+  /**
+   * Returns a list of all pages within the database.
+   * To get content of a particular page, use getPageBlocks().
+   * https://developers.notion.com/reference/post-database-query#post-database-query-filter
+   *
+   * @param filter - Notion DB query filter
+   * @returns {Promise<NotionPage[]>}
+   */
+  public async getPages(filter?): Promise<NotionPage[]> {
+    const pages = await this.getClient().databases.query({
       database_id: this.getConfig().databaseID,
+      filter,
     });
-  }
 
-  public async getLessons(): Promise<PageDetails[]> {
-    const lessons = await this.getPagesByType('lesson');
-    return this.parsePageResults(lessons);
-  }
-
-  public async getExercises(): Promise<PageDetails[]> {
-    const exercises = await this.getPagesByType('exercise');
-    return this.parsePageResults(exercises);
+    return this.parsePageResults(pages);
   }
 
   /**
@@ -85,30 +85,12 @@ export class NotionService {
     return blocks;
   }
 
-  private async getPages(filter?): Promise<QueryDatabaseResponse> {
-    return this.getClient().databases.query({
-      database_id: this.getConfig().databaseID,
-      filter,
-    });
-  }
-
-  private async getPagesByType(
-    type: 'lesson' | 'exercise',
-  ): Promise<QueryDatabaseResponse> {
-    return this.getPages({
-      property: 'Type',
-      select: {
-        equals: type,
-      },
-    });
-  }
-
-  private parsePageResults(pages: QueryDatabaseResponse): PageDetails[] {
+  private parsePageResults(pages: QueryDatabaseResponse): NotionPage[] {
     const parsedPages = pages.results.map((page) => {
       const pg = {
         id: page.id,
         lastEditedAt: page.last_edited_time,
-      } as PageDetails;
+      } as NotionPage;
 
       for (const [k, v] of Object.entries(page.properties)) {
         if (k.toLowerCase().includes('content_title')) {

@@ -69,26 +69,8 @@ describe(`NotionService`, () => {
     });
   });
 
-  describe(`getDatabase`, () => {
-    it(`calls databases.query() to retrieve DB metadata`, async () => {
-      configService.get = jest.fn().mockReturnValue({
-        integrationToken: 'integration token',
-        databaseID: 'database id',
-      });
-
-      const notionClient = notionService.getClient();
-      notionClient.databases.retrieve = jest.fn();
-
-      await notionService.getDatabase();
-
-      expect(notionClient.databases.retrieve).toBeCalledWith({
-        database_id: expect.any(String),
-      });
-    });
-  });
-
   describe(`getLessons`, () => {
-    it(`calls databases.query() w/ filter of type 'lesson'`, async () => {
+    it(`calls databases.query()`, async () => {
       configService.get = jest.fn().mockReturnValue({
         integrationToken: 'integration token',
         databaseID: 'database ID',
@@ -123,22 +105,14 @@ describe(`NotionService`, () => {
         ],
       });
 
-      await notionService.getLessons();
+      await notionService.getPages();
 
       expect(notionClient.databases.query).toBeCalledWith({
         database_id: 'database ID',
-        filter: {
-          property: 'Type',
-          select: {
-            equals: 'lesson',
-          },
-        },
       });
     });
-  });
 
-  describe(`getExercises`, () => {
-    it(`calls databases.query() w/ filter of type 'exercise'`, async () => {
+    it(`calls databases.query() with filter`, async () => {
       configService.get = jest.fn().mockReturnValue({
         integrationToken: 'integration token',
         databaseID: 'database ID',
@@ -157,14 +131,14 @@ describe(`NotionService`, () => {
               content_type: {
                 type: 'select',
                 select: {
-                  name: 'exercise',
+                  name: 'lesson',
                 },
               },
               content_title: {
                 type: 'title',
                 title: [
                   {
-                    plain_text: 'Exercise One',
+                    plain_text: 'Lesson Two',
                   },
                 ],
               },
@@ -173,14 +147,19 @@ describe(`NotionService`, () => {
         ],
       });
 
-      await notionService.getExercises();
+      await notionService.getPages({
+        property: 'Type',
+        select: {
+          equals: 'lesson',
+        },
+      });
 
       expect(notionClient.databases.query).toBeCalledWith({
         database_id: 'database ID',
         filter: {
           property: 'Type',
           select: {
-            equals: 'exercise',
+            equals: 'lesson',
           },
         },
       });
