@@ -1,9 +1,11 @@
 import { join } from 'path';
 import { Cache } from 'cache-manager';
 
+import { BullModule } from '@nestjs/bull';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import {
   Inject,
   Module,
@@ -21,11 +23,14 @@ import { SeedDBModule } from '../db/seeders/seed.module';
 import { NotionModule } from '../notion/notion.module';
 
 import configuration from '../config/configuration';
+import { BullConfigService } from '../config/services/bullConfigService';
 import { CacheConfigService } from '../config/services/cacheConfigService';
 import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
@@ -38,6 +43,10 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    }),
+
+    BullModule.forRootAsync({
+      useClass: BullConfigService,
     }),
 
     TypeOrmModule.forRootAsync({

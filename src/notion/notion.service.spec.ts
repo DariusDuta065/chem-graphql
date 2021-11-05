@@ -1,8 +1,11 @@
+import { getQueueToken } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Client as NotionClient } from '@notionhq/client';
 import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints';
 
+import { QUEUES } from './constants';
 import { NotionService } from './notion.service';
 
 describe(`NotionService`, () => {
@@ -16,6 +19,18 @@ describe(`NotionService`, () => {
         {
           provide: ConfigService,
           useValue: {},
+        },
+        {
+          provide: SchedulerRegistry,
+          useValue: {
+            addInterval: jest.fn(),
+          },
+        },
+        {
+          provide: getQueueToken(QUEUES.NOTION),
+          useValue: {
+            add: jest.fn(),
+          },
         },
       ],
     }).compile();

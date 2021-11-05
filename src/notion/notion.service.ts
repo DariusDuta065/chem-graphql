@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { Client as NotionClient } from '@notionhq/client';
 import {
@@ -7,28 +10,33 @@ import {
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 
+import { SyncNotionJob } from './jobs';
+import { JOBS, QUEUES } from './constants';
 import { NotionConfig } from '../config/interfaces/NotionConfig';
 import { Block, NotionBlock, NotionPage, isBlock } from './types';
 
 @Injectable()
 export class NotionService {
   private client: NotionClient;
+  private readonly logger = new Logger(NotionService.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @InjectQueue(QUEUES.NOTION) private notionQueue: Queue,
+  ) {}
 
-  public getConfig(): NotionConfig {
-    return this.configService.get<NotionConfig>(NotionConfig.CONFIG_KEY, {
-      infer: true,
-    });
-  }
-
-  public getClient(): NotionClient {
-    if (!this.client) {
-      this.client = new NotionClient({
-        auth: this.getConfig().integrationToken,
-      });
-    }
-    return this.client;
+  /**
+   * Runs reguraly in order to keep DB in sync with
+   * the content on Notion.
+   *
+   * Fires up {SyncNotionJob} asynchronously.
+   */
+  @Cron(CronExpression.EVERY_5_SECONDS, {
+    name: JOBS.SYNC_NOTION,
+  })
+  public syncNotionTask() {
+    this.logger.debug(`Queuing ${JOBS.SYNC_NOTION} job`);
+    this.notionQueue.add(JOBS.SYNC_NOTION, {} as SyncNotionJob);
   }
 
   /**
@@ -83,6 +91,21 @@ export class NotionService {
     }
 
     return blocks;
+  }
+
+  public getConfig(): NotionConfig {
+    return this.configService.get<NotionConfig>(NotionConfig.CONFIG_KEY, {
+      infer: true,
+    });
+  }
+
+  public getClient(): NotionClient {
+    if (!this.client) {
+      this.client = new NotionClient({
+        auth: this.getConfig().integrationToken,
+      });
+    }
+    return this.client;
   }
 
   private parsePageResults(pages: QueryDatabaseResponse): NotionPage[] {
