@@ -10,7 +10,6 @@ import {
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 
-import { SyncNotionJob } from './jobs';
 import { JOBS, QUEUES } from './constants';
 import { NotionConfig } from '../config/interfaces/NotionConfig';
 import { Block, NotionBlock, NotionPage, isBlock } from './types';
@@ -22,7 +21,8 @@ export class NotionService {
 
   constructor(
     private configService: ConfigService,
-    @InjectQueue(QUEUES.NOTION) private notionQueue: Queue,
+    @InjectQueue(QUEUES.NOTION_API_QUERIES)
+    private queriesQueue: Queue,
   ) {}
 
   /**
@@ -36,7 +36,7 @@ export class NotionService {
   })
   public syncNotionTask() {
     this.logger.debug(`Queuing ${JOBS.SYNC_NOTION} job`);
-    this.notionQueue.add(JOBS.SYNC_NOTION, {} as SyncNotionJob);
+    this.queriesQueue.add(JOBS.SYNC_NOTION);
   }
 
   /**

@@ -17,8 +17,6 @@ export class BullConfigService implements SharedBullConfigurationFactory {
       },
     );
 
-    // console.log('bull config', config);
-
     return config;
   }
 }

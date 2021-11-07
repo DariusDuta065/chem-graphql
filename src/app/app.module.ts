@@ -13,6 +13,7 @@ import {
   CACHE_MANAGER,
   OnModuleDestroy,
 } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 import { AppController } from './app.controller';
@@ -30,6 +31,7 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
 
     ConfigModule.forRoot({
       cache: true,

@@ -27,7 +27,7 @@ describe(`NotionService`, () => {
           },
         },
         {
-          provide: getQueueToken(QUEUES.NOTION),
+          provide: getQueueToken(QUEUES.NOTION_API_QUERIES),
           useValue: {
             add: jest.fn(),
           },
