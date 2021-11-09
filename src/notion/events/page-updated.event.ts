@@ -1,5 +1,5 @@
 export class PageUpdatedEvent {
-  notion_id: string;
+  blockID: string;
   lastEditedAt: string;
   type: string;
   title: string;

@@ -1,3 +1,3 @@
 export class PageDeletedEvent {
-  notion_id: string;
+  blockID: string;
 }

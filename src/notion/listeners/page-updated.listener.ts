@@ -17,6 +17,6 @@ export class PageUpdatedListener {
   handlePageUpdatedEvent(event: PageUpdatedEvent) {
     console.log(event);
 
-    this.jobsQueue.add(JOBS.UPDATE_CONTENT, {});
+    // this.jobsQueue.add(JOBS.UPDATE_CONTENT, {});
   }
 }

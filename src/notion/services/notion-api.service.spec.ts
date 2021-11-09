@@ -1,21 +1,23 @@
+import { Client as NotionClient } from '@notionhq/client';
+import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints';
+
 import { getQueueToken } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Client as NotionClient } from '@notionhq/client';
-import { ListBlockChildrenResponse } from '@notionhq/client/build/src/api-endpoints';
 
-import { QUEUES } from './constants';
-import { NotionService } from './notion.service';
+import { QUEUES } from '../constants';
+import { NotionAPIService } from './notion-api.service';
 
-describe(`NotionService`, () => {
-  let notionService: NotionService;
+describe(`NotionAPIService`, () => {
+  let module: TestingModule;
+  let notionApiService: NotionAPIService;
   let configService: ConfigService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
-        NotionService,
+        NotionAPIService,
         {
           provide: ConfigService,
           useValue: {},
@@ -35,19 +37,23 @@ describe(`NotionService`, () => {
       ],
     }).compile();
 
-    notionService = module.get<NotionService>(NotionService);
+    notionApiService = module.get<NotionAPIService>(NotionAPIService);
     configService = module.get<ConfigService>(ConfigService);
   });
 
+  afterAll(async () => {
+    await module.close();
+  });
+
   it(`is defined`, () => {
-    expect(notionService).toBeDefined();
+    expect(notionApiService).toBeDefined();
   });
 
   describe(`getConfig`, () => {
     it(`gets the configuration`, async () => {
       configService.get = jest.fn();
 
-      notionService.getConfig();
+      notionApiService.getConfig();
 
       expect(configService.get).toBeCalledWith('notion', {
         infer: true,
@@ -62,7 +68,7 @@ describe(`NotionService`, () => {
         databaseID: 'database id',
       });
 
-      const client = notionService.getClient();
+      const client = notionApiService.getClient();
 
       expect(client).toBeDefined();
       expect(client).toBeInstanceOf(NotionClient);
@@ -75,8 +81,8 @@ describe(`NotionService`, () => {
         databaseID: 'database id',
       });
 
-      notionService.getClient();
-      const client = notionService.getClient();
+      notionApiService.getClient();
+      const client = notionApiService.getClient();
 
       expect(client).toBeDefined();
       expect(client).toBeInstanceOf(NotionClient);
@@ -84,14 +90,14 @@ describe(`NotionService`, () => {
     });
   });
 
-  describe(`getLessons`, () => {
+  describe(`getPages`, () => {
     it(`calls databases.query()`, async () => {
       configService.get = jest.fn().mockReturnValue({
         integrationToken: 'integration token',
         databaseID: 'database ID',
       });
 
-      const notionClient = notionService.getClient();
+      const notionClient = notionApiService.getClient();
       notionClient.databases.query = jest.fn().mockReturnValue({
         object: 'list',
         next_cursor: null,
@@ -120,7 +126,7 @@ describe(`NotionService`, () => {
         ],
       });
 
-      await notionService.getPages();
+      await notionApiService.getPagesMetadata();
 
       expect(notionClient.databases.query).toBeCalledWith({
         database_id: 'database ID',
@@ -133,7 +139,7 @@ describe(`NotionService`, () => {
         databaseID: 'database ID',
       });
 
-      const notionClient = notionService.getClient();
+      const notionClient = notionApiService.getClient();
       notionClient.databases.query = jest.fn().mockReturnValue({
         object: 'list',
         next_cursor: null,
@@ -162,7 +168,7 @@ describe(`NotionService`, () => {
         ],
       });
 
-      await notionService.getPages({
+      await notionApiService.getPagesMetadata({
         property: 'Type',
         select: {
           equals: 'lesson',
@@ -217,12 +223,14 @@ describe(`NotionService`, () => {
         results,
       } as ListBlockChildrenResponse;
 
-      const notionClient = notionService.getClient();
+      const notionClient = notionApiService.getClient();
       notionClient.blocks.children.list = jest
         .fn()
         .mockReturnValue(childrenBlocks);
 
-      const res = await notionService.getPageBlocks('initial block ID');
+      const res = await notionApiService.getBlocksFromNotion(
+        'initial block ID',
+      );
 
       expect(res).toStrictEqual(results);
       expect(notionClient.blocks.children.list).toBeCalledWith({
@@ -237,7 +245,7 @@ describe(`NotionService`, () => {
         databaseID: 'database ID',
       });
 
-      const notionClient = notionService.getClient();
+      const notionClient = notionApiService.getClient();
       notionClient.blocks.children.list = jest
         .fn()
         .mockReturnValueOnce({
@@ -252,7 +260,7 @@ describe(`NotionService`, () => {
           results: ['page 2'],
         });
 
-      await notionService.getPageBlocks('initial block ID');
+      await notionApiService.getBlocksFromNotion('initial block ID');
 
       expect(notionClient.blocks.children.list).toBeCalledWith({
         block_id: 'initial block ID',
@@ -270,7 +278,7 @@ describe(`NotionService`, () => {
         databaseID: 'database ID',
       });
 
-      const notionClient = notionService.getClient();
+      const notionClient = notionApiService.getClient();
       notionClient.blocks.children.list = jest
         .fn()
         .mockReturnValueOnce({
@@ -307,7 +315,7 @@ describe(`NotionService`, () => {
           ],
         });
 
-      await notionService.getPageBlocks('parent block ID');
+      await notionApiService.getBlocksFromNotion('parent block ID');
 
       expect(notionClient.blocks.children.list).toBeCalledWith({
         block_id: 'parent block ID',

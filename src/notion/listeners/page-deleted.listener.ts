@@ -17,6 +17,6 @@ export class PageDeletedListener {
   handlePageDeletedEvent(event: PageDeletedEvent) {
     console.log(event);
 
-    this.jobsQueue.add(JOBS.DELETE_CONTENT, {});
+    // this.jobsQueue.add(JOBS.DELETE_CONTENT, {});
   }
 }

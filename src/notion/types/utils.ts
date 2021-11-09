@@ -1,6 +1,6 @@
-import { NotionBlock, Block } from '.';
+import { NotionBlockType, Block } from '.';
 
-const isBlock = (value: NotionBlock): value is Block => {
+const isBlock = (value: NotionBlockType): value is Block => {
   return 'object' in value;
 };
 

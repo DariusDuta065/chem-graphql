@@ -1,26 +1,28 @@
 import { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
-import { ConfigService } from '@nestjs/config';
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-
 import { Client as NotionClient } from '@notionhq/client';
+
 import {
   ListBlockChildrenResponse,
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 
-import { JOBS, QUEUES } from './constants';
-import { NotionConfig } from '../config/interfaces/NotionConfig';
-import { Block, NotionBlock, NotionPage, isBlock } from './types';
+import { InjectQueue } from '@nestjs/bull';
+import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+import { JOBS, QUEUES } from '../constants';
+import { NotionConfig } from '../../config/interfaces/NotionConfig';
+import { Block, NotionPage, isBlock, NotionBlockType } from '../types';
 
 @Injectable()
-export class NotionService {
+export class NotionAPIService {
   private client: NotionClient;
-  private readonly logger = new Logger(NotionService.name);
+  private readonly logger = new Logger(NotionAPIService.name);
 
   constructor(
     private configService: ConfigService,
+
     @InjectQueue(QUEUES.NOTION_API_QUERIES)
     private queriesQueue: Queue,
   ) {}
@@ -40,14 +42,14 @@ export class NotionService {
   }
 
   /**
-   * Returns a list of all pages within the database.
+   * Returns a list of all blocks representing pages in the Notion database block.
    * To get content of a particular page, use getPageBlocks().
    * https://developers.notion.com/reference/post-database-query#post-database-query-filter
    *
    * @param filter - Notion DB query filter
    * @returns {Promise<NotionPage[]>}
    */
-  public async getPages(filter?): Promise<NotionPage[]> {
+  public async getPagesMetadata(filter?): Promise<NotionPage[]> {
     const pages = await this.getClient().databases.query({
       database_id: this.getConfig().databaseID,
       filter,
@@ -63,7 +65,7 @@ export class NotionService {
    * @param pageID - block ID (i.e. pageID, a page is a block)
    * @returns {Promise<Block[]>}
    */
-  public async getPageBlocks(pageID: string): Promise<Block[]> {
+  public async getBlocksFromNotion(pageID: string): Promise<Block[]> {
     const blocks: Block[] = [];
 
     let start_cursor: string | undefined = undefined;
@@ -75,11 +77,13 @@ export class NotionService {
       );
 
       const parentBlocks: Block[] = results.filter(
-        (block) => block.has_children && isBlock(block as NotionBlock),
+        (block) => block.has_children && isBlock(block as NotionBlockType),
       ) as Block[];
 
       for (const parent of parentBlocks) {
-        parent[parent.type].children = await this.getPageBlocks(parent.id);
+        parent[parent.type].children = await this.getBlocksFromNotion(
+          parent.id,
+        );
       }
 
       blocks.push(...(results as Block[]));

@@ -69,4 +69,4 @@ export interface Block {
   [BlockTypeEnum.TOGGLE_LIST]?: BlockTypeContent;
 }
 
-export type NotionBlock = Block | Title;
+export type NotionBlockType = Block | Title;

@@ -17,6 +17,6 @@ export class PageCreatedListener {
   handlePageCreatedEvent(event: PageCreatedEvent) {
     console.log(event);
 
-    this.jobsQueue.add(JOBS.CREATE_CONTENT, {});
+    // this.jobsQueue.add(JOBS.CREATE_CONTENT, {});
   }
 }
