@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { NotionAPIService, NotionBlockService } from './services';
 import { NotionAPIProcessor, NotionBlockProcessor } from './processors';
 
 import { QUEUES } from '../shared/queues';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotionBlock } from './notion-block.entity';
+import { ContentModule } from '../content/content.module';
 
 @Module({
   imports: [
@@ -29,6 +30,8 @@ import { NotionBlock } from './notion-block.entity';
         name: QUEUES.CONTENT,
       },
     ),
+
+    ContentModule,
   ],
   providers: [
     ConfigService,

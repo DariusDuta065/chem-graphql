@@ -31,15 +31,14 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(CronExpression.EVERY_30_SECONDS, {
+  @Cron(CronExpression.EVERY_10_SECONDS, {
     name: JOBS.SYNC_NOTION,
   })
-  public syncNotionTask() {
+  public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
     }
 
-    this.logger.debug(`Queuing ${JOBS.SYNC_NOTION} job`);
     this.apiQueue.add(JOBS.SYNC_NOTION);
   }
 

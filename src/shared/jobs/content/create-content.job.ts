@@ -3,4 +3,5 @@ export interface CreateContentJob {
   title: string;
   type: string;
   lastEditedAt: string;
+  blocks?: string;
 }

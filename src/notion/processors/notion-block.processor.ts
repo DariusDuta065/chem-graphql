@@ -1,7 +1,7 @@
-import { Job } from 'bull';
+import { Job, Queue } from 'bull';
 
 import { Logger } from '@nestjs/common';
-import { Process, Processor } from '@nestjs/bull';
+import { InjectQueue, Process, Processor } from '@nestjs/bull';
 
 import { JOBS } from '../../shared/jobs';
 import { QUEUES } from '../../shared/queues';
@@ -9,19 +9,27 @@ import { QUEUES } from '../../shared/queues';
 import { NotionBlockService } from '../services';
 import {
   CheckBlockFetchStatus,
-  DeleteNotionBlockJob,
   UpdateNotionBlockJob,
 } from '../../shared/jobs/block';
+import { AggregateContentBlocksJob } from 'src/shared/jobs/content';
 
 @Processor(QUEUES.NOTION_BLOCKS)
 export class NotionBlockProcessor {
   private readonly logger = new Logger(NotionBlockProcessor.name);
 
-  constructor(private notionBlockService: NotionBlockService) {}
+  constructor(
+    private notionBlockService: NotionBlockService,
+
+    @InjectQueue(QUEUES.NOTION_BLOCKS)
+    private blocksQueue: Queue,
+
+    @InjectQueue(QUEUES.CONTENT)
+    private contentQueue: Queue,
+  ) {}
 
   @Process(JOBS.UPDATE_NOTION_BLOCK)
-  public async updateNotionBlockJob({ data }: Job<UpdateNotionBlockJob>) {
-    console.log('UPDATE notion block');
+  public updateNotionBlockJob({ data }: Job<UpdateNotionBlockJob>): void {
+    this.logger.debug(`Started processing ${JOBS.UPDATE_NOTION_BLOCK} job`);
 
     this.notionBlockService.upsertBlock({
       blockID: data.blockID,
@@ -35,15 +43,24 @@ export class NotionBlockProcessor {
     });
   }
 
-  @Process(JOBS.DELETE_NOTION_BLOCK)
-  public async deleteNotionBlockJob({ data }: Job<DeleteNotionBlockJob>) {
-    console.log('DELETE notion block', data.blockID);
+  @Process(JOBS.CHECK_BLOCK_FETCH_STATUS)
+  public async checkFetchStatusJob(
+    job: Job<CheckBlockFetchStatus>,
+  ): Promise<any> {
+    this.logger.warn(`Started processing ${JOBS.CHECK_BLOCK_FETCH_STATUS} job`);
 
-    this.notionBlockService.deleteBlock(data.blockID);
-  }
+    const { data } = job;
 
-  @Process(JOBS.CHECK_FETCH_STATUS)
-  public async checkFetchStatusJob({ data }: Job<CheckBlockFetchStatus>) {
-    console.log('CHECKING fetch status', data.blockID);
+    if (job.attemptsMade === 3) {
+      const aggregateContentBlocksJob: AggregateContentBlocksJob = {
+        blockID: data.blockID,
+      };
+      await this.contentQueue.add(
+        JOBS.AGGREGATE_CONTENT_BLOCKS,
+        aggregateContentBlocksJob,
+      );
+    } else {
+      throw new Error('Not all children blocks were fetched yet.');
+    }
   }
 }

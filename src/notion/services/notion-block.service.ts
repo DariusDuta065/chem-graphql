@@ -15,19 +15,10 @@ export class NotionBlockService {
     private blocksRepository: Repository<NotionBlock>,
   ) {}
 
-  /**
-   * Returns all rows from the `notion_blocks` table.
-   *
-   * @returns {Promise<NotionBlock[]>}
-   */
-  public async getBlocks(): Promise<NotionBlock[]> {
-    return this.blocksRepository.find();
-  }
-
   public static getBlocksDifferences(
     notionBlocksIDs: string[],
     dbBlocksIDs: string[],
-  ) {
+  ): { common: string[]; notInDB: string[]; notInNotion: string[] } {
     return {
       common: _.intersection(notionBlocksIDs, dbBlocksIDs),
       notInDB: _.difference(notionBlocksIDs, dbBlocksIDs),
@@ -35,13 +26,19 @@ export class NotionBlockService {
     };
   }
 
-  public async upsertBlock(block: NotionBlock) {
-    return this.blocksRepository.save(block);
+  public async checkBlockStatus(blockID: string): Promise<boolean> {
+    return true;
   }
 
-  public async deleteBlock(blockID: string) {
-    return this.blocksRepository.delete({
-      blockID,
-    });
+  public async aggregateBlocks(startingBlockID: string): Promise<string> {
+    return 'aggregate';
+  }
+
+  public getBlocks(): Promise<NotionBlock[]> {
+    return this.blocksRepository.find();
+  }
+
+  public upsertBlock(block: NotionBlock): Promise<NotionBlock> {
+    return this.blocksRepository.save(block);
   }
 }

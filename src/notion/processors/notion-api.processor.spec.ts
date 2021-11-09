@@ -6,14 +6,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { NotionAPIProcessor } from '.';
 import { NotionAPIService, NotionBlockService } from '../services';
+import { ContentService } from '../../content/content.service';
 
 import { QUEUES } from '../../shared/queues';
 import { JOBS } from '../../shared/jobs';
 
-describe('NotionQueriesProcessor', () => {
-  let notionApiService: NotionAPIService;
-  let notionBlockService: NotionBlockService;
+describe('NotionAPIProcessor', () => {
   let notionQueriesProcessor: NotionAPIProcessor;
+
+  let notionApiService: NotionAPIService;
+  let contentService: ContentService;
+
   let apiQueue: Queue;
   let blocksQueue: Queue;
   let contentQueue: Queue;
@@ -23,11 +26,11 @@ describe('NotionQueriesProcessor', () => {
       providers: [
         NotionAPIProcessor,
         {
-          provide: NotionAPIService,
+          provide: ContentService,
           useValue: {},
         },
         {
-          provide: NotionBlockService,
+          provide: NotionAPIService,
           useValue: {},
         },
         {
@@ -48,7 +51,7 @@ describe('NotionQueriesProcessor', () => {
     notionQueriesProcessor = module.get<NotionAPIProcessor>(NotionAPIProcessor);
 
     notionApiService = module.get<NotionAPIService>(NotionAPIService);
-    notionBlockService = module.get<NotionBlockService>(NotionBlockService);
+    contentService = module.get<ContentService>(ContentService);
 
     apiQueue = module.get<Queue>(getQueueToken(QUEUES.NOTION_API));
     blocksQueue = module.get<Queue>(getQueueToken(QUEUES.NOTION_BLOCKS));
@@ -75,18 +78,22 @@ describe('NotionQueriesProcessor', () => {
           title: 'Title Two',
         },
       ];
-      const dbBlocks = [
+      const contents = [
         {
           blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
           isUpdating: false,
           lastEditedAt: new Date('2021-11-02T03:02:55.000Z'),
-          childrenBlocks: '[...]',
+          type: 'lesson',
+          title: 'Title One',
+          blocks: '[...]',
         },
         {
           blockID: '1336e560-26ba-44c0-b7d0-59d058cab8fa',
           isUpdating: false,
           lastEditedAt: new Date('2021-11-08T03:04:10.000Z'),
-          childrenBlocks: '[...]',
+          type: 'exercise',
+          title: 'Title Three',
+          blocks: '[...]',
         },
       ];
 
@@ -98,7 +105,8 @@ describe('NotionQueriesProcessor', () => {
       notionApiService.getPagesMetadata = jest
         .fn()
         .mockReturnValue(notionBlocks);
-      notionBlockService.getBlocks = jest.fn().mockReturnValue(dbBlocks);
+      contentService.getContent = jest.fn().mockReturnValue(contents);
+
       blocksQueue.add = jest.fn();
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
@@ -106,7 +114,7 @@ describe('NotionQueriesProcessor', () => {
       await notionQueriesProcessor.syncNotionJob();
 
       expect(notionApiService.getPagesMetadata).toBeCalled();
-      expect(notionBlockService.getBlocks).toBeCalled();
+      expect(contentService.getContent).toBeCalled();
       expect(getBlocksDifferencesSpy).toBeCalledWith(
         [
           '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
@@ -126,7 +134,7 @@ describe('NotionQueriesProcessor', () => {
       notionApiService.getPagesMetadata = jest.fn(() => {
         throw new Error('Notion API error');
       });
-      notionBlockService.getBlocks = jest.fn().mockReturnValue([]);
+      contentService.getContent = jest.fn().mockReturnValue([]);
 
       await notionQueriesProcessor.syncNotionJob();
 
@@ -151,18 +159,22 @@ describe('NotionQueriesProcessor', () => {
           title: 'Title Two',
         },
       ];
-      const dbBlocks = [
+      const contents = [
         {
           blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
           isUpdating: false,
           lastEditedAt: new Date('2021-11-02T03:02:55.000Z'),
-          childrenBlocks: '[...]',
+          type: 'lesson',
+          title: 'Title One',
+          blocks: '[...]',
         },
         {
           blockID: '1336e560-26ba-44c0-b7d0-59d058cab8fa',
           isUpdating: false,
           lastEditedAt: new Date('2021-11-08T03:04:10.000Z'),
-          childrenBlocks: '[...]',
+          type: 'exercise',
+          title: 'Title Three',
+          blocks: '[...]',
         },
       ];
 
@@ -171,7 +183,7 @@ describe('NotionQueriesProcessor', () => {
       notionApiService.getPagesMetadata = jest
         .fn()
         .mockReturnValue(notionBlocks);
-      notionBlockService.getBlocks = jest.fn().mockReturnValue(dbBlocks);
+      contentService.getContent = jest.fn().mockReturnValue(contents);
 
       jest
         .spyOn(Array.prototype as any, 'find')
@@ -182,7 +194,7 @@ describe('NotionQueriesProcessor', () => {
       await notionQueriesProcessor.syncNotionJob();
 
       expect(notionApiService.getPagesMetadata).toBeCalled();
-      expect(notionBlockService.getBlocks).toBeCalled();
+      expect(contentService.getContent).toBeCalled();
 
       [
         '9dd90a4c-58bc-436d-8a7f-adca881c3215',
@@ -202,13 +214,14 @@ describe('NotionQueriesProcessor', () => {
           title: 'Title Two',
         },
       ];
-      const dbBlocks = [];
+      const contents = [];
 
       Logger.debug = jest.fn();
       notionApiService.getPagesMetadata = jest
         .fn()
         .mockReturnValue(notionBlocks);
-      notionBlockService.getBlocks = jest.fn().mockReturnValue(dbBlocks);
+      contentService.getContent = jest.fn().mockReturnValue(contents);
+
       blocksQueue.add = jest.fn();
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
@@ -221,19 +234,25 @@ describe('NotionQueriesProcessor', () => {
         type: 'exercise',
         title: 'Title Two',
       });
-      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
-        blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-      });
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        {
+          blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
+        },
+        JOBS.RETRY_OPTS,
+      );
     });
 
     it(`handles page deletion for pages that are in DB but not in Notion anymore`, async () => {
       const notionBlocks = [];
-      const dbBlocks = [
+      const contents = [
         {
           blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-          lastEditedAt: new Date('2021-11-07T14:51:00.000Z'),
           isUpdating: false,
-          childrenBlocks: '[...]',
+          lastEditedAt: new Date('2021-11-07T14:51:00.000Z'),
+          type: 'lesson',
+          title: 'Title One',
+          blocks: '[...]',
         },
       ];
 
@@ -241,16 +260,13 @@ describe('NotionQueriesProcessor', () => {
       notionApiService.getPagesMetadata = jest
         .fn()
         .mockReturnValue(notionBlocks);
-      notionBlockService.getBlocks = jest.fn().mockReturnValue(dbBlocks);
+      contentService.getContent = jest.fn().mockReturnValue(contents);
       contentQueue.add = jest.fn();
       blocksQueue.add = jest.fn();
 
       await notionQueriesProcessor.syncNotionJob();
 
       expect(contentQueue.add).toBeCalledWith(JOBS.DELETE_CONTENT, {
-        blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-      });
-      expect(blocksQueue.add).toBeCalledWith(JOBS.DELETE_NOTION_BLOCK, {
         blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
       });
     });
@@ -264,12 +280,15 @@ describe('NotionQueriesProcessor', () => {
           title: 'Title One',
         },
       ];
-      const dbBlocks = [
+      const contents = [
         {
+          id: 1,
           blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
           isUpdating: false,
           lastEditedAt: new Date('2021-11-02T03:02:55.000Z'),
-          childrenBlocks: '[...]',
+          type: 'lesson',
+          title: 'Title One',
+          blocks: '[...]',
         },
       ];
 
@@ -277,21 +296,27 @@ describe('NotionQueriesProcessor', () => {
       notionApiService.getPagesMetadata = jest
         .fn()
         .mockReturnValue(notionBlocks);
-      notionBlockService.getBlocks = jest.fn().mockReturnValue(dbBlocks);
+      contentService.getContent = jest.fn().mockReturnValue(contents);
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
 
       await notionQueriesProcessor.syncNotionJob();
 
       expect(contentQueue.add).toBeCalledWith(JOBS.UPDATE_CONTENT, {
+        id: 1,
         blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
         lastEditedAt: '2021-11-08T20:14:00.000Z',
         type: 'lesson',
         title: 'Title One',
+        blocks: '[...]',
       });
-      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
-        blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
-      });
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        {
+          blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
+        },
+        JOBS.RETRY_OPTS,
+      );
     });
   });
 });
