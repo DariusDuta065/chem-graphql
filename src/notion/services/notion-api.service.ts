@@ -1,10 +1,7 @@
 import { Queue } from 'bull';
 import { Client as NotionClient } from '@notionhq/client';
 
-import {
-  ListBlockChildrenResponse,
-  QueryDatabaseResponse,
-} from '@notionhq/client/build/src/api-endpoints';
+import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
 import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
@@ -13,8 +10,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { JOBS } from '../../shared/jobs';
 import { QUEUES } from '../../shared/queues';
+import { Block, NotionPage, isBlock } from '../types';
 import { NotionConfig } from '../../config/interfaces/NotionConfig';
-import { Block, NotionPage, isBlock, NotionBlockType } from '../types';
 
 @Injectable()
 export class NotionAPIService {

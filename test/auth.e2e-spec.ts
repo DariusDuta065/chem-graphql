@@ -1,7 +1,6 @@
 import * as request from 'supertest';
 
 import { Test } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
 import { INestApplication } from '@nestjs/common';
 
 import { TestUtils } from './utils/test.utils';
@@ -15,14 +14,10 @@ import { AuthModule } from '../src/auth/auth.module';
 import { UsersModule } from '../src/users/users.module';
 import { TokenOutput } from '../src/auth/dto/token.output';
 import { UserData } from '../src/users/dto/userData.output';
+import { NotionAPIProcessor } from '../src/notion/processors';
 
 import queries from './graphql/queries';
 import mutations from './graphql/mutations';
-import { QUEUES } from '../src/shared/queues';
-import {
-  NotionAPIProcessor,
-  NotionBlockProcessor,
-} from '../src/notion/processors';
 
 describe('AuthResolver (e2e)', () => {
   let app: INestApplication;
@@ -36,8 +31,6 @@ describe('AuthResolver (e2e)', () => {
       providers: [TestUtils, AuthUtils],
     })
       .overrideProvider(NotionAPIProcessor)
-      .useValue({})
-      .overrideProvider(NotionBlockProcessor)
       .useValue({})
       .compile();
 

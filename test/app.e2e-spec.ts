@@ -1,14 +1,9 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bull';
 import { INestApplication } from '@nestjs/common';
 
 import { AppModule } from '../src/app/app.module';
-import { QUEUES } from '../src/shared/queues';
-import {
-  NotionAPIProcessor,
-  NotionBlockProcessor,
-} from '../src/notion/processors';
+import { NotionAPIProcessor } from '../src/notion/processors';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -18,8 +13,6 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     })
       .overrideProvider(NotionAPIProcessor)
-      .useValue({})
-      .overrideProvider(NotionBlockProcessor)
       .useValue({})
       .compile();
 
