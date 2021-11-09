@@ -30,6 +30,7 @@ module.exports = {
         "properties": "explicit",
         "parameterProperties": "explicit"
       }
-    }]
+    }],
+    '@typescript-eslint/explicit-function-return-type': ['error']
   },
 };
