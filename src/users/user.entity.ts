@@ -14,23 +14,23 @@ export class User {
 
   @PrimaryGeneratedColumn()
   @Field(() => Int)
-  userId: number;
+  public userId: number;
 
   @Column({ nullable: false })
   @Field()
-  email: string;
+  public email: string;
 
   @Column({ nullable: false })
   @Field()
-  password: string;
+  public password: string;
 
   @Column({ nullable: false })
   @Field()
-  firstName: string;
+  public firstName: string;
 
   @Column({ nullable: false })
   @Field()
-  lastName: string;
+  public lastName: string;
 
   @Column({
     type: 'enum',
@@ -39,5 +39,5 @@ export class User {
     default: Role.User,
   })
   @Field(() => Role)
-  role: Role;
+  public role: Role;
 }

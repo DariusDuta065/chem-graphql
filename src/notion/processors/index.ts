@@ -1,2 +1,2 @@
-export * from './queries.processor';
-export * from './jobs.processor';
+export * from './notion-api.processor';
+export * from './notion-block.processor';

@@ -3,14 +3,14 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 @Entity()
 export class NotionBlock {
   @PrimaryColumn({ type: 'uuid' })
-  blockID: string;
+  public blockID: string;
 
   @Column({ type: 'boolean', default: false })
-  isUpdating: boolean;
+  public isUpdating: boolean;
 
   @Column({ type: 'datetime', nullable: false })
-  lastEditedAt: Date;
+  public lastEditedAt: Date;
 
   @Column({ type: 'text' })
-  childrenBlocks: string;
+  public childrenBlocks: string;
 }

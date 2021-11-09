@@ -2,15 +2,10 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 
-import {
-  PageCreatedListener,
-  PageUpdatedListener,
-  PageDeletedListener,
-} from './listeners';
 import { NotionAPIService, NotionBlockService } from './services';
-import { NotionJobsProcessor, NotionQueriesProcessor } from './processors';
+import { NotionAPIProcessor, NotionBlockProcessor } from './processors';
 
-import { QUEUES } from './constants';
+import { QUEUES } from '../shared/queues';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotionBlock } from './notion-block.entity';
 
@@ -20,7 +15,7 @@ import { NotionBlock } from './notion-block.entity';
 
     BullModule.registerQueue(
       {
-        name: QUEUES.NOTION_API_QUERIES,
+        name: QUEUES.NOTION_API,
         // https://developers.notion.com/reference/errors#rate-limits
         limiter: {
           max: 3, // max 3 req per sec
@@ -28,7 +23,10 @@ import { NotionBlock } from './notion-block.entity';
         },
       },
       {
-        name: QUEUES.NOTION_JOBS,
+        name: QUEUES.NOTION_BLOCKS,
+      },
+      {
+        name: QUEUES.CONTENT,
       },
     ),
   ],
@@ -37,12 +35,8 @@ import { NotionBlock } from './notion-block.entity';
     NotionAPIService,
     NotionBlockService,
 
-    NotionJobsProcessor,
-    NotionQueriesProcessor,
-
-    PageCreatedListener,
-    PageUpdatedListener,
-    PageDeletedListener,
+    NotionAPIProcessor,
+    NotionBlockProcessor,
   ],
 })
 export class NotionModule {}

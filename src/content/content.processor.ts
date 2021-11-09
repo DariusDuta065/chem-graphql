@@ -1,28 +1,29 @@
 import { Logger } from '@nestjs/common';
 import { Process, Processor } from '@nestjs/bull';
 
-import { JOBS, QUEUES } from '../constants';
+import { JOBS } from '../shared/jobs';
+import { QUEUES } from '../shared/queues';
 
-@Processor(QUEUES.NOTION_JOBS)
-export class NotionJobsProcessor {
-  private readonly logger = new Logger(NotionJobsProcessor.name);
+@Processor(QUEUES.CONTENT)
+export class ContentProcessor {
+  private readonly logger = new Logger(ContentProcessor.name);
 
   constructor() {
     //
   }
 
   @Process(JOBS.CREATE_CONTENT)
-  async createContentJob() {
+  public async createContentJob() {
     console.log('create content job');
   }
 
   @Process(JOBS.UPDATE_CONTENT)
-  async updateContentJob() {
+  public async updateContentJob() {
     console.log('update content job');
   }
 
   @Process(JOBS.DELETE_CONTENT)
-  async deleteContentJob() {
+  public async deleteContentJob() {
     console.log('delete content job');
   }
 }

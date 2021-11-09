@@ -20,8 +20,9 @@ import { AppController } from './app.controller';
 
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
-import { SeedDBModule } from '../db/seeders/seed.module';
 import { NotionModule } from '../notion/notion.module';
+import { SeedDBModule } from '../db/seeders/seed.module';
+import { ContentModule } from '../content/content.module';
 
 import configuration from '../config/configuration';
 import { BullConfigService } from '../config/services/bullConfigService';
@@ -62,6 +63,7 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
 
     AuthModule,
     UsersModule,
+    ContentModule,
 
     NotionModule,
 
@@ -74,7 +76,7 @@ export class AppModule implements OnModuleDestroy {
 
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  onModuleDestroy() {
+  public onModuleDestroy() {
     // Manually close Redis client, to not have TCP handle leak
     const client = (this.cacheManager.store as any).getClient();
     client.quit();

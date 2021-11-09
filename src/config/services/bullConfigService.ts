@@ -9,7 +9,7 @@ import { BullConfig } from '../interfaces/BullConfig';
 export class BullConfigService implements SharedBullConfigurationFactory {
   constructor(private configService: ConfigService) {}
 
-  createSharedConfiguration(): QueueOptions {
+  public createSharedConfiguration(): QueueOptions {
     const config: BullConfig = this.configService.get<BullConfig>(
       BullConfig.CONFIG_KEY,
       {

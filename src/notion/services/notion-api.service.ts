@@ -11,7 +11,8 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { JOBS, QUEUES } from '../constants';
+import { JOBS } from '../../shared/jobs';
+import { QUEUES } from '../../shared/queues';
 import { NotionConfig } from '../../config/interfaces/NotionConfig';
 import { Block, NotionPage, isBlock, NotionBlockType } from '../types';
 
@@ -23,8 +24,8 @@ export class NotionAPIService {
   constructor(
     private configService: ConfigService,
 
-    @InjectQueue(QUEUES.NOTION_API_QUERIES)
-    private queriesQueue: Queue,
+    @InjectQueue(QUEUES.NOTION_API)
+    private apiQueue: Queue,
   ) {}
 
   /**
@@ -33,12 +34,16 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(CronExpression.EVERY_5_SECONDS, {
+  @Cron(CronExpression.EVERY_30_SECONDS, {
     name: JOBS.SYNC_NOTION,
   })
   public syncNotionTask() {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
     this.logger.debug(`Queuing ${JOBS.SYNC_NOTION} job`);
-    this.queriesQueue.add(JOBS.SYNC_NOTION);
+    this.apiQueue.add(JOBS.SYNC_NOTION);
   }
 
   /**
@@ -59,34 +64,34 @@ export class NotionAPIService {
   }
 
   /**
-   * Recursively iterates and resolves all the blocks
-   * and their children via Notion's API.
+   * Paginates over all the parent blocks, and returns them
+   * along with all blocks that have further children.
    *
-   * @param pageID - block ID (i.e. pageID, a page is a block)
-   * @returns {Promise<Block[]>}
+   * @param blockID - pageID, since a page is a block)
+   * @returns {Promise} - all children blocks for blockID,
+   * and all the ones that have further children in 'parentBlocks'
    */
-  public async getBlocksFromNotion(pageID: string): Promise<Block[]> {
-    const blocks: Block[] = [];
+  public async getBlocksFromNotion(blockID: string): Promise<{
+    lastEditedAt: string;
+    childrenBlocks: Block[];
+    parentBlocks: string[];
+  }> {
+    const { last_edited_time: lastEditedAt } =
+      await this.getClient().blocks.retrieve({
+        block_id: blockID,
+      });
 
+    const childrenBlocks: Block[] = [];
     let start_cursor: string | undefined = undefined;
 
     while (true) {
-      const { results, has_more, next_cursor } = await this.getBlocksChildren(
-        pageID,
-        start_cursor,
-      );
+      const { results, has_more, next_cursor } =
+        await this.getClient().blocks.children.list({
+          block_id: blockID,
+          start_cursor,
+        });
 
-      const parentBlocks: Block[] = results.filter(
-        (block) => block.has_children && isBlock(block as NotionBlockType),
-      ) as Block[];
-
-      for (const parent of parentBlocks) {
-        parent[parent.type].children = await this.getBlocksFromNotion(
-          parent.id,
-        );
-      }
-
-      blocks.push(...(results as Block[]));
+      childrenBlocks.push(...(results as Block[]));
 
       start_cursor = next_cursor ?? undefined;
       if (!has_more) {
@@ -94,7 +99,11 @@ export class NotionAPIService {
       }
     }
 
-    return blocks;
+    const parentBlocks: string[] = childrenBlocks
+      .filter((block) => block.has_children && isBlock(block))
+      .map((block) => block.id);
+
+    return { lastEditedAt, childrenBlocks, parentBlocks };
   }
 
   public getConfig(): NotionConfig {
@@ -136,15 +145,5 @@ export class NotionAPIService {
     });
 
     return parsedPages;
-  }
-
-  private async getBlocksChildren(
-    blockID: string,
-    start_cursor?: string,
-  ): Promise<ListBlockChildrenResponse> {
-    return this.getClient().blocks.children.list({
-      block_id: blockID,
-      start_cursor,
-    });
   }
 }

@@ -34,4 +34,14 @@ export class NotionBlockService {
       notInNotion: _.difference(dbBlocksIDs, notionBlocksIDs),
     };
   }
+
+  public async upsertBlock(block: NotionBlock) {
+    return this.blocksRepository.save(block);
+  }
+
+  public async deleteBlock(blockID: string) {
+    return this.blocksRepository.delete({
+      blockID,
+    });
+  }
 }
