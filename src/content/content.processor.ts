@@ -24,8 +24,6 @@ export class ContentProcessor {
   public async createContentJob({
     data,
   }: Job<CreateContentJob>): Promise<void> {
-    // this.logger.debug(`Started processing ${JOBS.CREATE_CONTENT} job`);
-
     const content = new Content();
     content.blockID = data.blockID;
     content.title = data.title;
@@ -40,8 +38,6 @@ export class ContentProcessor {
   public async updateContentJob({
     data,
   }: Job<UpdateContentJob>): Promise<void> {
-    // this.logger.debug(`Started processing ${JOBS.UPDATE_CONTENT} job`);
-
     this.contentService.updateContent({
       id: data.id,
       blockID: data.blockID,
@@ -58,8 +54,6 @@ export class ContentProcessor {
   public async deleteContentJob({
     data,
   }: Job<DeleteContentJob>): Promise<void> {
-    // this.logger.debug(`Started processing ${JOBS.DELETE_CONTENT} job`);
-
     this.contentService.deleteContent(data.blockID);
   }
 
@@ -67,10 +61,10 @@ export class ContentProcessor {
   public async aggregateContentBlocksJob({
     data,
   }: Job<AggregateContentBlocksJob>): Promise<void> {
-    // this.logger.debug(
-    //   `Started processing ${JOBS.AGGREGATE_CONTENT_BLOCKS} job`,
-    // );
+    this.logger.debug(
+      `Started processing ${JOBS.AGGREGATE_CONTENT_BLOCKS} job`,
+    );
 
-    this.contentService.aggregateContentBlocks(data.blockID);
+    await this.contentService.aggregateContentBlocks(data.blockID);
   }
 }

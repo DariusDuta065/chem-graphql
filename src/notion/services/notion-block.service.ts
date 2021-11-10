@@ -5,11 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { NotionBlock } from '../notion-block.entity';
+import { isBlock, NotionBlockType } from '../types';
 
 @Injectable()
 export class NotionBlockService {
-  //
-
   constructor(
     @InjectRepository(NotionBlock)
     private blocksRepository: Repository<NotionBlock>,
@@ -27,11 +26,24 @@ export class NotionBlockService {
   }
 
   public async checkBlockStatus(blockID: string): Promise<boolean> {
-    return true;
-  }
+    const { childrenBlocks, isUpdating } =
+      await this.blocksRepository.findOneOrFail({
+        blockID,
+      });
 
-  public async aggregateBlocks(startingBlockID: string): Promise<string> {
-    return 'aggregate';
+    if (isUpdating) {
+      throw new Error(`Block ${blockID} is still updating`);
+    }
+
+    const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
+
+    for (const block of parsedBlocks) {
+      if (isBlock(block) && block.has_children) {
+        await this.checkBlockStatus(block.id);
+      }
+    }
+
+    return true;
   }
 
   public getBlocks(): Promise<NotionBlock[]> {

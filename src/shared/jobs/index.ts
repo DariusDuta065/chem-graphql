@@ -11,11 +11,16 @@ const JOBS = {
   DELETE_CONTENT: 'delete_content',
   AGGREGATE_CONTENT_BLOCKS: 'aggregate_content_blocks',
 
-  RETRY_OPTS: {
-    attempts: 8,
-    backoff: {
-      type: 'exponential',
-      delay: 6000,
+  OPTIONS: {
+    RETRIED: {
+      attempts: 10,
+      backoff: {
+        type: 'exponential',
+        delay: 2000,
+      },
+    },
+    DELAYED: {
+      delay: 1000,
     },
   },
 };

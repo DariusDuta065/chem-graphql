@@ -1,16 +1,25 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+
 import { Content } from './content.entity';
+import { NotionBlock } from '../notion/notion-block.entity';
+import { isBlock, NotionBlockType } from '../notion/types';
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectRepository(Content) private contentRepository: Repository<Content>,
+    @InjectRepository(NotionBlock)
+    private blocksRepository: Repository<NotionBlock>,
   ) {}
 
   public getContent(): Promise<Content[]> {
     return this.contentRepository.find();
+  }
+
+  public getContentByBlockID(blockID: string): Promise<Content> {
+    return this.contentRepository.findOneOrFail({ blockID });
   }
 
   public insertContent(content: Content): Promise<Content> {
@@ -26,17 +35,25 @@ export class ContentService {
   }
 
   public async aggregateContentBlocks(blockID: string): Promise<void> {
-    console.log('aggregate blocks for page ID:', blockID);
+    const content = await this.getContentByBlockID(blockID);
 
-    const content = await this.contentRepository.findOne({ blockID });
+    const getChildrenBlocks = async (blockID: string): Promise<string> => {
+      const { childrenBlocks } = await this.blocksRepository.findOneOrFail({
+        blockID,
+      });
 
-    if (!content) {
-      console.log('content not found');
-      return;
-    }
+      const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
 
-    content.blocks = 'blocks will be here';
+      for (const block of parsedBlocks) {
+        if (isBlock(block) && block.has_children) {
+          block.children = JSON.parse(await getChildrenBlocks(block.id));
+        }
+      }
 
-    this.contentRepository.save(content);
+      return JSON.stringify(parsedBlocks);
+    };
+
+    content.blocks = await getChildrenBlocks(blockID);
+    await this.updateContent(content);
   }
 }

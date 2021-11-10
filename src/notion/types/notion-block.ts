@@ -58,6 +58,7 @@ export interface Block {
   created_time: Date | string;
   last_edited_time: Date | string;
   has_children: boolean;
+  children?: NotionBlockType[];
 
   [BlockTypeEnum.HEADING1]?: BlockTypeContent;
   [BlockTypeEnum.HEADING2]?: BlockTypeContent;

@@ -59,6 +59,7 @@ export class NotionAPIProcessor {
       this.updatePages(common, contents, notionBlocks);
     } catch (error) {
       this.logger.error(`Error in ${JOBS.SYNC_NOTION} ${error}`);
+      throw error;
     }
   }
 
@@ -66,12 +67,11 @@ export class NotionAPIProcessor {
   public async fetchNotionBlockJob({
     data,
   }: Job<FetchNotionBlockJob>): Promise<void> {
-    this.logger.debug(`Started processing ${JOBS.FETCH_NOTION_BLOCK} job`);
+    this.logger.debug(
+      `Started processing ${JOBS.FETCH_NOTION_BLOCK} job ${data.blockID}`,
+    );
     const { blockID } = data;
 
-    // TODO: move isUpdating to `content` instead
-    // JOBS.CHECK_BLOCK_FETCH_STATUS will update that to false when all blocks are in `notion_block`
-    // and it will aggregate the blocks and store them in `content.blocks`
     try {
       let updateNotionBlockJob: UpdateNotionBlockJob = {
         blockID,
@@ -97,7 +97,7 @@ export class NotionAPIProcessor {
         this.apiQueue.add(
           JOBS.FETCH_NOTION_BLOCK,
           fetchNotionBlockJob,
-          JOBS.RETRY_OPTS,
+          JOBS.OPTIONS.RETRIED,
         );
       }
     } catch (error) {
@@ -150,8 +150,7 @@ export class NotionAPIProcessor {
 
   /**
    * This method receives the blocks that are found in both Notion's DB
-   * and the `contents` table; it then checks if Notion has a version
-   * of that block that is newer (via the `last_edited_at` field).
+   * and the `contents` table; it then updates all pages.
    *
    * @param {string[]} blockIDs
    * @param {Content[]} contents
@@ -171,12 +170,20 @@ export class NotionAPIProcessor {
         continue;
       }
 
-      const notionDate = new Date(notionBlock.lastEditedAt);
-      const dbDate = new Date(content.lastEditedAt);
-
-      if (notionDate > dbDate) {
-        this.handlePageUpdation(content, notionBlock);
-      }
+      /**
+       * https://developers.notion.com/changelog/last-edited-time-is-now-rounded-to-the-nearest-minute
+       *
+       * Notion approximates updates to the nearest minute, meaning that multiple updates made on a page
+       * within the same minute will not be reflected in the `content` or `notion_block` table since
+       * there is no way of telling if we have the latest version by just looking at the `last_edited_at` fields.
+       *
+       * On top of that, children blocks do not update their parent blocks' `last_edited_at`, but only their own
+       * block -- this means that `notion_block.last_edited_at` will not reflect when a child of that block
+       * has been updated.
+       *
+       * Thus, we have to assume that every page block must be refetched whenever `SyncNotionJob` happens.
+       */
+      this.handlePageUpdation(content, notionBlock);
     }
   }
 
@@ -198,12 +205,15 @@ export class NotionAPIProcessor {
     this.apiQueue.add(
       JOBS.FETCH_NOTION_BLOCK,
       fetchNotionBlockJob,
-      JOBS.RETRY_OPTS,
+      JOBS.OPTIONS.RETRIED,
     );
     this.blocksQueue.add(
       JOBS.CHECK_BLOCK_FETCH_STATUS,
       checkBlockFetchStatusJob,
-      JOBS.RETRY_OPTS,
+      {
+        ...JOBS.OPTIONS.RETRIED,
+        ...JOBS.OPTIONS.DELAYED,
+      },
     );
   }
 
@@ -227,12 +237,15 @@ export class NotionAPIProcessor {
     this.apiQueue.add(
       JOBS.FETCH_NOTION_BLOCK,
       fetchNotionBlockJob,
-      JOBS.RETRY_OPTS,
+      JOBS.OPTIONS.RETRIED,
     );
     this.blocksQueue.add(
       JOBS.CHECK_BLOCK_FETCH_STATUS,
       checkBlockFetchStatusJob,
-      JOBS.RETRY_OPTS,
+      {
+        ...JOBS.OPTIONS.RETRIED,
+        ...JOBS.OPTIONS.DELAYED,
+      },
     );
   }
 

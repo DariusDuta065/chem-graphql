@@ -128,19 +128,40 @@ describe('NotionAPIProcessor', () => {
     });
 
     it(`handles errors from Notion's API`, async () => {
-      const mockError = jest.fn();
-      jest.spyOn(Logger.prototype, 'error').mockImplementation(mockError);
+      const contents = [
+        {
+          blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
+          isUpdating: false,
+          lastEditedAt: new Date('2021-11-02T03:02:55.000Z'),
+          type: 'lesson',
+          title: 'Title One',
+          blocks: '[...]',
+        },
+        {
+          blockID: '1336e560-26ba-44c0-b7d0-59d058cab8fa',
+          isUpdating: false,
+          lastEditedAt: new Date('2021-11-08T03:04:10.000Z'),
+          type: 'exercise',
+          title: 'Title Three',
+          blocks: '[...]',
+        },
+      ];
 
-      notionApiService.getPagesMetadata = jest.fn(() => {
+      Logger.debug = jest.fn();
+      jest.spyOn(Logger.prototype, 'error').mockImplementation(jest.fn());
+
+      notionApiService.getPagesMetadata = jest.fn(async () => {
         throw new Error('Notion API error');
       });
-      contentService.getContent = jest.fn().mockReturnValue([]);
 
-      await notionQueriesProcessor.syncNotionJob();
+      contentService.getContent = jest.fn().mockReturnValue(contents);
 
-      expect(notionApiService.getPagesMetadata).toBeCalled();
-      expect(mockError).toBeCalledWith(
-        'Error in sync_notion Error: Notion API error',
+      blocksQueue.add = jest.fn();
+      contentQueue.add = jest.fn();
+      apiQueue.add = jest.fn();
+
+      expect(notionQueriesProcessor.syncNotionJob()).rejects.toThrowError(
+        'Notion API error',
       );
     });
 
@@ -239,7 +260,7 @@ describe('NotionAPIProcessor', () => {
         {
           blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
         },
-        JOBS.RETRY_OPTS,
+        JOBS.OPTIONS.RETRIED,
       );
     });
 
@@ -315,7 +336,7 @@ describe('NotionAPIProcessor', () => {
         {
           blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
         },
-        JOBS.RETRY_OPTS,
+        JOBS.OPTIONS.RETRIED,
       );
     });
   });

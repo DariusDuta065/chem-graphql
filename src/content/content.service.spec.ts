@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { Content } from './content.entity';
 import { ContentService } from './content.service';
+import { NotionBlock } from '../notion/notion-block.entity';
 
 describe('ContentService', () => {
   let service: ContentService;
@@ -14,6 +15,10 @@ describe('ContentService', () => {
         ContentService,
         {
           provide: getRepositoryToken(Content),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(NotionBlock),
           useClass: Repository,
         },
       ],
