@@ -343,4 +343,112 @@ describe('NotionAPIProcessor', () => {
       );
     });
   });
+
+  describe('fetchNotionBlockJob', () => {
+    it(`fetches block metadata & children, and updates the 'notion_block' table`, async () => {
+      const job = { data: { blockID: 'block ID' } } as any;
+
+      notionApiService.getBlockMetadata = jest.fn().mockReturnValue({
+        last_edited_time: '2021-11-11 20:56:00',
+      });
+      notionApiService.getChildrenBlocks = jest.fn().mockReturnValue({
+        childrenBlocks: 'children blocks',
+        parentBlocks: [],
+      });
+      blocksQueue.add = jest.fn();
+      apiQueue.add = jest.fn();
+
+      await processor.fetchNotionBlockJob(job);
+
+      expect(notionApiService.getBlockMetadata).toBeCalledWith('block ID');
+      expect(notionApiService.getChildrenBlocks).toHaveBeenCalledWith(
+        'block ID',
+      );
+      expect(blocksQueue.add).toBeCalledWith(JOBS.UPDATE_NOTION_BLOCK, {
+        blockID: 'block ID',
+        lastEditedAt: '2021-11-11 20:56:00',
+        isUpdating: true,
+        childrenBlocks: [],
+      });
+      expect(apiQueue.add).not.toBeCalled();
+      expect(blocksQueue.add).toBeCalledWith(JOBS.UPDATE_NOTION_BLOCK, {
+        blockID: 'block ID',
+        lastEditedAt: '2021-11-11 20:56:00',
+        isUpdating: false,
+        childrenBlocks: 'children blocks',
+      });
+    });
+
+    it(`enqueues separate fetchNotionBlock jobs for children blocks`, async () => {
+      const job = { data: { blockID: 'block ID' } } as any;
+
+      notionApiService.getBlockMetadata = jest.fn().mockReturnValue({
+        last_edited_time: '2021-11-11 20:56:00',
+      });
+      notionApiService.getChildrenBlocks = jest.fn().mockReturnValue({
+        childrenBlocks: 'children blocks',
+        parentBlocks: ['parent block 1', 'parent block 2'],
+      });
+      blocksQueue.add = jest.fn();
+      apiQueue.add = jest.fn();
+
+      await processor.fetchNotionBlockJob(job);
+
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        { blockID: 'parent block 1' },
+        JOBS.OPTIONS.RETRIED,
+      );
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        { blockID: 'parent block 2' },
+        JOBS.OPTIONS.RETRIED,
+      );
+    });
+
+    it(`handles dates provided as instances of Date`, async () => {
+      const job = { data: { blockID: 'block ID' } } as any;
+
+      notionApiService.getBlockMetadata = jest.fn().mockReturnValue({
+        last_edited_time: new Date('2021-11-11 20:56:00'),
+      });
+      notionApiService.getChildrenBlocks = jest.fn().mockReturnValue({
+        childrenBlocks: 'children blocks',
+        parentBlocks: [],
+      });
+      blocksQueue.add = jest.fn();
+      apiQueue.add = jest.fn();
+
+      await processor.fetchNotionBlockJob(job);
+
+      expect(notionApiService.getBlockMetadata).toBeCalledWith('block ID');
+      expect(notionApiService.getChildrenBlocks).toHaveBeenCalledWith(
+        'block ID',
+      );
+      expect(blocksQueue.add).toBeCalledWith(JOBS.UPDATE_NOTION_BLOCK, {
+        blockID: 'block ID',
+        lastEditedAt: new Date('2021-11-11 20:56:00').toISOString(),
+        isUpdating: true,
+        childrenBlocks: [],
+      });
+      expect(apiQueue.add).not.toBeCalled();
+      expect(blocksQueue.add).toBeCalledWith(JOBS.UPDATE_NOTION_BLOCK, {
+        blockID: 'block ID',
+        lastEditedAt: new Date('2021-11-11 20:56:00').toISOString(),
+        isUpdating: false,
+        childrenBlocks: 'children blocks',
+      });
+    });
+
+    it(`throws error & fails job if any error is caught`, async () => {
+      const job = { data: { blockID: 'block ID' } } as any;
+      notionApiService.getBlockMetadata = jest.fn(async () => {
+        throw new Error('Notion API error');
+      });
+
+      expect(processor.fetchNotionBlockJob(job)).rejects.toThrowError(
+        `Notion API error`,
+      );
+    });
+  });
 });

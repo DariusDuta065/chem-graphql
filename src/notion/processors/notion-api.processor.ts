@@ -87,29 +87,34 @@ export class NotionAPIProcessor {
         isUpdating: true,
         childrenBlocks: [],
       };
-      this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, updateNotionBlockJob);
+      await this.blocksQueue.add(
+        JOBS.UPDATE_NOTION_BLOCK,
+        updateNotionBlockJob,
+      );
 
-      const { childrenBlocks, parentBlocks } =
-        await this.notionApiService.getChildrenBlocks(blockID);
+      const blockData = await this.notionApiService.getChildrenBlocks(blockID);
 
-      updateNotionBlockJob = {
-        blockID,
-        lastEditedAt,
-        childrenBlocks,
-        isUpdating: false,
-      };
-      this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, updateNotionBlockJob);
-
-      for (const blockID of parentBlocks) {
+      for (const blockID of blockData.parentBlocks) {
         const fetchNotionBlockJob: FetchNotionBlockJob = {
           blockID,
         };
-        this.apiQueue.add(
+        await this.apiQueue.add(
           JOBS.FETCH_NOTION_BLOCK,
           fetchNotionBlockJob,
           JOBS.OPTIONS.RETRIED,
         );
       }
+
+      updateNotionBlockJob = {
+        blockID,
+        lastEditedAt,
+        isUpdating: false,
+        childrenBlocks: blockData.childrenBlocks,
+      };
+      await this.blocksQueue.add(
+        JOBS.UPDATE_NOTION_BLOCK,
+        updateNotionBlockJob,
+      );
     } catch (error) {
       this.logger.error(`Error in ${JOBS.FETCH_NOTION_BLOCK} ${error}`);
       throw error;
