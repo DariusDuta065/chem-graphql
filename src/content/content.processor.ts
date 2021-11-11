@@ -10,7 +10,7 @@ import {
   CreateContentJob,
   DeleteContentJob,
   UpdateContentJob,
-} from '../shared/jobs/content';
+} from '../shared/jobs';
 import { ContentService } from './content.service';
 import { Content } from './content.entity';
 
@@ -44,9 +44,7 @@ export class ContentProcessor {
       title: data.title,
       type: data.type,
       blocks: data.blocks,
-      lastEditedAt: data.lastEditedAt
-        ? new Date(data.lastEditedAt)
-        : new Date(),
+      lastEditedAt: new Date(data.lastEditedAt),
     });
   }
 
@@ -62,7 +60,7 @@ export class ContentProcessor {
     data,
   }: Job<AggregateContentBlocksJob>): Promise<void> {
     this.logger.debug(
-      `Started processing ${JOBS.AGGREGATE_CONTENT_BLOCKS} job`,
+      `Started ${JOBS.AGGREGATE_CONTENT_BLOCKS} (block ID: ${data.blockID})`,
     );
 
     await this.contentService.aggregateContentBlocks(data.blockID);

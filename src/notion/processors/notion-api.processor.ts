@@ -15,12 +15,12 @@ import {
   CreateContentJob,
   DeleteContentJob,
   UpdateContentJob,
-} from '../../shared/jobs/content';
+} from '../../shared/jobs';
 import {
   CheckBlockFetchStatus,
   FetchNotionBlockJob,
   UpdateNotionBlockJob,
-} from '../../shared/jobs/block';
+} from '../../shared/jobs';
 
 @Processor(QUEUES.NOTION_API)
 export class NotionAPIProcessor {
@@ -68,7 +68,7 @@ export class NotionAPIProcessor {
     data,
   }: Job<FetchNotionBlockJob>): Promise<void> {
     this.logger.debug(
-      `Started processing ${JOBS.FETCH_NOTION_BLOCK} job ${data.blockID}`,
+      `Started ${JOBS.FETCH_NOTION_BLOCK} (block ID: ${data.blockID})`,
     );
     const { blockID } = data;
 

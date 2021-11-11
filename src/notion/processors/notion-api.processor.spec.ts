@@ -8,11 +8,12 @@ import { NotionAPIProcessor } from '.';
 import { NotionAPIService, NotionBlockService } from '../services';
 import { ContentService } from '../../content/content.service';
 
-import { QUEUES } from '../../shared/queues';
 import { JOBS } from '../../shared/jobs';
+import { QUEUES } from '../../shared/queues';
+import { FetchNotionBlockJob } from '../../shared/jobs';
 
 describe('NotionAPIProcessor', () => {
-  let notionQueriesProcessor: NotionAPIProcessor;
+  let processor: NotionAPIProcessor;
 
   let notionApiService: NotionAPIService;
   let contentService: ContentService;
@@ -48,7 +49,7 @@ describe('NotionAPIProcessor', () => {
       ],
     }).compile();
 
-    notionQueriesProcessor = module.get<NotionAPIProcessor>(NotionAPIProcessor);
+    processor = module.get<NotionAPIProcessor>(NotionAPIProcessor);
 
     notionApiService = module.get<NotionAPIService>(NotionAPIService);
     contentService = module.get<ContentService>(ContentService);
@@ -59,7 +60,7 @@ describe('NotionAPIProcessor', () => {
   });
 
   it(`is defined`, async () => {
-    expect(notionQueriesProcessor).toBeDefined();
+    expect(processor).toBeDefined();
   });
 
   describe('syncNotionJob', () => {
@@ -111,7 +112,7 @@ describe('NotionAPIProcessor', () => {
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
 
-      await notionQueriesProcessor.syncNotionJob();
+      await processor.syncNotionJob();
 
       expect(notionApiService.getPagesMetadata).toBeCalled();
       expect(contentService.getContent).toBeCalled();
@@ -160,7 +161,7 @@ describe('NotionAPIProcessor', () => {
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
 
-      expect(notionQueriesProcessor.syncNotionJob()).rejects.toThrowError(
+      expect(processor.syncNotionJob()).rejects.toThrowError(
         'Notion API error',
       );
     });
@@ -212,7 +213,7 @@ describe('NotionAPIProcessor', () => {
         .mockImplementationOnce(() => undefined)
         .mockImplementationOnce(() => undefined);
 
-      await notionQueriesProcessor.syncNotionJob();
+      await processor.syncNotionJob();
 
       expect(notionApiService.getPagesMetadata).toBeCalled();
       expect(contentService.getContent).toBeCalled();
@@ -247,7 +248,7 @@ describe('NotionAPIProcessor', () => {
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
 
-      await notionQueriesProcessor.syncNotionJob();
+      await processor.syncNotionJob();
 
       expect(contentQueue.add).toBeCalledWith(JOBS.CREATE_CONTENT, {
         blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
@@ -255,11 +256,13 @@ describe('NotionAPIProcessor', () => {
         type: 'exercise',
         title: 'Title Two',
       });
+
+      const fetchNotionBlockJob: FetchNotionBlockJob = {
+        blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
+      };
       expect(apiQueue.add).toBeCalledWith(
         JOBS.FETCH_NOTION_BLOCK,
-        {
-          blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-        },
+        fetchNotionBlockJob,
         JOBS.OPTIONS.RETRIED,
       );
     });
@@ -285,7 +288,7 @@ describe('NotionAPIProcessor', () => {
       contentQueue.add = jest.fn();
       blocksQueue.add = jest.fn();
 
-      await notionQueriesProcessor.syncNotionJob();
+      await processor.syncNotionJob();
 
       expect(contentQueue.add).toBeCalledWith(JOBS.DELETE_CONTENT, {
         blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
@@ -321,7 +324,7 @@ describe('NotionAPIProcessor', () => {
       contentQueue.add = jest.fn();
       apiQueue.add = jest.fn();
 
-      await notionQueriesProcessor.syncNotionJob();
+      await processor.syncNotionJob();
 
       expect(contentQueue.add).toBeCalledWith(JOBS.UPDATE_CONTENT, {
         id: 1,
