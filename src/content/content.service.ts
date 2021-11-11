@@ -36,24 +36,24 @@ export class ContentService {
 
   public async aggregateContentBlocks(blockID: string): Promise<void> {
     const content = await this.getContentByBlockID(blockID);
+    content.blocks = await this.getChildrenBlocks(blockID);
 
-    const getChildrenBlocks = async (blockID: string): Promise<string> => {
-      const { childrenBlocks } = await this.blocksRepository.findOneOrFail({
-        blockID,
-      });
-
-      const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
-
-      for (const block of parsedBlocks) {
-        if (isBlock(block) && block.has_children) {
-          block.children = JSON.parse(await getChildrenBlocks(block.id));
-        }
-      }
-
-      return JSON.stringify(parsedBlocks);
-    };
-
-    content.blocks = await getChildrenBlocks(blockID);
     await this.updateContent(content);
+  }
+
+  public async getChildrenBlocks(blockID: string): Promise<string> {
+    const { childrenBlocks } = await this.blocksRepository.findOneOrFail({
+      blockID,
+    });
+
+    const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
+
+    for (const block of parsedBlocks) {
+      if (isBlock(block) && block.has_children) {
+        block.children = JSON.parse(await this.getChildrenBlocks(block.id));
+      }
+    }
+
+    return JSON.stringify(parsedBlocks);
   }
 }
