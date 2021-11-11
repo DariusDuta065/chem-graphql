@@ -7,11 +7,9 @@ import { JOBS } from '../../shared/jobs';
 import { QUEUES } from '../../shared/queues';
 
 import { NotionBlockService } from '../services';
-import {
-  CheckBlockFetchStatus,
-  UpdateNotionBlockJob,
-} from '../../shared/jobs/block';
-import { AggregateContentBlocksJob } from 'src/shared/jobs/content';
+import { CheckBlockFetchStatus, UpdateNotionBlockJob } from '../../shared/jobs';
+import { AggregateContentBlocksJob } from 'src/shared/jobs';
+import { NotionBlock } from '../notion-block.entity';
 
 @Processor(QUEUES.NOTION_BLOCKS)
 export class NotionBlockProcessor {
@@ -26,16 +24,14 @@ export class NotionBlockProcessor {
 
   @Process(JOBS.UPDATE_NOTION_BLOCK)
   public updateNotionBlockJob({ data }: Job<UpdateNotionBlockJob>): void {
-    this.notionBlockService.upsertBlock({
+    const blockData: NotionBlock = {
       blockID: data.blockID,
-      isUpdating: data.isUpdating ?? false,
-      childrenBlocks: data.childrenBlocks
-        ? JSON.stringify(data.childrenBlocks)
-        : '',
-      lastEditedAt: data.lastEditedAt
-        ? new Date(data.lastEditedAt)
-        : new Date(),
-    });
+      lastEditedAt: new Date(data.lastEditedAt),
+      isUpdating: data.isUpdating,
+      childrenBlocks: JSON.stringify(data.childrenBlocks),
+    };
+
+    this.notionBlockService.upsertBlock(blockData);
   }
 
   @Process(JOBS.CHECK_BLOCK_FETCH_STATUS)
