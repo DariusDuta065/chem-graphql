@@ -31,9 +31,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(CronExpression.EVERY_MINUTE, {
-    name: JOBS.SYNC_NOTION,
-  })
+  @Cron(CronExpression.EVERY_MINUTE)
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
@@ -60,23 +58,41 @@ export class NotionAPIService {
   }
 
   /**
-   * Paginates over all the parent blocks, and returns them
-   * along with all blocks that have further children.
+   * Returns information about a particular block.
+   *
+   * @param blockID
+   * @returns {Promise<Block>}
+   */
+  public async getBlockMetadata(blockID: string): Promise<Block> {
+    const data = await this.getClient().blocks.retrieve({
+      block_id: blockID,
+    });
+
+    return {
+      id: data.id,
+      type: data.type,
+      object: data.object,
+      has_children: data.has_children,
+      created_time: data.created_time,
+      last_edited_time: data.last_edited_time,
+    };
+  }
+
+  /**
+   * Paginates over all the children blocks of 'blockID',
+   * and returns them, along with all blocks that have
+   * further children.
+   *
+   * The block IDs within parentBlocks[] will later on be
+   * recursively resolved, see JOBS.UPDATE_NOTION_BLOCK.
    *
    * @param blockID - pageID, since a page is a block)
-   * @returns {Promise} - all children blocks for blockID,
-   * and all the ones that have further children in 'parentBlocks'
+   * @returns {Promise}
    */
-  public async getBlocksFromNotion(blockID: string): Promise<{
-    lastEditedAt: string;
+  public async getChildrenBlocks(blockID: string): Promise<{
     childrenBlocks: Block[];
     parentBlocks: string[];
   }> {
-    const { last_edited_time: lastEditedAt } =
-      await this.getClient().blocks.retrieve({
-        block_id: blockID,
-      });
-
     const childrenBlocks: Block[] = [];
     let start_cursor: string | undefined = undefined;
 
@@ -99,7 +115,7 @@ export class NotionAPIService {
       .filter((block) => block.has_children && isBlock(block))
       .map((block) => block.id);
 
-    return { lastEditedAt, childrenBlocks, parentBlocks };
+    return { childrenBlocks, parentBlocks };
   }
 
   public getConfig(): NotionConfig {

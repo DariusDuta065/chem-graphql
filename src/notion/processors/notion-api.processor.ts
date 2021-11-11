@@ -79,8 +79,16 @@ export class NotionAPIProcessor {
       };
       this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, updateNotionBlockJob);
 
-      const { lastEditedAt, childrenBlocks, parentBlocks } =
-        await this.notionApiService.getBlocksFromNotion(blockID);
+      const { last_edited_time } = await this.notionApiService.getBlockMetadata(
+        blockID,
+      );
+      const lastEditedAt: string =
+        last_edited_time instanceof Date
+          ? last_edited_time.toISOString()
+          : last_edited_time;
+
+      const { childrenBlocks, parentBlocks } =
+        await this.notionApiService.getChildrenBlocks(blockID);
 
       updateNotionBlockJob = {
         blockID,
