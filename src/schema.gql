@@ -2,16 +2,38 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateGroupInput {
+  grade: Float!
+  notes: String = null
+  scheduleDay: Float!
+  scheduleHour: Float!
+  scheduleMinute: Float!
+}
+
+type Group {
+  grade: Float!
+  id: Float!
+  notes: String
+  scheduleDay: Float!
+  scheduleHour: Float!
+  scheduleMinute: Float!
+}
+
 type Mutation {
+  createGroup(createGroupInput: CreateGroupInput!): Group!
+  deleteGroup(groupId: Float!): Boolean!
   login(password: String!, username: String!): TokenOutput!
   logout(refreshToken: String!): String!
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   resetPassword(userID: Int!): User!
+  updateGroup(updateGroupInput: UpdateGroupInput!): Group!
 }
 
 type Query {
   adminRoute: String!
+  group(groupId: Float!): Group
+  groups: [Group!]!
   profile: UserData!
   publicRoute: String!
   userRoute: String!
@@ -21,6 +43,15 @@ type TokenOutput {
   accesstoken: String!
   refreshToken: String
   userData: UserData
+}
+
+input UpdateGroupInput {
+  grade: Float!
+  id: Float!
+  notes: String = null
+  scheduleDay: Float!
+  scheduleHour: Float!
+  scheduleMinute: Float!
 }
 
 type User {

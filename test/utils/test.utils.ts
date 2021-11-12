@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
-import { getConnection, getRepository } from 'typeorm';
+import { getConnection, getRepository, Repository } from 'typeorm';
 
 @Injectable()
 export class TestUtils {
@@ -10,17 +10,17 @@ export class TestUtils {
     }
   }
 
-  static hashPassword(password: string): string {
+  public static hashPassword(password: string): string {
     return bcrypt.hashSync(password, 10);
   }
 
-  static isJwt(jwt: string): boolean {
+  public static isJwt(jwt: string): boolean {
     const regxp = /(^[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*$)/;
 
     return regxp.test(jwt);
   }
 
-  getEntities(): EntityData[] {
+  public getEntities(): EntityData[] {
     const connection = getConnection();
 
     if (!connection || !connection.isConnected) {
@@ -39,21 +39,21 @@ export class TestUtils {
     return entities;
   }
 
-  async cleanAll(entities?: EntityData[]) {
+  public async cleanAll(entities?: EntityData[]): Promise<void> {
     try {
       if (!entities) {
         entities = this.getEntities();
       }
       for (const entity of entities) {
         const repository = getRepository(entity.name);
-        await repository.query(`DELETE FROM ${entity.tableName}`);
+        await repository.query(`DELETE FROM \`${entity.tableName}\``);
       }
     } catch (error) {
       throw new Error(`Error cleaning test DB ${error}`);
     }
   }
 
-  async load<T>(entities: T[] | T, entityName: string) {
+  public async load<T>(entities: T[] | T, entityName: string): Promise<void> {
     try {
       const repo = this.getRepository(entityName);
 
@@ -67,7 +67,7 @@ export class TestUtils {
     }
   }
 
-  private getRepository(entityName: string) {
+  private getRepository(entityName: string): Repository<any> {
     try {
       return getRepository(entityName.toLowerCase());
     } catch (error) {
@@ -77,6 +77,6 @@ export class TestUtils {
 }
 
 class EntityData {
-  name: string;
-  tableName: string;
+  public name: string;
+  public tableName: string;
 }

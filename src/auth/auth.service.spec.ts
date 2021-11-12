@@ -24,21 +24,15 @@ describe('AuthService', () => {
       providers: [
         {
           provide: UsersService,
-          useFactory: () => {
-            return {};
-          },
+          useValue: {},
         },
         {
           provide: JwtService,
-          useFactory: () => {
-            return {};
-          },
+          useValue: {},
         },
         {
           provide: CACHE_MANAGER,
-          useFactory: () => {
-            return {};
-          },
+          useValue: {},
         },
         AuthService,
       ],
@@ -195,22 +189,51 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('should call users service to register a new user', async () => {
-      const userRegisterInput = {
+    it(`should call users service to register a new user`, async () => {
+      const userRegisterInput: UserRegisterInput = {
         email: 'email@test.com',
+        password: 'user password',
         firstName: 'first',
         lastName: 'last',
         role: Role.User,
-      } as UserRegisterInput;
+      };
 
-      const userData = {
+      const userData: User = {
         userId: 1,
         email: 'email@test.com',
         firstName: 'first',
         lastName: 'last',
         role: Role.User,
         password: 'password',
-      } as User;
+      };
+
+      usersService.registerUser = jest.fn(async () => userData);
+      const res = await authService.register(userRegisterInput);
+
+      expect(res).toStrictEqual(userData);
+      expect(usersService.registerUser).toBeCalledWith(
+        userRegisterInput,
+        'user password',
+        expect.any(String),
+      );
+    });
+
+    it(`should generate a password if one isn't provided`, async () => {
+      const userRegisterInput: UserRegisterInput = {
+        email: 'email@test.com',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+      };
+
+      const userData: User = {
+        userId: 1,
+        email: 'email@test.com',
+        firstName: 'first',
+        lastName: 'last',
+        role: Role.User,
+        password: 'generated password',
+      };
 
       usersService.registerUser = jest.fn(async () => userData);
       const res = await authService.register(userRegisterInput);

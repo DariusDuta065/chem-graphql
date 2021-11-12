@@ -27,7 +27,7 @@ export class AuthService {
    * @param password
    * @returns {Promise}
    */
-  async validateUser(
+  public async validateUser(
     username: string,
     password: string,
   ): Promise<UserData | null> {
@@ -49,7 +49,7 @@ export class AuthService {
    * @throws {Error}
    * @returns JWT token
    */
-  async login(
+  public async login(
     user: UserData,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const tokens = {
@@ -67,7 +67,7 @@ export class AuthService {
    * @param {string} refreshToken
    * @throws {Error}
    */
-  async logout(refreshToken: string) {
+  public async logout(refreshToken: string): Promise<void> {
     const userID = await this.cacheManager.get<number>(refreshToken);
 
     if (!userID) {
@@ -85,7 +85,7 @@ export class AuthService {
    * @returns {Promise<User|undefined>}
    * @throws {Error}
    */
-  async register(
+  public async register(
     userRegisterInput: UserRegisterInput,
   ): Promise<User | undefined> {
     const cleartextPass = userRegisterInput.password ?? this.generatePassword();
@@ -106,7 +106,7 @@ export class AuthService {
    * @returns {User}
    * @throws {Error}
    */
-  async resetPassword(userID: number): Promise<User> {
+  public async resetPassword(userID: number): Promise<User> {
     const cleartextPass = this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 
@@ -130,7 +130,7 @@ export class AuthService {
    * @return {Promise} - the 2 new tokens
    * @throws {Error}
    */
-  async refreshTokens(refreshToken: string): Promise<{
+  public async refreshTokens(refreshToken: string): Promise<{
     accessToken: string;
     refreshToken: string;
   }> {
@@ -153,7 +153,7 @@ export class AuthService {
     return await this.login(UserData.fromUser(user));
   }
 
-  async fetchUserInfo(token: TokenOutput) {
+  public async fetchUserInfo(token: TokenOutput): Promise<UserData> {
     const userId = this.decodeUserID(token.accesstoken);
     const user = await this.usersService.findOneByID(userId);
 
@@ -173,14 +173,14 @@ export class AuthService {
     return bcrypt.compareSync(password, hashedPassword);
   }
 
-  private generateAccessToken(user: UserData) {
+  private generateAccessToken(user: UserData): string {
     return this.jwtService.sign(
       { sub: user.id, ...user },
       { expiresIn: '15m' },
     );
   }
 
-  private generateRefreshToken(user: UserData) {
+  private generateRefreshToken(user: UserData): string {
     return this.encodeRefreshToken(
       this.jwtService.sign({ sub: user.id }, { expiresIn: '30d' }),
     );
@@ -227,13 +227,16 @@ export class AuthService {
     return userID;
   }
 
-  private async saveRefreshToken(refreshToken: string, userID: number) {
+  private async saveRefreshToken(
+    refreshToken: string,
+    userID: number,
+  ): Promise<void> {
     await this.cacheManager.set(refreshToken, userID, {
       ttl: 30 * 24 * 60 * 60, // 30 days
     });
   }
 
-  private async deleteRefreshToken(refreshToken: string) {
+  private async deleteRefreshToken(refreshToken: string): Promise<void> {
     await this.cacheManager.del(refreshToken);
   }
 
@@ -262,7 +265,7 @@ export class AuthService {
   private generatePassword(
     length = 8,
     wishlist = '0123456789abcdefghijklmnopqrstuvwxyz',
-  ) {
+  ): string {
     return Array.from(crypto.randomFillSync(new Uint32Array(length)))
       .map((x) => wishlist[x % wishlist.length])
       .join('');

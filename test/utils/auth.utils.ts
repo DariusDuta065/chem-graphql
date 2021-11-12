@@ -25,7 +25,7 @@ export class AuthUtils {
    * @param userData
    * @returns pair of tokens & user
    */
-  async getTokens(userData?: {
+  public async getTokens(userData?: {
     userId?: number;
     email?: string;
     password?: string;
@@ -63,14 +63,14 @@ export class AuthUtils {
     };
   }
 
-  async createUser(user?: {
+  public async createUser(user?: {
     userId?: number;
     email?: string;
     password?: string;
     firstName?: string;
     lastName?: string;
     role?: Role;
-  }) {
+  }): Promise<User> {
     const registerInput: UserRegisterInput = {
       email: user?.email ?? faker.internet.email(),
       firstName: user?.firstName ?? faker.name.firstName(),
