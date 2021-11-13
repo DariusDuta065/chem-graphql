@@ -1,5 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { User } from '../user/user.entity';
 
 @Entity()
 @ObjectType()
@@ -27,4 +29,7 @@ export class Group {
   @Field()
   @Column({ type: 'tinyint' })
   public scheduleMinute: number;
+
+  @OneToMany(() => User, (user) => user.group, { nullable: true })
+  public users?: User[];
 }
