@@ -3,16 +3,16 @@ import { CommandModule } from 'nestjs-command';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../../auth/auth.module';
-import { UsersModule } from '../../users/users.module';
+import { UserModule } from '../../user/user.module';
 
-import { User } from '../../users/user.entity';
+import { User } from '../../user/user.entity';
 
 import { SeedDBCommand } from './seed.command';
 import { SeedDBService } from './seed.service';
 
 @Module({
   imports: [
-    UsersModule,
+    UserModule,
     AuthModule,
     CommandModule,
     TypeOrmModule.forFeature([User]),

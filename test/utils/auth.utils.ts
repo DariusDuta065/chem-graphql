@@ -1,16 +1,16 @@
 import * as faker from 'faker';
 import { Injectable } from '@nestjs/common';
 
-import { User } from '../../src/users/user.entity';
+import { User } from '../../src/user/user.entity';
 import { Role } from '../../src/auth/enums/role.enum';
 import { AuthService } from '../../src/auth/auth.service';
-import { UsersService } from '../../src/users/users.service';
+import { UserService } from '../../src/user/user.service';
 import { UserRegisterInput } from '../../src/auth/dto/user-register.input';
 
 @Injectable()
 export class AuthUtils {
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private authService: AuthService,
   ) {
     if (process.env.NODE_ENV !== 'test') {
@@ -40,7 +40,7 @@ export class AuthUtils {
     if (!userID) {
       user = await this.createUser(userData);
     } else {
-      const existingUser = await this.usersService.findOneByID(userID);
+      const existingUser = await this.userService.findOneByID(userID);
 
       if (!existingUser) {
         user = await this.createUser(userData);

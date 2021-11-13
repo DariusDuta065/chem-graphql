@@ -7,16 +7,16 @@ import { Role } from '../auth/enums/role.enum';
 import { UserRegisterInput } from '../auth/dto/user-register.input';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  public async findOneByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ email });
   }
 
-  async findOneByID(userId: number | string): Promise<User | undefined> {
+  public async findOneByID(userId: number | string): Promise<User | undefined> {
     return this.usersRepository.findOne({ userId: Number(userId) });
   }
 
@@ -30,7 +30,7 @@ export class UsersService {
    * @returns {User}
    * @throws {Error}
    */
-  async registerUser(
+  public async registerUser(
     input: UserRegisterInput,
     cleartextPass: string,
     hashedPass: string,
@@ -60,7 +60,10 @@ export class UsersService {
    * @returns {User}
    * @throws {EntityNotFoundError}
    */
-  async updateUserPassword(userID: number, password: string): Promise<User> {
+  public async updateUserPassword(
+    userID: number,
+    password: string,
+  ): Promise<User> {
     const user = await this.usersRepository.findOneOrFail(userID);
     user.password = password;
 

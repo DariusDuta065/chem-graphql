@@ -6,15 +6,15 @@ import { INestApplication } from '@nestjs/common';
 import { TestUtils } from './utils/test.utils';
 import { AuthUtils } from './utils/auth.utils';
 
-import { User } from '../src/users/user.entity';
+import { User } from '../src/user/user.entity';
 import { AppModule } from '../src/app/app.module';
 import { configureApp } from '../src/app/app.main';
 import { Role } from '../src/auth/enums/role.enum';
 import { AuthModule } from '../src/auth/auth.module';
 import { GroupModule } from '../src/group/group.module';
-import { UsersModule } from '../src/users/users.module';
+import { UserModule } from '../src/user/user.module';
 import { TokenOutput } from '../src/auth/dto/token.output';
-import { UserData } from '../src/users/dto/userData.output';
+import { UserData } from '../src/user/dto/user-data.output';
 import { NotionAPIProcessor } from '../src/notion/processors';
 
 import queries from './graphql/queries';
@@ -28,7 +28,7 @@ describe('AuthResolver (e2e)', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [AppModule, UsersModule, AuthModule, GroupModule],
+      imports: [AppModule, UserModule, AuthModule, GroupModule],
       providers: [TestUtils, AuthUtils],
     })
       .overrideProvider(NotionAPIProcessor)
@@ -117,329 +117,329 @@ describe('AuthResolver (e2e)', () => {
     });
   });
 
-  // describe('logout', () => {
-  //   it(`logouts auth'ed user`, async () => {
-  //     const { refreshToken } = await authUtils.getTokens();
+  describe('logout', () => {
+    it(`logouts auth'ed user`, async () => {
+      const { refreshToken } = await authUtils.getTokens();
 
-  //     const logoutData = {
-  //       logoutRefreshToken: refreshToken,
-  //     };
+      const logoutData = {
+        logoutRefreshToken: refreshToken,
+      };
 
-  //     const res = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...mutations.logout,
-  //         variables: logoutData,
-  //       });
+      const res = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...mutations.logout,
+          variables: logoutData,
+        });
 
-  //     expect(res.body.data).toBeDefined();
-  //     expect(res.body.data.logout).toBe('ok');
-  //   });
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.logout).toBe('ok');
+    });
 
-  //   it(`returns unauthorized if session token is invalid`, async () => {
-  //     const logoutData = {
-  //       logoutRefreshToken: 'refreshToken',
-  //     };
+    it(`returns unauthorized if session token is invalid`, async () => {
+      const logoutData = {
+        logoutRefreshToken: 'refreshToken',
+      };
 
-  //     const res = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...mutations.logout,
-  //         variables: logoutData,
-  //       });
+      const res = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...mutations.logout,
+          variables: logoutData,
+        });
 
-  //     expect(res.body.data).toBeNull();
-  //     expect(res.body.errors).toBeDefined();
-  //     expect(res.body.errors[0].message).toBe('Unauthorized');
-  //   });
-  // });
+      expect(res.body.data).toBeNull();
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.errors[0].message).toBe('Unauthorized');
+    });
+  });
 
-  // describe('refreshToken', () => {
-  //   it(`returns a new pair of tokens for auth'ed user`, async () => {
-  //     const { refreshToken, user } = await authUtils.getTokens();
+  describe('refreshToken', () => {
+    it(`returns a new pair of tokens for auth'ed user`, async () => {
+      const { refreshToken, user } = await authUtils.getTokens();
 
-  //     const refreshData = {
-  //       refreshToken,
-  //     };
+      const refreshData = {
+        refreshToken,
+      };
 
-  //     const res = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...mutations.refreshToken,
-  //         variables: refreshData,
-  //       });
+      const res = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...mutations.refreshToken,
+          variables: refreshData,
+        });
 
-  //     const tokenOutput: TokenOutput = res.body.data.refreshToken;
+      const tokenOutput: TokenOutput = res.body.data.refreshToken;
 
-  //     expect(TestUtils.isJwt(tokenOutput.accesstoken)).toBeTruthy();
-  //     expect(tokenOutput.refreshToken).toEqual(expect.any(String));
-  //     expect(tokenOutput.userData).toStrictEqual({
-  //       id: user.userId,
-  //       email: user.email,
-  //       firstName: user.firstName,
-  //       lastName: user.lastName,
-  //       role: user.role,
-  //     } as UserData);
-  //   });
-  // });
+      expect(TestUtils.isJwt(tokenOutput.accesstoken)).toBeTruthy();
+      expect(tokenOutput.refreshToken).toEqual(expect.any(String));
+      expect(tokenOutput.userData).toStrictEqual({
+        id: user.userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      } as UserData);
+    });
+  });
 
-  // describe('register', () => {
-  //   it(`allows admins to create new users & returns their cleartext password`, async () => {
-  //     const { accessToken } = await authUtils.getTokens({
-  //       role: Role.Admin,
-  //     });
+  describe('register', () => {
+    it(`allows admins to create new users & returns their cleartext password`, async () => {
+      const { accessToken } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
 
-  //     const userRegisterInput = {
-  //       email: 'testemail@test.com',
-  //       firstName: 'first name',
-  //       lastName: 'last name',
-  //     };
+      const userRegisterInput = {
+        email: 'testemail@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+      };
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...mutations.register,
-  //         variables: {
-  //           userRegisterInput,
-  //         },
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...mutations.register,
+          variables: {
+            userRegisterInput,
+          },
+        });
 
-  //     const { password, userId, ...rest } = body.data.register;
-  //     expect(password).toEqual(expect.any(String));
-  //     expect(userId).toEqual(expect.any(Number));
+      const { password, userId, ...rest } = body.data.register;
+      expect(password).toEqual(expect.any(String));
+      expect(userId).toEqual(expect.any(Number));
 
-  //     expect(rest).toStrictEqual({
-  //       email: userRegisterInput.email,
-  //       firstName: userRegisterInput.firstName,
-  //       lastName: userRegisterInput.lastName,
-  //       role: 'User',
-  //     });
-  //   });
+      expect(rest).toStrictEqual({
+        email: userRegisterInput.email,
+        firstName: userRegisterInput.firstName,
+        lastName: userRegisterInput.lastName,
+        role: 'User',
+      });
+    });
 
-  //   it(`blocks regular users from registering users`, async () => {
-  //     const { accessToken } = await authUtils.getTokens({
-  //       role: Role.User,
-  //     });
+    it(`blocks regular users from registering users`, async () => {
+      const { accessToken } = await authUtils.getTokens({
+        role: Role.User,
+      });
 
-  //     const userRegisterInput = {
-  //       email: 'testemail@test.com',
-  //       firstName: 'first name',
-  //       lastName: 'last name',
-  //     };
+      const userRegisterInput = {
+        email: 'testemail@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+      };
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...mutations.register,
-  //         variables: {
-  //           userRegisterInput,
-  //         },
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...mutations.register,
+          variables: {
+            userRegisterInput,
+          },
+        });
 
-  //     expect(body.data).toBeNull();
-  //     expect(body.errors).toBeDefined();
-  //     expect(body.errors[0].message).toBe('Unauthorized');
-  //   });
-  // });
+      expect(body.data).toBeNull();
+      expect(body.errors).toBeDefined();
+      expect(body.errors[0].message).toBe('Unauthorized');
+    });
+  });
 
-  // describe('resetPassword', () => {
-  //   it(`allows admins to reset user's password & returns the new cleartext password`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.Admin,
-  //     });
-  //     const oldPassword = user.password;
+  describe('resetPassword', () => {
+    it(`allows admins to reset user's password & returns the new cleartext password`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
+      const oldPassword = user.password;
 
-  //     const variables = {
-  //       userID: user.userId,
-  //     };
+      const variables = {
+        userID: user.userId,
+      };
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...mutations.resetPassword,
-  //         variables,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...mutations.resetPassword,
+          variables,
+        });
 
-  //     const { password: newPassword } = body.data.resetPassword;
-  //     expect(newPassword).toEqual(expect.any(String));
-  //     expect(newPassword).not.toEqual(oldPassword);
-  //   });
-  // });
+      const { password: newPassword } = body.data.resetPassword;
+      expect(newPassword).toEqual(expect.any(String));
+      expect(newPassword).not.toEqual(oldPassword);
+    });
+  });
 
-  // describe('profile', () => {
-  //   it(`returns user data of auth'ed user`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens();
+  describe('profile', () => {
+    it(`returns user data of auth'ed user`, async () => {
+      const { accessToken, user } = await authUtils.getTokens();
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.profile,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.profile,
+        });
 
-  //     expect(body.data.profile).toStrictEqual({
-  //       id: user.userId,
-  //       email: user.email,
-  //       firstName: user.firstName,
-  //       lastName: user.lastName,
-  //       role: user.role,
-  //     });
-  //   });
+      expect(body.data.profile).toStrictEqual({
+        id: user.userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      });
+    });
 
-  //   it(`returns unauthorized if session token is invalid`, async () => {
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer invalid-token`)
-  //       .send({
-  //         ...queries.profile,
-  //       });
+    it(`returns unauthorized if session token is invalid`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer invalid-token`)
+        .send({
+          ...queries.profile,
+        });
 
-  //     expect(body.data).toBeNull();
-  //     expect(body.errors[0].message).toBe('Unauthorized');
-  //   });
-  // });
+      expect(body.data).toBeNull();
+      expect(body.errors[0].message).toBe('Unauthorized');
+    });
+  });
 
-  // describe('adminRoute', () => {
-  //   it(`allows admins`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.Admin,
-  //     });
+  describe('adminRoute', () => {
+    it(`allows admins`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.adminRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.adminRoute,
+        });
 
-  //     expect(user.role).toBe(Role.Admin);
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.adminRoute).toBe('admin');
-  //   });
+      expect(user.role).toBe(Role.Admin);
+      expect(body.errors).toBeUndefined();
+      expect(body.data.adminRoute).toBe('admin');
+    });
 
-  //   it(`denies users`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.User,
-  //     });
+    it(`denies users`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.User,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.adminRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.adminRoute,
+        });
 
-  //     expect(user.role).toBe(Role.User);
-  //     expect(body.data).toBeNull();
-  //     expect(body.errors[0].message).toBe('Unauthorized');
-  //   });
+      expect(user.role).toBe(Role.User);
+      expect(body.data).toBeNull();
+      expect(body.errors[0].message).toBe('Unauthorized');
+    });
 
-  //   it(`denies unauthenticated requests`, async () => {
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...queries.adminRoute,
-  //       });
+    it(`denies unauthenticated requests`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...queries.adminRoute,
+        });
 
-  //     expect(body.data).toBeNull();
-  //     expect(body.errors[0].message).toBe('Unauthorized');
-  //   });
-  // });
+      expect(body.data).toBeNull();
+      expect(body.errors[0].message).toBe('Unauthorized');
+    });
+  });
 
-  // describe('userRoute', () => {
-  //   it(`allows admins`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.Admin,
-  //     });
+  describe('userRoute', () => {
+    it(`allows admins`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.userRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.userRoute,
+        });
 
-  //     expect(user.role).toBe(Role.Admin);
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.userRoute).toBe('user');
-  //   });
+      expect(user.role).toBe(Role.Admin);
+      expect(body.errors).toBeUndefined();
+      expect(body.data.userRoute).toBe('user');
+    });
 
-  //   it(`allows users`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.User,
-  //     });
+    it(`allows users`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.User,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.userRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.userRoute,
+        });
 
-  //     expect(user.role).toBe(Role.User);
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.userRoute).toBe('user');
-  //   });
+      expect(user.role).toBe(Role.User);
+      expect(body.errors).toBeUndefined();
+      expect(body.data.userRoute).toBe('user');
+    });
 
-  //   it(`denies unauthenticated requests`, async () => {
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...queries.adminRoute,
-  //       });
+    it(`denies unauthenticated requests`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...queries.adminRoute,
+        });
 
-  //     expect(body.data).toBeNull();
-  //     expect(body.errors[0].message).toBe('Unauthorized');
-  //   });
-  // });
+      expect(body.data).toBeNull();
+      expect(body.errors[0].message).toBe('Unauthorized');
+    });
+  });
 
-  // describe('publicRoute', () => {
-  //   it(`allows admins`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.Admin,
-  //     });
+  describe('publicRoute', () => {
+    it(`allows admins`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.Admin,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.publicRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.publicRoute,
+        });
 
-  //     expect(user.role).toBe(Role.Admin);
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.publicRoute).toBe('public');
-  //   });
+      expect(user.role).toBe(Role.Admin);
+      expect(body.errors).toBeUndefined();
+      expect(body.data.publicRoute).toBe('public');
+    });
 
-  //   it(`allows  users`, async () => {
-  //     const { accessToken, user } = await authUtils.getTokens({
-  //       role: Role.User,
-  //     });
+    it(`allows  users`, async () => {
+      const { accessToken, user } = await authUtils.getTokens({
+        role: Role.User,
+      });
 
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .send({
-  //         ...queries.publicRoute,
-  //       });
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          ...queries.publicRoute,
+        });
 
-  //     expect(user.role).toBe(Role.User);
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.publicRoute).toBe('public');
-  //   });
+      expect(user.role).toBe(Role.User);
+      expect(body.errors).toBeUndefined();
+      expect(body.data.publicRoute).toBe('public');
+    });
 
-  //   it(`allows unauthenticated requests`, async () => {
-  //     const { body } = await request(app.getHttpServer())
-  //       .post('/graphql')
-  //       .send({
-  //         ...queries.publicRoute,
-  //       });
+    it(`allows unauthenticated requests`, async () => {
+      const { body } = await request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          ...queries.publicRoute,
+        });
 
-  //     expect(body.errors).toBeUndefined();
-  //     expect(body.data.publicRoute).toBe('public');
-  //   });
-  // });
+      expect(body.errors).toBeUndefined();
+      expect(body.data.publicRoute).toBe('public');
+    });
+  });
 });

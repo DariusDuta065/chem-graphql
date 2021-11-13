@@ -1,7 +1,7 @@
 import { ArgumentsHost, Logger, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError, TypeORMError } from 'typeorm';
 
-import { User } from '../../users/user.entity';
+import { User } from '../../user/user.entity';
 import { TypeORMExceptionFilter } from './typeorm-filter';
 
 describe('TypeORMExceptionFilter', () => {

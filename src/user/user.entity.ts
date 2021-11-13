@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
+import { Group } from '../group/group.entity';
 import { Role } from '../auth/enums/role.enum';
 
 registerEnumType(Role, {
@@ -40,4 +41,7 @@ export class User {
   })
   @Field(() => Role)
   public role: Role;
+
+  @ManyToOne(() => Group, (group) => group.users, { nullable: true })
+  public group?: Group;
 }

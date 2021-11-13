@@ -5,17 +5,17 @@ import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Role } from './enums/role.enum';
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 import { AuthService } from './auth.service';
 import { TokenOutput } from './dto/token.output';
-import { UsersService } from '../users/users.service';
-import { UserData } from '../users/dto/userData.output';
+import { UserService } from '../user/user.service';
+import { UserData } from '../user/dto/user-data.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 describe('AuthService', () => {
   let module: TestingModule;
   let authService: AuthService;
-  let usersService: UsersService;
+  let userService: UserService;
   let jwtService: JwtService;
   let cacheManager: Cache;
 
@@ -23,7 +23,7 @@ describe('AuthService', () => {
     module = await Test.createTestingModule({
       providers: [
         {
-          provide: UsersService,
+          provide: UserService,
           useValue: {},
         },
         {
@@ -40,7 +40,7 @@ describe('AuthService', () => {
     module.useLogger(false);
 
     authService = module.get<AuthService>(AuthService);
-    usersService = module.get<UsersService>(UsersService);
+    userService = module.get<UserService>(UserService);
     jwtService = module.get<JwtService>(JwtService);
     cacheManager = await module.resolve<Cache>(CACHE_MANAGER);
   });
@@ -65,16 +65,16 @@ describe('AuthService', () => {
           '$2b$10$lBOAfXRo/D/82DrNP2ZgG.8fU5z1BBsSZKJ5Yt.ekSmxoA7yEJsl2', // 'password'
       } as User;
 
-      usersService.findOneByEmail = jest.fn(async () => user);
+      userService.findOneByEmail = jest.fn(async () => user);
 
       const res = await authService.validateUser(user.email, 'password');
 
-      expect(usersService.findOneByEmail).toBeCalledWith(user.email);
+      expect(userService.findOneByEmail).toBeCalledWith(user.email);
       expect(res).toStrictEqual(UserData.fromUser(user));
     });
 
     it(`should return null if user does not exist`, async () => {
-      usersService.findOneByEmail = jest.fn(async () => undefined);
+      userService.findOneByEmail = jest.fn(async () => undefined);
 
       const res = await authService.validateUser('email@email.com', 'password');
       expect(res).toStrictEqual(null);
@@ -91,7 +91,7 @@ describe('AuthService', () => {
           '$2b$10$lBOAfXRo/D/82DrNP2ZgG.8fU5z1BBsSZKJ5Yt.ekSmxoA7yEJsl2', // 'password'
       } as User;
 
-      usersService.findOneByEmail = jest.fn(async () => user);
+      userService.findOneByEmail = jest.fn(async () => user);
 
       const res = await authService.validateUser(
         'email@email.com',
@@ -207,11 +207,11 @@ describe('AuthService', () => {
         password: 'password',
       };
 
-      usersService.registerUser = jest.fn(async () => userData);
+      userService.registerUser = jest.fn(async () => userData);
       const res = await authService.register(userRegisterInput);
 
       expect(res).toStrictEqual(userData);
-      expect(usersService.registerUser).toBeCalledWith(
+      expect(userService.registerUser).toBeCalledWith(
         userRegisterInput,
         'user password',
         expect.any(String),
@@ -235,11 +235,11 @@ describe('AuthService', () => {
         password: 'generated password',
       };
 
-      usersService.registerUser = jest.fn(async () => userData);
+      userService.registerUser = jest.fn(async () => userData);
       const res = await authService.register(userRegisterInput);
 
       expect(res).toStrictEqual(userData);
-      expect(usersService.registerUser).toBeCalledWith(
+      expect(userService.registerUser).toBeCalledWith(
         userRegisterInput,
         expect.any(String),
         expect.any(String),
@@ -265,14 +265,14 @@ describe('AuthService', () => {
         password: 'old password',
       } as User;
 
-      usersService.updateUserPassword = jest.fn(async () => ({
+      userService.updateUserPassword = jest.fn(async () => ({
         ...user,
       }));
 
       const res = await authService.resetPassword(user.userId);
 
       expect(res.password).toBe('cleartext new password');
-      expect(usersService.updateUserPassword).toBeCalledWith(
+      expect(userService.updateUserPassword).toBeCalledWith(
         user.userId,
         'hashed new password',
       );
@@ -289,7 +289,7 @@ describe('AuthService', () => {
         role: Role.User,
       });
 
-      usersService.findOneByID = jest
+      userService.findOneByID = jest
         .fn()
         .mockReturnValueOnce({ userId: userData.id, ...userData });
 
@@ -303,7 +303,7 @@ describe('AuthService', () => {
 
       const res = await authService.refreshTokens('old refreshToken');
 
-      expect(usersService.findOneByID).toBeCalledWith(userData.id);
+      expect(userService.findOneByID).toBeCalledWith(userData.id);
       expect(authService.login).toBeCalledWith(userData);
 
       expect(res.accessToken).toBe('new accessToken');
@@ -349,7 +349,7 @@ describe('AuthService', () => {
     it('should throw an error if user does not exist in DB', async () => {
       jwtService.decode = jest.fn().mockReturnValue({ sub: 1 });
       cacheManager.get = jest.fn().mockReturnValue(1);
-      usersService.findOneByID = jest.fn().mockReturnValue(undefined);
+      userService.findOneByID = jest.fn().mockReturnValue(undefined);
 
       expect(
         authService.refreshTokens('old refreshToken'),
@@ -367,7 +367,7 @@ describe('AuthService', () => {
         role: Role.User,
       });
 
-      usersService.findOneByID = jest
+      userService.findOneByID = jest
         .fn()
         .mockReturnValue({ userId: userData.id, ...userData });
 
@@ -381,7 +381,7 @@ describe('AuthService', () => {
       const res = await authService.fetchUserInfo(tokens);
 
       expect(res).toStrictEqual(userData);
-      expect(usersService.findOneByID).toBeCalledWith(userData.id);
+      expect(userService.findOneByID).toBeCalledWith(userData.id);
     });
 
     it(`should throw an error if user does not exist in DB`, async () => {
@@ -393,7 +393,7 @@ describe('AuthService', () => {
         role: Role.User,
       });
 
-      usersService.findOneByID = jest.fn().mockReturnValue(undefined);
+      userService.findOneByID = jest.fn().mockReturnValue(undefined);
       jwtService.decode = jest.fn().mockReturnValue({ sub: userData.id });
 
       const tokens = {

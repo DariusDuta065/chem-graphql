@@ -1,24 +1,24 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { UserData } from '../../users/dto/userData.output';
+import { UserData } from '../../user/dto/user-data.output';
 
 @ObjectType()
 export class TokenOutput {
   @Field()
-  accesstoken: string;
+  public accesstoken: string;
 
   @Field({ nullable: true })
-  refreshToken?: string;
+  public refreshToken?: string;
 
   @Field(() => UserData, { nullable: true })
-  userData?: UserData;
+  public userData?: UserData;
 
-  static fromTokens({
+  public static fromTokens({
     accessToken,
     refreshToken,
   }: {
     accessToken: string;
     refreshToken?: string;
-  }) {
+  }): TokenOutput {
     const tokenData = new TokenOutput();
     tokenData.accesstoken = accessToken;
     tokenData.refreshToken = refreshToken;

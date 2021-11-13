@@ -19,7 +19,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { AppController } from './app.controller';
 
 import { AuthModule } from '../auth/auth.module';
-import { UsersModule } from '../users/users.module';
+import { UserModule } from '../user/user.module';
 import { GroupModule } from '../group/group.module';
 import { NotionModule } from '../notion/notion.module';
 import { SeedDBModule } from '../db/seeders/seed.module';
@@ -63,7 +63,7 @@ import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
     }),
 
     AuthModule,
-    UsersModule,
+    UserModule,
     ContentModule,
     GroupModule,
 

@@ -15,10 +15,10 @@ import {
   Int,
 } from '@nestjs/graphql';
 
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 
 import { TokenOutput } from './dto/token.output';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -29,7 +29,7 @@ import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
-import { UserData } from '../users/dto/userData.output';
+import { UserData } from '../user/dto/user-data.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 @Resolver(() => TokenOutput)
@@ -38,12 +38,12 @@ export class AuthResolver {
 
   constructor(
     private authService: AuthService,
-    private usersService: UsersService,
+    private userService: UserService,
   ) {}
 
   @UseGuards(GqlLocalAuthGuard)
   @Mutation(() => TokenOutput)
-  async login(
+  public async login(
     @Args('username') username: string,
     @Args('password') password: string,
     @CurrentUser() user: UserData,
@@ -59,7 +59,9 @@ export class AuthResolver {
   }
 
   @Mutation(() => String)
-  async logout(@Args('refreshToken') refreshToken: string): Promise<string> {
+  public async logout(
+    @Args('refreshToken') refreshToken: string,
+  ): Promise<string> {
     try {
       await this.authService.logout(refreshToken);
       return 'ok';
@@ -72,7 +74,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => TokenOutput)
-  async refreshToken(
+  public async refreshToken(
     @Args('refreshToken') refreshToken: string,
   ): Promise<TokenOutput> {
     try {
@@ -90,7 +92,7 @@ export class AuthResolver {
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Mutation(() => User)
-  async register(
+  public async register(
     @Args('userRegisterInput') userRegisterInput: UserRegisterInput,
   ): Promise<User> {
     try {
@@ -109,7 +111,7 @@ export class AuthResolver {
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Mutation(() => User)
-  async resetPassword(
+  public async resetPassword(
     @Args('userID', { type: () => Int }) userID: number,
   ): Promise<User> {
     return this.authService.resetPassword(userID);
@@ -117,8 +119,8 @@ export class AuthResolver {
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => UserData)
-  async profile(@CurrentUser() { userId }: User): Promise<UserData> {
-    const user = await this.usersService.findOneByID(userId);
+  public async profile(@CurrentUser() { userId }: User): Promise<UserData> {
+    const user = await this.userService.findOneByID(userId);
 
     if (!user) {
       throw new UnauthorizedException();
@@ -127,7 +129,7 @@ export class AuthResolver {
   }
 
   @ResolveField()
-  async userData(@Parent() tokens: TokenOutput): Promise<UserData> {
+  public async userData(@Parent() tokens: TokenOutput): Promise<UserData> {
     try {
       return await this.authService.fetchUserInfo(tokens);
     } catch (err) {
@@ -141,19 +143,19 @@ export class AuthResolver {
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Query(() => String)
-  adminRoute() {
+  public adminRoute(): string {
     return 'admin';
   }
 
   @Roles(Role.User)
   @UseGuards(RolesGuard)
   @Query(() => String)
-  userRoute() {
+  public userRoute(): string {
     return 'user';
   }
 
   @Query(() => String)
-  publicRoute() {
+  public publicRoute(): string {
     return 'public';
   }
 }

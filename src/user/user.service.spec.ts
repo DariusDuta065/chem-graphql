@@ -5,18 +5,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { User } from './user.entity';
 import { Role } from '../auth/enums/role.enum';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { UserRegisterInput } from 'src/auth/dto/user-register.input';
 
-describe('UsersService', () => {
+describe('UserService', () => {
   let module: TestingModule;
-  let usersService: UsersService;
+  let usersService: UserService;
   let usersRepository: Repository<User>;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
       providers: [
-        UsersService,
+        UserService,
         {
           provide: getRepositoryToken(User),
           useClass: Repository,
@@ -24,7 +24,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
+    usersService = module.get<UserService>(UserService);
     usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 

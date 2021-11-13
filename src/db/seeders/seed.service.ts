@@ -2,7 +2,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { User } from '../../users/user.entity';
+import { User } from '../../user/user.entity';
 import { AuthService } from '../../auth/auth.service';
 
 import { CreateUserInput } from './dto/create-user.input';
@@ -16,7 +16,7 @@ export class SeedDBService {
     private authService: AuthService,
   ) {}
 
-  async createUser(userInput: CreateUserInput) {
+  public async createUser(userInput: CreateUserInput): Promise<void> {
     try {
       await this.authService.register(userInput);
     } catch (err) {

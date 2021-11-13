@@ -4,17 +4,17 @@ import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 import { TokenOutput } from './dto/token.output';
-import { UserData } from '../users/dto/userData.output';
+import { UserData } from '../user/dto/user-data.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private jwtService: JwtService,
 
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -31,7 +31,7 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<UserData | null> {
-    const user = await this.usersService.findOneByEmail(username);
+    const user = await this.userService.findOneByEmail(username);
 
     if (!user) {
       return null;
@@ -91,7 +91,7 @@ export class AuthService {
     const cleartextPass = userRegisterInput.password ?? this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 
-    return this.usersService.registerUser(
+    return this.userService.registerUser(
       userRegisterInput,
       cleartextPass,
       hashedPass,
@@ -110,7 +110,7 @@ export class AuthService {
     const cleartextPass = this.generatePassword();
     const hashedPass = this.hashPassword(cleartextPass);
 
-    const updatedUser = await this.usersService.updateUserPassword(
+    const updatedUser = await this.userService.updateUserPassword(
       userID,
       hashedPass,
     );
@@ -141,7 +141,7 @@ export class AuthService {
       throw new Error('Tokens mismatch');
     }
 
-    const user = await this.usersService.findOneByID(redisUserID);
+    const user = await this.userService.findOneByID(redisUserID);
     if (!user) {
       throw new Error('User not found');
     }
@@ -155,7 +155,7 @@ export class AuthService {
 
   public async fetchUserInfo(token: TokenOutput): Promise<UserData> {
     const userId = this.decodeUserID(token.accesstoken);
-    const user = await this.usersService.findOneByID(userId);
+    const user = await this.userService.findOneByID(userId);
 
     if (!user) {
       throw new Error('User not found');

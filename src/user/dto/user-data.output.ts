@@ -12,21 +12,21 @@ export class UserData {
   }
 
   @Field(() => Int)
-  id: number;
+  public id: number;
 
   @Field()
-  email: string;
+  public email: string;
 
   @Field()
-  firstName: string;
+  public firstName: string;
 
   @Field()
-  lastName: string;
+  public lastName: string;
 
   @Field()
-  role: string;
+  public role: string;
 
-  static fromUser(user: User) {
+  public static fromUser(user: User): UserData {
     return new UserData({
       id: user.userId,
       email: user.email,

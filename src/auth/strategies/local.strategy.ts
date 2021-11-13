@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { UserData } from '../../users/dto/userData.output';
+import { UserData } from '../../user/dto/user-data.output';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
    * which in turn uses ctx.getContext().req.user - that contains
    * the data returned from here.
    */
-  async validate(username: string, password: string): Promise<UserData> {
+  public async validate(username: string, password: string): Promise<UserData> {
     const user = await this.authService.validateUser(username, password);
 
     if (!user) {

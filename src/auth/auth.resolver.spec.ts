@@ -5,10 +5,10 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 
 import { Role } from './enums/role.enum';
-import { User } from '../users/user.entity';
+import { User } from '../user/user.entity';
 import { TokenOutput } from './dto/token.output';
-import { UsersService } from '../users/users.service';
-import { UserData } from '../users/dto/userData.output';
+import { UserService } from '../user/user.service';
+import { UserData } from '../user/dto/user-data.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 describe('AuthResolver', () => {
@@ -16,7 +16,7 @@ describe('AuthResolver', () => {
 
   let authService: AuthService;
   let authResolver: AuthResolver;
-  let usersService: UsersService;
+  let userService: UserService;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -27,7 +27,7 @@ describe('AuthResolver', () => {
           useValue: {},
         },
         {
-          provide: UsersService,
+          provide: UserService,
           useValue: {},
         },
       ],
@@ -36,7 +36,7 @@ describe('AuthResolver', () => {
 
     authResolver = module.get<AuthResolver>(AuthResolver);
     authService = module.get<AuthService>(AuthService);
-    usersService = module.get<UsersService>(UsersService);
+    userService = module.get<UserService>(UserService);
   });
 
   afterAll(async () => {
@@ -222,14 +222,14 @@ describe('AuthResolver', () => {
         email: 'email@test.com',
       } as User;
 
-      usersService.findOneByID = jest.fn(async () => {
+      userService.findOneByID = jest.fn(async () => {
         return user;
       });
 
       const res = await authResolver.profile(user);
 
       expect(res).toStrictEqual(UserData.fromUser(user));
-      expect(usersService.findOneByID).toBeCalledWith(user.userId);
+      expect(userService.findOneByID).toBeCalledWith(user.userId);
     });
 
     it('should throw 401 if the user cannot be found', async () => {
@@ -242,7 +242,7 @@ describe('AuthResolver', () => {
         email: 'email@test.com',
       } as User;
 
-      usersService.findOneByID = jest.fn(async () => undefined);
+      userService.findOneByID = jest.fn(async () => undefined);
 
       expect(authResolver.profile(user)).rejects.toThrowError(
         UnauthorizedException,

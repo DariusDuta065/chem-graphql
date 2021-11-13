@@ -9,7 +9,7 @@ import {
 import { Role } from '../enums/role.enum';
 import { GqlJwtAuthGuard } from './gql-jwt-auth.guard';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { UserData } from '../../users/dto/userData.output';
+import { UserData } from '../../user/dto/user-data.output';
 
 @Injectable()
 export class RolesGuard extends GqlJwtAuthGuard {
@@ -17,7 +17,7 @@ export class RolesGuard extends GqlJwtAuthGuard {
     super();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),

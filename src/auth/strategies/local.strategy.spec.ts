@@ -7,7 +7,7 @@ import { AuthService } from '../auth.service';
 import { LocalStrategy } from './local.strategy';
 
 import { Role } from '../enums/role.enum';
-import { UserData } from 'src/users/dto/userData.output';
+import { UserData } from 'src/user/dto/user-data.output';
 
 describe('LocalStrategy', () => {
   let module: TestingModule;
@@ -19,7 +19,7 @@ describe('LocalStrategy', () => {
         AuthService,
         {
           provide: AuthService,
-          useValue: () => ({}),
+          useValue: {},
         },
       ],
     }).compile();
