@@ -31,7 +31,7 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<UserData | null> {
-    const user = await this.userService.findOneByEmail(username);
+    const user = await this.userService.getUserByEmail(username);
 
     if (!user) {
       return null;
@@ -141,7 +141,7 @@ export class AuthService {
       throw new Error('Tokens mismatch');
     }
 
-    const user = await this.userService.findOneByID(redisUserID);
+    const user = await this.userService.getUserByID(redisUserID);
     if (!user) {
       throw new Error('User not found');
     }
@@ -155,7 +155,7 @@ export class AuthService {
 
   public async fetchUserInfo(token: TokenOutput): Promise<UserData> {
     const userId = this.decodeUserID(token.accesstoken);
-    const user = await this.userService.findOneByID(userId);
+    const user = await this.userService.getUserByID(userId);
 
     if (!user) {
       throw new Error('User not found');

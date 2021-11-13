@@ -40,7 +40,7 @@ export class AuthUtils {
     if (!userID) {
       user = await this.createUser(userData);
     } else {
-      const existingUser = await this.userService.findOneByID(userID);
+      const existingUser = await this.userService.getUserByID(userID);
 
       if (!existingUser) {
         user = await this.createUser(userData);

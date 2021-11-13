@@ -4,14 +4,16 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { User } from './user.entity';
-import { Role } from '../auth/enums/role.enum';
 import { UserService } from './user.service';
-import { UserRegisterInput } from 'src/auth/dto/user-register.input';
+import { Role } from '../auth/enums/role.enum';
+
+import { UpdateUserInput } from './dto/update-user.input';
+import { UserRegisterInput } from '../auth/dto/user-register.input';
 
 describe('UserService', () => {
   let module: TestingModule;
-  let usersService: UserService;
-  let usersRepository: Repository<User>;
+  let service: UserService;
+  let userRepository: Repository<User>;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -24,12 +26,160 @@ describe('UserService', () => {
       ],
     }).compile();
 
-    usersService = module.get<UserService>(UserService);
-    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    service = module.get<UserService>(UserService);
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   afterAll(async () => {
     await module.close();
+  });
+
+  describe('getUsers', () => {
+    it(`returns all users`, async () => {
+      userRepository.find = jest.fn();
+
+      await service.getUsers();
+
+      expect(userRepository.find).toBeCalled();
+    });
+  });
+
+  describe('updateUser', () => {
+    it(`updates an existing user`, async () => {
+      const user: User = {
+        userId: 1,
+        role: Role.User,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+      };
+
+      const updateUserInput: UpdateUserInput = {
+        id: 1,
+        email: 'newEmail@test.com',
+        firstName: 'new first name',
+        lastName: 'new last name',
+      };
+      userRepository.findOneOrFail = jest.fn(async () => user);
+      userRepository.save = jest.fn();
+
+      await service.updateUser(updateUserInput);
+
+      expect(userRepository.findOneOrFail).toBeCalledWith(1);
+      expect(userRepository.save).toBeCalledWith({
+        ...user,
+        email: updateUserInput.email,
+        firstName: updateUserInput.firstName,
+        lastName: updateUserInput.lastName,
+      });
+    });
+
+    describe('updates only the provided fields', () => {
+      const user: User = {
+        userId: 1,
+        role: Role.User,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+      };
+
+      it(`user's email`, async () => {
+        userRepository.findOneOrFail = jest.fn(async () => user);
+        userRepository.save = jest.fn();
+
+        const updateUserInput: UpdateUserInput = {
+          id: 1,
+          email: 'newEmail@test.com',
+        };
+
+        await service.updateUser(updateUserInput);
+
+        expect(userRepository.save).toBeCalledWith({
+          ...user,
+          email: 'newEmail@test.com',
+        });
+      });
+
+      it(`user's first name`, async () => {
+        userRepository.findOneOrFail = jest.fn(async () => user);
+        userRepository.save = jest.fn();
+
+        const updateUserInput: UpdateUserInput = {
+          id: 1,
+          firstName: 'new first name',
+        };
+
+        await service.updateUser(updateUserInput);
+
+        expect(userRepository.save).toBeCalledWith({
+          ...user,
+          firstName: 'new first name',
+        });
+      });
+
+      it(`user's last name`, async () => {
+        userRepository.findOneOrFail = jest.fn(async () => user);
+        userRepository.save = jest.fn();
+
+        const updateUserInput: UpdateUserInput = {
+          id: 1,
+          lastName: 'new last name',
+        };
+
+        await service.updateUser(updateUserInput);
+
+        expect(userRepository.save).toBeCalledWith({
+          ...user,
+          lastName: 'new last name',
+        });
+      });
+    });
+
+    it(`throws error if user doesn't exist`, async () => {
+      const updateUserInput: UpdateUserInput = {
+        id: 1,
+        email: 'newEmail@test.com',
+        firstName: 'new first name',
+        lastName: 'new last name',
+      };
+      userRepository.findOneOrFail = jest.fn(async () => {
+        throw new EntityNotFoundError(User, '');
+      });
+
+      expect(service.updateUser(updateUserInput)).rejects.toThrowError(
+        EntityNotFoundError,
+      );
+    });
+  });
+
+  describe('deleteUser', () => {
+    it(`returns true if user was successfully deleted`, async () => {
+      const user: User = {
+        userId: 1,
+        role: Role.User,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+      };
+      userRepository.findOne = jest.fn(async () => user);
+      userRepository.delete = jest.fn();
+
+      const res = await service.deleteUser(1);
+
+      expect(res).toBeTruthy();
+      expect(userRepository.delete).toBeCalledWith(user);
+    });
+
+    it(`returns false if user to be deleted doesn't exist`, async () => {
+      userRepository.findOne = jest.fn(async () => undefined);
+
+      const res = await service.deleteUser(1);
+
+      expect(res).toBeFalsy();
+    });
   });
 
   describe('registerUser', () => {
@@ -43,10 +193,10 @@ describe('UserService', () => {
       const cleartextPass = 'clear password';
       const hashedPass = 'hashed password';
 
-      usersService.findOneByEmail = jest.fn().mockReturnValue(undefined);
-      usersRepository.save = jest.fn().mockImplementation(async (user) => user);
+      service.getUserByEmail = jest.fn().mockReturnValue(undefined);
+      userRepository.save = jest.fn().mockImplementation(async (user) => user);
 
-      const res = await usersService.registerUser(
+      const res = await service.registerUser(
         userRegisterInput,
         cleartextPass,
         hashedPass,
@@ -70,16 +220,12 @@ describe('UserService', () => {
       const cleartextPass = 'clear password';
       const hashedPass = 'hashed password';
 
-      usersService.findOneByEmail = jest.fn().mockReturnValue(undefined);
-      usersRepository.save = jest.fn().mockImplementation(async (user) => user);
+      service.getUserByEmail = jest.fn().mockReturnValue(undefined);
+      userRepository.save = jest.fn().mockImplementation(async (user) => user);
 
-      await usersService.registerUser(
-        userRegisterInput,
-        cleartextPass,
-        hashedPass,
-      );
+      await service.registerUser(userRegisterInput, cleartextPass, hashedPass);
 
-      expect(usersRepository.save).toBeCalledWith({
+      expect(userRepository.save).toBeCalledWith({
         ...userRegisterInput,
         password: hashedPass,
       });
@@ -96,14 +242,14 @@ describe('UserService', () => {
       const cleartextPass = 'clear password';
       const hashedPass = 'hashed password';
 
-      usersService.findOneByEmail = jest.fn().mockReturnValue({
+      service.getUserByEmail = jest.fn().mockReturnValue({
         userId: 1,
         password: 'hashed password',
         ...userRegisterInput,
       });
 
       expect(
-        usersService.registerUser(userRegisterInput, cleartextPass, hashedPass),
+        service.registerUser(userRegisterInput, cleartextPass, hashedPass),
       ).rejects.toThrowError(Error);
     });
   });
@@ -118,13 +264,13 @@ describe('UserService', () => {
         lastName: 'last',
         role: Role.User,
       } as User;
-      usersRepository.findOneOrFail = jest.fn(async () => user);
-      usersRepository.save = jest.fn();
+      userRepository.findOneOrFail = jest.fn(async () => user);
+      userRepository.save = jest.fn();
 
-      await usersService.updateUserPassword(user.userId, 'new password');
+      await service.updateUserPassword(user.userId, 'new password');
 
-      expect(usersRepository.findOneOrFail).toBeCalledWith(user.userId);
-      expect(usersRepository.save).toBeCalledWith({
+      expect(userRepository.findOneOrFail).toBeCalledWith(user.userId);
+      expect(userRepository.save).toBeCalledWith({
         ...user,
         password: 'new password',
       });
@@ -139,13 +285,13 @@ describe('UserService', () => {
         lastName: 'last',
         role: Role.User,
       } as User;
-      usersRepository.findOneOrFail = jest.fn(async () => {
+      userRepository.findOneOrFail = jest.fn(async () => {
         throw new EntityNotFoundError({ type: User, name: User.name }, '');
       });
-      usersRepository.save = jest.fn();
+      userRepository.save = jest.fn();
 
       expect(
-        usersService.updateUserPassword(user.userId, 'new password'),
+        service.updateUserPassword(user.userId, 'new password'),
       ).rejects.toThrowError(EntityNotFoundError);
     });
   });

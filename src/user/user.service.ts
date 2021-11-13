@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Role } from '../auth/enums/role.enum';
 import { UserRegisterInput } from '../auth/dto/user-register.input';
+import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UserService {
@@ -12,12 +13,36 @@ export class UserService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  public async findOneByEmail(email: string): Promise<User | undefined> {
+  public async getUsers(): Promise<User[]> {
+    return this.usersRepository.find();
+  }
+
+  public async getUserByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({ email });
   }
 
-  public async findOneByID(userId: number | string): Promise<User | undefined> {
+  public async getUserByID(userId: number | string): Promise<User | undefined> {
     return this.usersRepository.findOne({ userId: Number(userId) });
+  }
+
+  public async updateUser(input: UpdateUserInput): Promise<User> {
+    const user = await this.usersRepository.findOneOrFail(input.id);
+    user.email = input.email ?? user.email;
+    user.firstName = input.firstName ?? user.firstName;
+    user.lastName = input.lastName ?? user.lastName;
+
+    return this.usersRepository.save(user);
+  }
+
+  public async deleteUser(userID: number): Promise<boolean> {
+    const user = await this.usersRepository.findOne(userID);
+
+    if (!user) {
+      return false;
+    }
+
+    await this.usersRepository.delete(user);
+    return true;
   }
 
   /**
@@ -36,7 +61,7 @@ export class UserService {
     hashedPass: string,
   ): Promise<User> {
     // Check for duplicate users
-    const userExists = await this.findOneByEmail(input.email);
+    const userExists = await this.getUserByEmail(input.email);
     if (userExists) {
       throw new Error('User already exists');
     }

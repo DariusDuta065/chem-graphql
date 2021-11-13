@@ -42,6 +42,8 @@ export class User {
   @Field(() => Role)
   public role: Role;
 
-  @ManyToOne(() => Group, (group) => group.users, { nullable: true })
-  public group?: Group;
+  @ManyToOne(() => Group, (group) => group.users, {
+    nullable: true,
+  })
+  public group?: Promise<Group>;
 }

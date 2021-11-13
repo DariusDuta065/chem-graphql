@@ -31,5 +31,5 @@ export class Group {
   public scheduleMinute: number;
 
   @OneToMany(() => User, (user) => user.group, { nullable: true })
-  public users?: User[];
+  public users?: Promise<User[]>;
 }

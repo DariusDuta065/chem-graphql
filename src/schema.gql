@@ -22,12 +22,14 @@ type Group {
 type Mutation {
   createGroup(createGroupInput: CreateGroupInput!): Group!
   deleteGroup(groupId: Float!): Boolean!
+  deleteUser(userId: Float!): Boolean!
   login(password: String!, username: String!): TokenOutput!
   logout(refreshToken: String!): String!
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   resetPassword(userID: Int!): User!
   updateGroup(updateGroupInput: UpdateGroupInput!): Group!
+  updateUser(updateUserInput: UpdateUserInput!): UserOutput!
 }
 
 type Query {
@@ -36,7 +38,9 @@ type Query {
   groups: [Group!]!
   profile: UserData!
   publicRoute: String!
+  user(userId: Float!): UserOutput
   userRoute: String!
+  users: [UserOutput!]!
 }
 
 type TokenOutput {
@@ -54,6 +58,13 @@ input UpdateGroupInput {
   scheduleMinute: Float!
 }
 
+input UpdateUserInput {
+  email: String
+  firstName: String
+  id: Float!
+  lastName: String
+}
+
 type User {
   email: String!
   firstName: String!
@@ -69,6 +80,15 @@ type UserData {
   id: Int!
   lastName: String!
   role: String!
+}
+
+type UserOutput {
+  email: String!
+  firstName: String!
+  group: Group
+  lastName: String!
+  role: UserRole!
+  userId: Int!
 }
 
 input UserRegisterInput {

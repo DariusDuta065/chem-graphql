@@ -222,14 +222,14 @@ describe('AuthResolver', () => {
         email: 'email@test.com',
       } as User;
 
-      userService.findOneByID = jest.fn(async () => {
+      userService.getUserByID = jest.fn(async () => {
         return user;
       });
 
       const res = await authResolver.profile(user);
 
       expect(res).toStrictEqual(UserData.fromUser(user));
-      expect(userService.findOneByID).toBeCalledWith(user.userId);
+      expect(userService.getUserByID).toBeCalledWith(user.userId);
     });
 
     it('should throw 401 if the user cannot be found', async () => {
@@ -242,7 +242,7 @@ describe('AuthResolver', () => {
         email: 'email@test.com',
       } as User;
 
-      userService.findOneByID = jest.fn(async () => undefined);
+      userService.getUserByID = jest.fn(async () => undefined);
 
       expect(authResolver.profile(user)).rejects.toThrowError(
         UnauthorizedException,

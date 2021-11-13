@@ -120,7 +120,7 @@ export class AuthResolver {
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => UserData)
   public async profile(@CurrentUser() { userId }: User): Promise<UserData> {
-    const user = await this.userService.findOneByID(userId);
+    const user = await this.userService.getUserByID(userId);
 
     if (!user) {
       throw new UnauthorizedException();
