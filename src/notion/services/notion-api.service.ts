@@ -153,9 +153,18 @@ export class NotionAPIService {
         }
       }
 
+      if (!pg.title || !pg.type) {
+        this.logger.error(`Page ${page.id} ignored, invalid title or type.`);
+        return undefined;
+      }
+
       return pg;
     });
 
-    return parsedPages;
+    return parsedPages.filter(
+      (item: NotionPage | undefined): item is NotionPage => {
+        return typeof item !== 'undefined';
+      },
+    );
   }
 }
