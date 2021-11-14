@@ -1,22 +1,36 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Group } from '../group/group.entity';
 
 @Entity()
+@ObjectType()
 export class Content {
+  @Field()
   @PrimaryGeneratedColumn()
   public id: number;
 
+  @Field()
   @Column({ type: 'uuid', unique: true })
   public blockID: string;
 
+  @Field()
   @Column()
   public title: string;
 
+  @Field()
   @Column()
   public type: string;
 
+  @Field()
   @Column({ type: 'datetime' })
   public lastEditedAt: Date;
 
+  @Field()
   @Column({ type: 'text' })
   public blocks: string;
+
+  @Field(() => [Group], { nullable: true })
+  @ManyToMany(() => Group, (group) => group.contents)
+  public groups?: Group[];
 }
