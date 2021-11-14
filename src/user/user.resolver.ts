@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { UserOutput } from './dto/user.output';
@@ -5,7 +6,12 @@ import { UpdateUserInput } from './dto/update-user.input';
 
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { Role } from '../auth/enums/role.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
+@UseGuards(RolesGuard)
+@Roles(Role.User, Role.Admin)
 @Resolver(() => UserOutput)
 export class UserResolver {
   constructor(private userService: UserService) {}
