@@ -2,6 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Content {
+  blockID: String!
+  blocks: String!
+  groups: [Group!]
+  id: Float!
+  lastEditedAt: DateTime!
+  title: String!
+  type: String!
+}
+
 input CreateGroupInput {
   grade: Float!
   notes: String = null
@@ -10,13 +20,20 @@ input CreateGroupInput {
   scheduleMinute: Float!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Group {
+  contents: [Content!]
   grade: Float!
   id: Float!
   notes: String
   scheduleDay: Float!
   scheduleHour: Float!
   scheduleMinute: Float!
+  users: [User!]
 }
 
 type Mutation {
@@ -50,12 +67,14 @@ type TokenOutput {
 }
 
 input UpdateGroupInput {
+  contents: [Float!]
   grade: Float!
   id: Float!
   notes: String = null
   scheduleDay: Float!
   scheduleHour: Float!
   scheduleMinute: Float!
+  users: [Float!]
 }
 
 input UpdateUserInput {

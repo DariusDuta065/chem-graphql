@@ -3,7 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { Group } from './group.entity';
+import { User } from '../user/user.entity';
 import { GroupService } from './group.service';
+import { Content } from '../content/content.entity';
 
 import { CreateGroupInput } from './dto/create-group.input';
 import { UpdateGroupInput } from './dto/update-group.input';
@@ -11,6 +13,8 @@ import { UpdateGroupInput } from './dto/update-group.input';
 describe('GroupService', () => {
   let service: GroupService;
   let groupRepository: Repository<Group>;
+  let userRepository: Repository<User>;
+  let contentRepository: Repository<Content>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,11 +24,23 @@ describe('GroupService', () => {
           provide: getRepositoryToken(Group),
           useValue: Repository,
         },
+        {
+          provide: getRepositoryToken(User),
+          useValue: Repository,
+        },
+        {
+          provide: getRepositoryToken(Content),
+          useValue: Repository,
+        },
       ],
     }).compile();
 
     service = module.get<GroupService>(GroupService);
     groupRepository = module.get<Repository<Group>>(getRepositoryToken(Group));
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    contentRepository = module.get<Repository<Content>>(
+      getRepositoryToken(Content),
+    );
   });
 
   it('should be defined', () => {
@@ -112,6 +128,58 @@ describe('GroupService', () => {
       expect(service.updateGroup(updateGroupInput)).rejects.toThrowError(
         EntityNotFoundError,
       );
+    });
+
+    it(`updates group's users`, async () => {
+      const updateGroupInput: UpdateGroupInput = {
+        id: 1,
+        grade: 11,
+        notes: 'notes',
+        scheduleDay: 1,
+        scheduleHour: 12,
+        scheduleMinute: 30,
+        users: [1, 2, 3],
+      };
+      groupRepository.findOneOrFail = jest.fn().mockReturnValue({
+        ...updateGroupInput,
+      });
+      groupRepository.save = jest.fn();
+      userRepository.findByIds = jest.fn();
+
+      await service.updateGroup(updateGroupInput);
+
+      expect(userRepository.findByIds).toBeCalledWith([1, 2, 3], {
+        where: { role: 'user' },
+      });
+      expect(groupRepository.save).toBeCalledWith({
+        ...updateGroupInput,
+        users: expect.any(Promise),
+      });
+    });
+
+    it(`updates group's contents`, async () => {
+      const updateGroupInput: UpdateGroupInput = {
+        id: 1,
+        grade: 11,
+        notes: 'notes',
+        scheduleDay: 1,
+        scheduleHour: 12,
+        scheduleMinute: 30,
+        contents: [1, 2, 3],
+      };
+      groupRepository.findOneOrFail = jest.fn().mockReturnValue({
+        ...updateGroupInput,
+      });
+      groupRepository.save = jest.fn();
+      contentRepository.findByIds = jest.fn();
+
+      await service.updateGroup(updateGroupInput);
+
+      expect(contentRepository.findByIds).toBeCalledWith([1, 2, 3]);
+      expect(groupRepository.save).toBeCalledWith({
+        ...updateGroupInput,
+        contents: expect.any(Promise),
+      });
     });
   });
 

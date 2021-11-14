@@ -1,5 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 @InputType()
 export class UpdateGroupInput {
@@ -35,4 +43,16 @@ export class UpdateGroupInput {
   @Max(59)
   @IsNumber()
   public scheduleMinute: number;
+
+  @Field(() => [Number], { nullable: true })
+  @IsOptional()
+  @IsPositive({ each: true })
+  @IsInt({ each: true })
+  public users?: number[];
+
+  @Field(() => [Number], { nullable: true })
+  @IsOptional()
+  @IsPositive({ each: true })
+  @IsInt({ each: true })
+  public contents?: number[];
 }

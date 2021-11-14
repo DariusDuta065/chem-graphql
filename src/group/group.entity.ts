@@ -1,7 +1,15 @@
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { User } from '../user/user.entity';
+import { Content } from '../content/content.entity';
 
 @Entity()
 @ObjectType()
@@ -30,6 +38,12 @@ export class Group {
   @Column({ type: 'tinyint' })
   public scheduleMinute: number;
 
+  @Field(() => [User], { nullable: true })
   @OneToMany(() => User, (user) => user.group, { nullable: true })
   public users?: Promise<User[]>;
+
+  @Field(() => [Content], { nullable: true })
+  @ManyToMany(() => Content, (content) => content.groups)
+  @JoinTable({ name: 'group_content' })
+  public contents?: Promise<Content[]>;
 }
