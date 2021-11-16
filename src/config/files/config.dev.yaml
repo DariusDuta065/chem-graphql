@@ -5,7 +5,7 @@ http:
 jwt:
   secret: secretKey
   signOptions:
-    expiresIn: 10m
+    expiresIn: 24h
 
 bull:
   redis:

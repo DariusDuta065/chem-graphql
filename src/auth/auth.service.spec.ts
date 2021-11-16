@@ -2,6 +2,7 @@ import { Cache } from 'cache-manager';
 
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { Role } from './enums/role.enum';
@@ -17,6 +18,7 @@ describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
   let jwtService: JwtService;
+  let configService: ConfigService;
   let cacheManager: Cache;
 
   beforeAll(async () => {
@@ -31,6 +33,10 @@ describe('AuthService', () => {
           useValue: {},
         },
         {
+          provide: ConfigService,
+          useValue: {},
+        },
+        {
           provide: CACHE_MANAGER,
           useValue: {},
         },
@@ -42,6 +48,7 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     jwtService = module.get<JwtService>(JwtService);
+    configService = module.get<ConfigService>(ConfigService);
     cacheManager = await module.resolve<Cache>(CACHE_MANAGER);
   });
 
@@ -104,6 +111,12 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should generate pair of tokens', async () => {
       cacheManager.set = jest.fn();
+      configService.get = jest.fn().mockReturnValue({
+        secret: 'secretKey',
+        signOptions: {
+          expiresIn: '15m',
+        },
+      });
       jwtService.sign = jest
         .fn()
         .mockReturnValueOnce('accessToken')

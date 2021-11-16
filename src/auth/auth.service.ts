@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 
 import { UserService } from '../user/user.service';
@@ -9,6 +10,7 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 import { TokenOutput } from './dto/token.output';
 import { UserData } from '../user/dto/user-data.output';
+import { JwtConfig } from '../config/interfaces/JwtConfig';
 import { UserRegisterInput } from './dto/user-register.input';
 
 @Injectable()
@@ -16,6 +18,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private configService: ConfigService,
 
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
@@ -176,7 +179,7 @@ export class AuthService {
   private generateAccessToken(user: UserData): string {
     return this.jwtService.sign(
       { sub: user.id, ...user },
-      { expiresIn: '15m' },
+      { expiresIn: this.getJwtConfig().signOptions.expiresIn },
     );
   }
 
@@ -276,5 +279,11 @@ export class AuthService {
    */
   private hashPassword(password: string): string {
     return bcrypt.hashSync(password, 10);
+  }
+
+  private getJwtConfig(): JwtConfig {
+    return this.configService.get<JwtConfig>(JwtConfig.CONFIG_KEY, {
+      infer: true,
+    });
   }
 }

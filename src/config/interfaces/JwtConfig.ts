@@ -1,8 +1,8 @@
 export class JwtConfig {
-  static CONFIG_KEY = 'jwt';
+  public static CONFIG_KEY = 'jwt';
 
-  secret: string;
-  signOptions: {
+  public secret: string;
+  public signOptions: {
     expiresIn: string;
   };
 }
