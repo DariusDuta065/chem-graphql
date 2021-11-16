@@ -2,14 +2,20 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { User } from '../user/user.entity';
 import { Content } from './content.entity';
-import { ContentService } from './content.service';
+import { Role } from '../auth/enums/role.enum';
 import { NotionBlock } from '../notion/notion-block.entity';
+
+import { ContentService } from './content.service';
+import { UnauthorizedException } from '@nestjs/common';
+import { Group } from '../group/group.entity';
 
 describe('ContentService', () => {
   let service: ContentService;
   let contentRepository: Repository<Content>;
   let blocksRepository: Repository<NotionBlock>;
+  let userRepository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +29,10 @@ describe('ContentService', () => {
           provide: getRepositoryToken(NotionBlock),
           useClass: Repository,
         },
+        {
+          provide: getRepositoryToken(User),
+          useClass: Repository,
+        },
       ],
     }).compile();
 
@@ -33,10 +43,139 @@ describe('ContentService', () => {
     blocksRepository = module.get<Repository<NotionBlock>>(
       getRepositoryToken(NotionBlock),
     );
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getContentsForUser', () => {
+    it(`returns all content for admins`, async () => {
+      const userID = 1;
+      const user: User = {
+        userId: 1,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+        role: Role.Admin,
+      };
+      userRepository.findOne = jest.fn().mockReturnValue(user);
+      contentRepository.find = jest.fn();
+
+      await service.getContentsForUser(userID);
+
+      expect(userRepository.findOne).toBeCalledWith(userID, {
+        loadEagerRelations: true,
+      });
+      expect(contentRepository.find).toBeCalled();
+    });
+
+    it(`returns only available content for user's group`, async () => {
+      const userID = 1;
+
+      const content: Content = {
+        id: 1,
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+        lastEditedAt: new Date('2021-11-11 20:56:00'),
+        title: 'Content 1',
+        type: 'lesson',
+        blocks: '[...]',
+      };
+      const group: Group = {
+        id: 1,
+        grade: 11,
+        notes: '',
+        scheduleDay: 1,
+        scheduleHour: 12,
+        scheduleMinute: 30,
+        contents: Promise.resolve([content]),
+      };
+      const user: User = {
+        userId: 1,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+        role: Role.User,
+        group: Promise.resolve(group),
+      };
+      userRepository.findOne = jest.fn().mockReturnValue(user);
+
+      const res = await service.getContentsForUser(userID);
+
+      expect(res).toStrictEqual([content]);
+    });
+
+    it(`throws error if user does not exist`, async () => {
+      const userID = 1;
+      userRepository.findOne = jest.fn().mockReturnValue(undefined);
+
+      expect(service.getContentsForUser(userID)).rejects.toThrowError(
+        UnauthorizedException,
+      );
+    });
+
+    it(`returns [] if user is not part of a group`, async () => {
+      const userID = 1;
+
+      const user: User = {
+        userId: 1,
+        email: 'email@test.com',
+        firstName: 'first name',
+        lastName: 'last name',
+        password: 'hashed password',
+        role: Role.User,
+      };
+      userRepository.findOne = jest.fn().mockReturnValue(user);
+
+      const res = await service.getContentsForUser(userID);
+
+      expect(res).toStrictEqual([]);
+    });
+  });
+
+  describe('getContentForUser', () => {
+    it(`gets all available content for user, then filters for contentID`, async () => {
+      const userID = 1;
+      const contentID = 1;
+
+      const content: Content = {
+        id: 1,
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+        lastEditedAt: new Date('2021-11-11 20:56:00'),
+        title: 'Content 1',
+        type: 'lesson',
+        blocks: '[...]',
+      };
+
+      service.getContentsForUser = jest.fn(async () => [content]);
+
+      const res = await service.getContentForUser(userID, contentID);
+
+      expect(res).toStrictEqual(content);
+    });
+
+    it(`returns undefined if contentID is not available for user`, async () => {
+      const userID = 1;
+      const contentID = 2;
+
+      const content: Content = {
+        id: 1,
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+        lastEditedAt: new Date('2021-11-11 20:56:00'),
+        title: 'Content 1',
+        type: 'lesson',
+        blocks: '[...]',
+      };
+
+      service.getContentsForUser = jest.fn(async () => [content]);
+
+      const res = await service.getContentForUser(userID, contentID);
+
+      expect(res).toBeUndefined();
+    });
   });
 
   describe('getContent', () => {
@@ -108,7 +247,7 @@ describe('ContentService', () => {
   });
 
   describe('aggregateContentBlocks', () => {
-    it(``, async () => {
+    it(`gets all children blocks and attaches them to content entity`, async () => {
       const oldContent: Content = {
         blockID: 'blockID',
         title: 'title',

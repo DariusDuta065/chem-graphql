@@ -51,6 +51,8 @@ type Mutation {
 
 type Query {
   adminRoute: String!
+  content(contentId: Float!): Content
+  contents: [Content!]!
   group(groupId: Float!): Group
   groups: [Group!]!
   profile: UserData!

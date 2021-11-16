@@ -9,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotionAPIService } from './notion-api.service';
 import { QUEUES } from '../../shared/queues';
 import { JOBS } from '../../shared/jobs';
+import { Logger } from '@nestjs/common';
 
 describe(`NotionAPIService`, () => {
   let module: TestingModule;
@@ -88,7 +89,7 @@ describe(`NotionAPIService`, () => {
   });
 
   describe(`getPagesMetadata`, () => {
-    it(`calls databases.query()`, async () => {
+    it(`returns pages of the DB from Notion's API`, async () => {
       configService.get = jest.fn().mockReturnValue({
         integrationToken: 'integration token',
         databaseID: 'database ID',
@@ -123,11 +124,58 @@ describe(`NotionAPIService`, () => {
         ],
       });
 
-      await notionApiService.getPagesMetadata();
+      const res = await notionApiService.getPagesMetadata();
 
+      expect(res).toStrictEqual([
+        {
+          id: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+          lastEditedAt: '2021-11-02T20:14:00.000Z',
+          type: 'lesson',
+          title: 'Lesson Two',
+        },
+      ]);
       expect(notionClient.databases.query).toBeCalledWith({
         database_id: 'database ID',
       });
+    });
+
+    it(`omits pages that do not have necessary metadata`, async () => {
+      configService.get = jest.fn().mockReturnValue({
+        integrationToken: 'integration token',
+        databaseID: 'database ID',
+      });
+      const errorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation(jest.fn());
+
+      const databaseResults = [
+        {
+          id: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+          last_edited_time: '2021-11-02T20:14:00.000Z',
+          properties: {
+            content_type: {
+              type: 'select',
+              select: {
+                name: 'lesson',
+              },
+            },
+          },
+        },
+      ];
+      const notionClient = notionApiService.getClient();
+      notionClient.databases.query = jest.fn().mockReturnValue({
+        object: 'list',
+        next_cursor: null,
+        has_more: false,
+        results: databaseResults,
+      });
+
+      const res = await notionApiService.getPagesMetadata();
+
+      expect(res).toStrictEqual([]);
+      expect(errorSpy).toBeCalledWith(
+        `Page ${databaseResults[0].id} ignored, invalid title or type.`,
+      );
     });
 
     it(`calls databases.query() with filter`, async () => {
