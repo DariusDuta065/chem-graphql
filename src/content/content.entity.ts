@@ -32,5 +32,5 @@ export class Content {
 
   @Field(() => [Group], { nullable: true })
   @ManyToMany(() => Group, (group) => group.contents)
-  public groups?: Group[];
+  public groups?: Promise<Group[]>;
 }

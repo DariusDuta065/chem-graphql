@@ -72,8 +72,18 @@ export class ContentService {
     return this.contentRepository.save(content);
   }
 
-  public async deleteContent(blockID: string): Promise<void> {
+  public async deleteContent(blockID: string): Promise<boolean> {
+    const content = await this.contentRepository.findOne({ blockID });
+
+    if (!content) {
+      return false;
+    }
+
+    content.groups = Promise.resolve([]);
+    await this.contentRepository.save(content);
+
     await this.contentRepository.delete({ blockID });
+    return true;
   }
 
   public async aggregateContentBlocks(blockID: string): Promise<void> {

@@ -235,13 +235,43 @@ describe('ContentService', () => {
   });
 
   describe('deleteContent', () => {
-    it(`deletes content`, async () => {
+    it(`deletes content when content is found`, async () => {
+      const content: Content = {
+        id: 1,
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+        lastEditedAt: new Date('2021-11-11 20:56:00'),
+        title: 'content title',
+        type: 'content type',
+        blocks: '[...]',
+      };
+
+      contentRepository.findOne = jest.fn().mockReturnValue(content);
+      contentRepository.save = jest.fn();
       contentRepository.delete = jest.fn();
 
-      await service.deleteContent('blockID');
+      const res = await service.deleteContent(
+        '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+      );
 
+      expect(res).toBeTruthy();
+      expect(contentRepository.save).toBeCalledWith({
+        ...content,
+        groups: Promise.resolve([]),
+      });
       expect(contentRepository.delete).toBeCalledWith({
-        blockID: 'blockID',
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+      });
+    });
+
+    it(`returns false if content with blockID doesn't exist`, async () => {
+      contentRepository.findOne = jest.fn().mockReturnValue(undefined);
+      const res = await service.deleteContent(
+        '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+      );
+
+      expect(res).toBeFalsy();
+      expect(contentRepository.findOne).toBeCalledWith({
+        blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
       });
     });
   });

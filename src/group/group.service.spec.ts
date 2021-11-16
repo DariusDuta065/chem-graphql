@@ -184,7 +184,8 @@ describe('GroupService', () => {
   });
 
   describe('deleteGroup', () => {
-    it(`returns true if group was successfully deleted`, async () => {
+    it(`returns true when group & its relations were deleted`, async () => {
+      const groupID = 1;
       const group: Group = {
         id: 1,
         notes: '',
@@ -194,15 +195,21 @@ describe('GroupService', () => {
         scheduleMinute: 45,
       };
       groupRepository.findOne = jest.fn(async () => group);
+      groupRepository.save = jest.fn();
       groupRepository.delete = jest.fn();
 
-      const res = await service.deleteGroup(1);
+      const res = await service.deleteGroup(groupID);
 
       expect(res).toBeTruthy();
-      expect(groupRepository.delete).toBeCalledWith(group);
+      expect(groupRepository.save).toBeCalledWith({
+        ...group,
+        contents: Promise.resolve([]),
+        users: Promise.resolve([]),
+      });
+      expect(groupRepository.delete).toBeCalledWith({ id: groupID });
     });
 
-    it(`returns false if group to be deleted doesn't exist`, async () => {
+    it(`returns false if group with groupID doesn't exist`, async () => {
       groupRepository.findOne = jest.fn(async () => undefined);
 
       const res = await service.deleteGroup(1);

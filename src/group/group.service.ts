@@ -68,7 +68,11 @@ export class GroupService {
       return false;
     }
 
-    await this.groupRepository.delete(group);
+    group.contents = Promise.resolve([]);
+    group.users = Promise.resolve([]);
+    await this.groupRepository.save(group);
+
+    await this.groupRepository.delete({ id: groupID });
     return true;
   }
 
