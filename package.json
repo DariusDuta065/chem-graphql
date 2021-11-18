@@ -98,31 +98,5 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "maxWorkers": 1,
-    "rootDir": ".",
-    "testRegex": ".*\\.(e2e-)?spec\\.ts",
-    "transform": {
-      "^.+\\.(t)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "src/**/*.(t|j)s",
-      "!**/*rc.(t|j)s",
-      "!**/main.(t|j)s",
-      "!**/cli.(t|j)s",
-      "!**/dist/**",
-      "!**/node_modules/**",
-      "!**/*.module.(t|j)s",
-      "!**/migrations/*.(t|j)s",
-      "!**/db/**"
-    ],
-    "coverageDirectory": "./coverage",
-    "testEnvironment": "node"
   }
 }
