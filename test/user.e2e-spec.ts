@@ -14,7 +14,7 @@ import { NotionAPIProcessor } from '../src/notion/processors';
 import queries from './graphql/queries';
 import mutations from './graphql/mutations';
 import { UserOutput } from '../src/user/dto/user.output';
-import { UpdateUserInput } from 'src/user/dto/update-user.input';
+import { UpdateUserInput } from '../src/user/dto/update-user.input';
 
 describe('UserResolver (e2e)', () => {
   let app: INestApplication;
@@ -43,6 +43,10 @@ describe('UserResolver (e2e)', () => {
   });
 
   beforeEach(async () => {
+    await testUtils.cleanAll();
+  });
+
+  afterEach(async () => {
     await testUtils.cleanAll();
   });
 
