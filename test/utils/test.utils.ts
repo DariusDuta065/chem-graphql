@@ -2,6 +2,10 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { getConnection, getRepository, Repository } from 'typeorm';
 
+import { Group } from '../../src/group/group.entity';
+import { User } from '../../src/user/user.entity';
+import { Content } from '../../src/content/content.entity';
+
 @Injectable()
 export class TestUtils {
   constructor() {
@@ -73,6 +77,35 @@ export class TestUtils {
     } catch (error) {
       throw new Error(`Could not get repository of ${entityName}`);
     }
+  }
+
+  public async getAll<T>(entityName: string): Promise<T[]> {
+    try {
+      const repo = this.getRepository(entityName);
+
+      return await repo.find();
+    } catch (error) {
+      throw new Error(`Could not get all entities: ${error}`);
+    }
+  }
+
+  public async updateGroup(
+    groupID: number,
+    users: User[] = [],
+    contents: Content[] = [],
+  ): Promise<Group> {
+    const repo: Repository<Group> = this.getRepository(Group.name);
+
+    const group = await repo.findOneOrFail(groupID);
+
+    if (users.length > 0) {
+      group.users = Promise.resolve(users);
+    }
+    if (contents.length > 0) {
+      group.contents = Promise.resolve(contents);
+    }
+
+    return await repo.save(group);
   }
 }
 
