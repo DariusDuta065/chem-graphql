@@ -39,11 +39,16 @@ export class Group {
   public scheduleMinute: number;
 
   @Field(() => [User], { nullable: true })
-  @OneToMany(() => User, (user) => user.group, { nullable: true })
+  @OneToMany(() => User, (user) => user.group, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   public users?: Promise<User[]>;
 
   @Field(() => [Content], { nullable: true })
-  @ManyToMany(() => Content, (content) => content.groups)
+  @ManyToMany(() => Content, (content) => content.groups, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({ name: 'group_content' })
   public contents?: Promise<Content[]>;
 }

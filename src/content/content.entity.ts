@@ -31,6 +31,6 @@ export class Content {
   public blocks: string;
 
   @Field(() => [Group], { nullable: true })
-  @ManyToMany(() => Group, (group) => group.contents)
+  @ManyToMany(() => Group, (group) => group.contents, { onDelete: 'CASCADE' })
   public groups?: Promise<Group[]>;
 }
