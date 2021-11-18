@@ -44,6 +44,7 @@ export class User {
 
   @ManyToOne(() => Group, (group) => group.users, {
     nullable: true,
+    onDelete: 'SET NULL',
   })
   public group?: Promise<Group>;
 }
