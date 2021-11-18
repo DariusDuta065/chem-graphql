@@ -14,7 +14,11 @@ export class UserService {
   ) {}
 
   public async getUsers(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.find({
+      where: {
+        role: Role.User,
+      },
+    });
   }
 
   public async getUserByEmail(email: string): Promise<User | undefined> {

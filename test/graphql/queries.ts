@@ -1,46 +1,161 @@
 const queries: {
   [key: string]: {
-    operationName: string;
-    query: string;
+    [key: string]: {
+      operationName: string;
+      query: string;
+    };
   };
 } = {
-  profile: {
-    operationName: `ProfileQuery`,
-    query: `
-      query ProfileQuery {
-        profile {
-          id
-          email
-          firstName
-          lastName
-          role
+  auth: {
+    profile: {
+      operationName: `ProfileQuery`,
+      query: `
+        query ProfileQuery {
+          profile {
+            id
+            email
+            firstName
+            lastName
+            role
+          }
         }
-      }
-    `,
+      `,
+    },
+    adminRoute: {
+      operationName: `AdminRouteQuery`,
+      query: `
+        query AdminRouteQuery {
+          adminRoute
+        }
+      `,
+    },
+    userRoute: {
+      operationName: `UserRouteQuery`,
+      query: `
+        query UserRouteQuery {
+          userRoute
+        }
+      `,
+    },
+    publicRoute: {
+      operationName: `PublicRouteQuery`,
+      query: `
+        query PublicRouteQuery {
+          publicRoute
+        }
+      `,
+    },
   },
-  adminRoute: {
-    operationName: `AdminRouteQuery`,
-    query: `
-      query AdminRouteQuery {
-        adminRoute
-      }
-    `,
+  groups: {
+    groups: {
+      operationName: `Groups`,
+      query: `
+        query Groups {
+          groups {
+            id
+            grade
+            notes
+            users {
+              userId
+            }
+            contents {
+              id
+            }
+          }
+        }
+      `,
+    },
+    group: {
+      operationName: `Group`,
+      query: `
+        query Group($groupId: Int!) {
+          group(groupId: $groupId) {
+            id
+            grade
+            notes
+            scheduleDay
+            scheduleHour
+            scheduleMinute
+          }
+        }
+      `,
+    },
   },
-  userRoute: {
-    operationName: `UserRouteQuery`,
-    query: `
-      query UserRouteQuery {
-        userRoute
-      }
-    `,
+  users: {
+    users: {
+      operationName: `Users`,
+      query: `
+        query Users {
+          users {
+            userId
+            email
+            firstName
+            lastName
+            role
+            group {
+              id
+              grade
+              notes
+              scheduleDay
+              scheduleHour
+              scheduleMinute
+            }
+          }
+        }
+      `,
+    },
+    user: {
+      operationName: `User`,
+      query: `
+        query User($userId: Int!) {
+          user(userId: $userId) {
+            userId
+            email
+            firstName
+            lastName
+            role
+            group {
+              id
+              grade
+              notes
+              scheduleDay
+              scheduleHour
+              scheduleMinute
+            }
+          }
+        }
+      `,
+    },
   },
-  publicRoute: {
-    operationName: `PublicRouteQuery`,
-    query: `
-      query PublicRouteQuery {
-        publicRoute
-      }
-    `,
+  contents: {
+    contents: {
+      operationName: `Contents`,
+      query: `
+        query Contents {
+          contents {
+            id
+            blockID
+            lastEditedAt
+            title
+            type
+          }
+        }
+      `,
+    },
+    content: {
+      operationName: `Content`,
+      query: `
+        query Content($contentId: Float!) {
+          content(contentId: $contentId) {
+            id
+            blockID
+            lastEditedAt
+            title
+            type
+          }
+        }
+      `,
+    },
   },
 };
 

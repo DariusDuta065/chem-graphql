@@ -38,8 +38,8 @@ type Group {
 
 type Mutation {
   createGroup(createGroupInput: CreateGroupInput!): Group!
-  deleteGroup(groupId: Float!): Boolean!
-  deleteUser(userId: Float!): Boolean!
+  deleteGroup(groupId: Int!): Boolean!
+  deleteUser(userId: Int!): Boolean!
   login(password: String!, username: String!): TokenOutput!
   logout(refreshToken: String!): String!
   refreshToken(refreshToken: String!): TokenOutput!
@@ -53,11 +53,11 @@ type Query {
   adminRoute: String!
   content(contentId: Float!): Content
   contents: [Content!]!
-  group(groupId: Float!): Group
+  group(groupId: Int!): Group
   groups: [Group!]!
   profile: UserData!
   publicRoute: String!
-  user(userId: Float!): UserOutput
+  user(userId: Int!): UserOutput
   userRoute: String!
   users: [UserOutput!]!
 }

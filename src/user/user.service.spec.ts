@@ -40,7 +40,11 @@ describe('UserService', () => {
 
       await service.getUsers();
 
-      expect(userRepository.find).toBeCalled();
+      expect(userRepository.find).toBeCalledWith({
+        where: {
+          role: Role.User,
+        },
+      });
     });
   });
 

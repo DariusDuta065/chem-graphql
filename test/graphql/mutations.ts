@@ -1,82 +1,165 @@
 const mutations: {
   [key: string]: {
-    operationName: string;
-    query: string;
+    [key: string]: {
+      operationName: string;
+      query: string;
+    };
   };
 } = {
-  login: {
-    operationName: `LoginMutation`,
-    query: `
-      mutation LoginMutation($password: String!, $username: String!) {
-        login(password: $password, username: $username) {
-          accesstoken
-          refreshToken
-          userData {
+  auth: {
+    login: {
+      operationName: `LoginMutation`,
+      query: `
+        mutation LoginMutation($password: String!, $username: String!) {
+          login(password: $password, username: $username) {
+            accesstoken
+            refreshToken
+            userData {
+              id
+              email
+              firstName
+              lastName
+              role
+            }
+          }
+        }
+    `,
+    },
+    logout: {
+      operationName: `LogoutMutation`,
+      query: `
+        mutation LogoutMutation($logoutRefreshToken: String!) {
+          logout(refreshToken: $logoutRefreshToken)
+        }
+    `,
+    },
+    refreshToken: {
+      operationName: `RefreshTokenMutation`,
+      query: `
+        mutation RefreshTokenMutation($refreshToken: String!) {
+          refreshToken(refreshToken: $refreshToken) {
+            accesstoken
+            refreshToken
+            userData {
+              email
+              firstName
+              id
+              lastName
+              role
+            }
+          }
+        }
+    `,
+    },
+    register: {
+      operationName: `RegisterMutation`,
+      query: `
+        mutation RegisterMutation($userRegisterInput: UserRegisterInput!) {
+          register(userRegisterInput: $userRegisterInput) {
+            userId
+            email
+            password
+            firstName
+            lastName
+            role
+          }
+        }
+    `,
+    },
+    resetPassword: {
+      operationName: `ResetPasswordMutation`,
+      query: `
+        mutation ResetPasswordMutation($userID: Int!) {
+          resetPassword(userID: $userID) {
+            userId
+            email
+            password
+            firstName
+            lastName
+            role
+          }
+        }
+    `,
+    },
+  },
+  groups: {
+    createGroup: {
+      operationName: `CreateGroup`,
+      query: `
+        mutation CreateGroup($createGroupInput: CreateGroupInput!) {
+          createGroup(createGroupInput: $createGroupInput) {
             id
+            grade
+            notes
+            scheduleDay
+            scheduleHour
+            scheduleMinute
+            users {
+              userId
+            }
+            contents {
+              id
+            }
+          }
+        }
+    `,
+    },
+    updateGroup: {
+      operationName: `UpdateGroup`,
+      query: `
+        mutation UpdateGroup($updateGroupInput: UpdateGroupInput!) {
+          updateGroup(updateGroupInput: $updateGroupInput) {
+            id
+            grade
+            notes
+            scheduleDay
+            scheduleHour
+            scheduleMinute
+            users {
+              userId
+              email
+            }
+            contents {
+              id
+              blockID
+              lastEditedAt
+            }
+          }
+        }
+    `,
+    },
+    deleteGroup: {
+      operationName: `DeleteGroup`,
+      query: `
+        mutation DeleteGroup($groupId: Int!) {
+          deleteGroup(groupId: $groupId)
+        }
+    `,
+    },
+  },
+  users: {
+    updateUser: {
+      operationName: `UpdateUser`,
+      query: `
+        mutation UpdateUser($updateUserInput: UpdateUserInput!) {
+          updateUser(updateUserInput: $updateUserInput) {
+            userId
             email
             firstName
             lastName
             role
           }
         }
-      }
-    `,
-  },
-  logout: {
-    operationName: `LogoutMutation`,
-    query: `
-      mutation LogoutMutation($logoutRefreshToken: String!) {
-        logout(refreshToken: $logoutRefreshToken)
-      }
-    `,
-  },
-  refreshToken: {
-    operationName: `RefreshTokenMutation`,
-    query: `
-      mutation RefreshTokenMutation($refreshToken: String!) {
-        refreshToken(refreshToken: $refreshToken) {
-          accesstoken
-          refreshToken
-          userData {
-            email
-            firstName
-            id
-            lastName
-            role
-          }
+      `,
+    },
+    deleteUser: {
+      operationName: `DeleteUser`,
+      query: `
+        mutation DeleteUser($userId: Int!) {
+          deleteUser(userId: $userId)
         }
-      }
-    `,
-  },
-  register: {
-    operationName: `RegisterMutation`,
-    query: `
-      mutation RegisterMutation($userRegisterInput: UserRegisterInput!) {
-        register(userRegisterInput: $userRegisterInput) {
-          userId
-          email
-          password
-          firstName
-          lastName
-          role
-        }
-      }
-    `,
-  },
-  resetPassword: {
-    operationName: `ResetPasswordMutation`,
-    query: `
-      mutation ResetPasswordMutation($userID: Int!) {
-        resetPassword(userID: $userID) {
-          userId
-          email
-          password
-          firstName
-          lastName
-          role
-        }
-      }
-    `,
+      `,
+    },
   },
 };
 
