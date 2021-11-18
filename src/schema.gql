@@ -51,7 +51,7 @@ type Mutation {
 
 type Query {
   adminRoute: String!
-  content(contentId: Float!): Content
+  content(contentId: Int!): Content
   contents: [Content!]!
   group(groupId: Int!): Group
   groups: [Group!]!

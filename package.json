@@ -100,13 +100,17 @@
     "typescript": "^4.3.5"
   },
   "jest": {
-    "preset": "ts-jest",
-    "rootDir": ".",
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
     ],
+    "maxWorkers": 1,
+    "rootDir": ".",
+    "testRegex": ".*\\.(e2e-)?spec\\.ts",
+    "transform": {
+      "^.+\\.(t)s$": "ts-jest"
+    },
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
       "!**/*rc.(t|j)s",
@@ -119,23 +123,6 @@
       "!**/db/**"
     ],
     "coverageDirectory": "./coverage",
-    "testEnvironment": "node",
-    "projects": [
-      {
-        "displayName": "unit-tests",
-        "testRegex": ".*\\.spec\\.ts",
-        "transform": {
-          "^.+\\.(t)s$": "ts-jest"
-        }
-      },
-      {
-        "displayName": "e2e-tests",
-        "testRegex": ".*\\.e2e-spec\\.ts",
-        "runner": "./test/utils/jest-serial-runner.js",
-        "transform": {
-          "^.+\\.(t)s$": "ts-jest"
-        }
-      }
-    ]
+    "testEnvironment": "node"
   }
 }

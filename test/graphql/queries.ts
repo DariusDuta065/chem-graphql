@@ -76,6 +76,12 @@ const queries: {
             scheduleDay
             scheduleHour
             scheduleMinute
+            users {
+              userId
+            }
+            contents {
+              id
+            }
           }
         }
       `,
