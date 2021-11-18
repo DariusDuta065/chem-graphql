@@ -1,5 +1,5 @@
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Query, Resolver } from '@nestjs/graphql';
 
 import { Content } from './content.entity';
 import { ContentService } from './content.service';
@@ -27,7 +27,7 @@ export class ContentResolver {
 
   @Query(() => Content, { nullable: true })
   public async content(
-    @Args('contentId') contentID: number,
+    @Args('contentId', { type: () => Int }) contentID: number,
     @CurrentUser() user: UserData,
   ): Promise<Content | undefined> {
     if (!user || !user.id) {

@@ -138,6 +138,7 @@ const queries: {
             lastEditedAt
             title
             type
+            blocks
           }
         }
       `,
@@ -145,13 +146,14 @@ const queries: {
     content: {
       operationName: `Content`,
       query: `
-        query Content($contentId: Float!) {
+        query Content($contentId: Int!) {
           content(contentId: $contentId) {
             id
             blockID
             lastEditedAt
             title
             type
+            blocks
           }
         }
       `,
