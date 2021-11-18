@@ -4297,6 +4297,11 @@ jest-runtime@^27.3.1:
     strip-bom "^4.0.0"
     yargs "^16.2.0"
 
+jest-serial-runner@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/jest-serial-runner/-/jest-serial-runner-1.2.0.tgz#d25002cc4ea1a2b7dd051d9e6c1fa5b17ca97a73"
+  integrity sha512-iEQPK4U6K+J+46bu3QV2Uu3EnQMiIMk9nFravKlT794KxIruch0kQSV46YHUOSBeFjR4kqY6ra3aqm/AlHklDg==
+
 jest-serializer@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-serializer/-/jest-serializer-27.0.6.tgz#93a6c74e0132b81a2d54623251c46c498bb5bec1"

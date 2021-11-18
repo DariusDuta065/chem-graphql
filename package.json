@@ -89,6 +89,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "faker-es6": "^7.0.0",
     "jest": "^27.0.6",
+    "jest-serial-runner": "^1.2.0",
     "leaked-handles": "^5.2.0",
     "prettier": "^2.3.2",
     "supertest": "^6.1.3",
@@ -99,16 +100,13 @@
     "typescript": "^4.3.5"
   },
   "jest": {
+    "preset": "ts-jest",
+    "rootDir": ".",
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
     ],
-    "rootDir": ".",
-    "testRegex": ".*\\.(e2e-)?spec\\.ts",
-    "transform": {
-      "^.+\\.(t)s$": "ts-jest"
-    },
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
       "!**/*rc.(t|j)s",
@@ -121,6 +119,23 @@
       "!**/db/**"
     ],
     "coverageDirectory": "./coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "projects": [
+      {
+        "displayName": "unit-tests",
+        "testRegex": ".*\\.spec\\.ts",
+        "transform": {
+          "^.+\\.(t)s$": "ts-jest"
+        }
+      },
+      {
+        "displayName": "e2e-tests",
+        "testRegex": ".*\\.e2e-spec\\.ts",
+        "runner": "./test/utils/jest-serial-runner.js",
+        "transform": {
+          "^.+\\.(t)s$": "ts-jest"
+        }
+      }
+    ]
   }
 }
