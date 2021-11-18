@@ -53,6 +53,10 @@ describe('AuthResolver (e2e)', () => {
     await testUtils.cleanAll();
   });
 
+  afterEach(async () => {
+    await testUtils.cleanAll();
+  });
+
   describe('login', () => {
     it(`returns unauthorized if user credentials don't match`, async () => {
       await testUtils.load(
@@ -74,7 +78,7 @@ describe('AuthResolver (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...mutations.login,
+          ...mutations.auth.login,
           variables: loginData,
         });
 
@@ -103,7 +107,7 @@ describe('AuthResolver (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...mutations.login,
+          ...mutations.auth.login,
           variables: loginData,
         });
 
@@ -128,7 +132,7 @@ describe('AuthResolver (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...mutations.logout,
+          ...mutations.auth.logout,
           variables: logoutData,
         });
 
@@ -144,7 +148,7 @@ describe('AuthResolver (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...mutations.logout,
+          ...mutations.auth.logout,
           variables: logoutData,
         });
 
@@ -165,7 +169,7 @@ describe('AuthResolver (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...mutations.refreshToken,
+          ...mutations.auth.refreshToken,
           variables: refreshData,
         });
 
@@ -199,7 +203,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...mutations.register,
+          ...mutations.auth.register,
           variables: {
             userRegisterInput,
           },
@@ -232,7 +236,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...mutations.register,
+          ...mutations.auth.register,
           variables: {
             userRegisterInput,
           },
@@ -259,7 +263,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...mutations.resetPassword,
+          ...mutations.auth.resetPassword,
           variables,
         });
 
@@ -277,7 +281,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.profile,
+          ...queries.auth.profile,
         });
 
       expect(body.data.profile).toStrictEqual({
@@ -294,7 +298,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer invalid-token`)
         .send({
-          ...queries.profile,
+          ...queries.auth.profile,
         });
 
       expect(body.data).toBeNull();
@@ -312,7 +316,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.adminRoute,
+          ...queries.auth.adminRoute,
         });
 
       expect(user.role).toBe(Role.Admin);
@@ -329,7 +333,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.adminRoute,
+          ...queries.auth.adminRoute,
         });
 
       expect(user.role).toBe(Role.User);
@@ -341,7 +345,7 @@ describe('AuthResolver (e2e)', () => {
       const { body } = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...queries.adminRoute,
+          ...queries.auth.adminRoute,
         });
 
       expect(body.data).toBeNull();
@@ -359,7 +363,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.userRoute,
+          ...queries.auth.userRoute,
         });
 
       expect(user.role).toBe(Role.Admin);
@@ -376,7 +380,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.userRoute,
+          ...queries.auth.userRoute,
         });
 
       expect(user.role).toBe(Role.User);
@@ -388,7 +392,7 @@ describe('AuthResolver (e2e)', () => {
       const { body } = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...queries.adminRoute,
+          ...queries.auth.adminRoute,
         });
 
       expect(body.data).toBeNull();
@@ -406,7 +410,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.publicRoute,
+          ...queries.auth.publicRoute,
         });
 
       expect(user.role).toBe(Role.Admin);
@@ -423,7 +427,7 @@ describe('AuthResolver (e2e)', () => {
         .post('/graphql')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          ...queries.publicRoute,
+          ...queries.auth.publicRoute,
         });
 
       expect(user.role).toBe(Role.User);
@@ -435,7 +439,7 @@ describe('AuthResolver (e2e)', () => {
       const { body } = await request(app.getHttpServer())
         .post('/graphql')
         .send({
-          ...queries.publicRoute,
+          ...queries.auth.publicRoute,
         });
 
       expect(body.errors).toBeUndefined();
