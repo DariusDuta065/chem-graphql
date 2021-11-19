@@ -2,9 +2,9 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { getConnection, getRepository, Repository } from 'typeorm';
 
-import { Group } from '../../src/group/group.entity';
-import { User } from '../../src/user/user.entity';
-import { Content } from '../../src/content/content.entity';
+import { User } from 'src/user/user.entity';
+import { Group } from 'src/group/group.entity';
+import { Content } from 'src/content/content.entity';
 
 @Injectable()
 export class TestUtils {

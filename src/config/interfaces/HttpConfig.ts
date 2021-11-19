@@ -1,6 +1,6 @@
 export class HttpConfig {
-  static CONFIG_KEY = 'http';
+  public static CONFIG_KEY = 'http';
 
-  host: string;
-  port: number;
+  public host: string;
+  public port: number;
 }

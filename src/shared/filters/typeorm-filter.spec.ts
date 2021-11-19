@@ -1,4 +1,4 @@
-import { ArgumentsHost, Logger, NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError, TypeORMError } from 'typeorm';
 
 import { User } from '../../user/user.entity';
@@ -17,7 +17,7 @@ describe('TypeORMExceptionFilter', () => {
     const mockError = jest.fn();
     jest.spyOn(Logger.prototype, 'error').mockImplementation(mockError);
 
-    const res = excFilter.catch(err, {} as ArgumentsHost);
+    const res = excFilter.catch(err);
 
     expect(res).toBe(err);
     expect(mockError).toBeCalledWith(err);
@@ -28,7 +28,7 @@ describe('TypeORMExceptionFilter', () => {
     const mockError = jest.fn();
     jest.spyOn(Logger.prototype, 'error').mockImplementation(mockError);
 
-    const res = excFilter.catch(err, {} as ArgumentsHost);
+    const res = excFilter.catch(err);
 
     expect(res).toBeInstanceOf(NotFoundException);
     expect(res.message).toBe(err.message);

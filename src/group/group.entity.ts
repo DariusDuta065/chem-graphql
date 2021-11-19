@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 
-import { User } from '../user/user.entity';
-import { Content } from '../content/content.entity';
+import { User } from 'src/user/user.entity';
+import { Content } from 'src/content/content.entity';
 
 @Entity()
 @ObjectType()

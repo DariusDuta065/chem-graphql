@@ -8,8 +8,8 @@ import {
 
 import { Role } from '../enums/role.enum';
 import { GqlJwtAuthGuard } from './gql-jwt-auth.guard';
+import { UserData } from 'src/user/dto/user-data.output';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { UserData } from '../../user/dto/user-data.output';
 
 @Injectable()
 export class RolesGuard extends GqlJwtAuthGuard {

@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Group } from './group.entity';
-import { User } from '../user/user.entity';
-import { Role } from '../auth/enums/role.enum';
-import { Content } from '../content/content.entity';
+import { User } from 'src/user/user.entity';
+import { Role } from 'src/auth/enums/role.enum';
+import { Content } from 'src/content/content.entity';
 
 import { CreateGroupInput } from './dto/create-group.input';
 import { UpdateGroupInput } from './dto/update-group.input';

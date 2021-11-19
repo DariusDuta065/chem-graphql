@@ -1,4 +1,4 @@
-import { Block } from '../../../notion/types';
+import { Block } from 'src/notion/types';
 
 export interface UpdateNotionBlockJob {
   blockID: string;

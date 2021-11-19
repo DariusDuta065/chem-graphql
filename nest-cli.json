@@ -3,7 +3,7 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": [
-      {"include": "config/**/*.yaml", "outDir": "./dist/"}
+      {"include": "config/files/*.yaml", "outDir": "./dist/src/"}
     ]
   }
 }

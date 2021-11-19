@@ -1,9 +1,9 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 
-import { User } from '../../user/user.entity';
-import { AuthService } from '../../auth/auth.service';
+import { User } from 'src/user/user.entity';
+import { AuthService } from 'src/auth/auth.service';
 
 import { CreateUserInput } from './dto/create-user.input';
 

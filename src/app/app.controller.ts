@@ -3,12 +3,12 @@ import { Controller, Get } from '@nestjs/common';
 @Controller()
 export class AppController {
   @Get('/')
-  index() {
+  public index(): string {
     return 'ok';
   }
 
   @Get('/ping')
-  ping() {
+  public ping(): string {
     return 'pong';
   }
 }

@@ -4,18 +4,18 @@ import { INestApplication } from '@nestjs/common';
 
 import { TestUtils, AuthUtils } from './utils';
 
-import { AppModule } from '../src/app/app.module';
-import { UserModule } from '../src/user/user.module';
-import { AuthModule } from '../src/auth/auth.module';
+import { AppModule } from 'src/app/app.module';
+import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/auth/auth.module';
 
-import { User } from '../src/user/user.entity';
-import { Group } from '../src/group/group.entity';
-import { Content } from '../src/content/content.entity';
+import { User } from 'src/user/user.entity';
+import { Group } from 'src/group/group.entity';
+import { Content } from 'src/content/content.entity';
 
-import { Role } from '../src/auth/enums/role.enum';
-import { NotionAPIProcessor } from '../src/notion/processors';
-import { CreateGroupInput } from '../src/group/dto/create-group.input';
-import { UpdateGroupInput } from '../src/group/dto/update-group.input';
+import { Role } from 'src/auth/enums/role.enum';
+import { NotionAPIProcessor } from 'src/notion/processors';
+import { CreateGroupInput } from 'src/group/dto/create-group.input';
+import { UpdateGroupInput } from 'src/group/dto/update-group.input';
 
 import queries from './graphql/queries';
 import mutations from './graphql/mutations';

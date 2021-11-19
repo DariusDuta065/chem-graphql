@@ -4,11 +4,11 @@ import { Args, Int, Query, Resolver } from '@nestjs/graphql';
 import { Content } from './content.entity';
 import { ContentService } from './content.service';
 
-import { Role } from '../auth/enums/role.enum';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { UserData } from '../user/dto/user-data.output';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UserData } from 'src/user/dto/user-data.output';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @UseGuards(RolesGuard)
 @Roles(Role.User, Role.Admin)

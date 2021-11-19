@@ -8,10 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
-import { HttpConfig } from '../config/interfaces/HttpConfig';
-import { TypeORMExceptionFilter } from '../shared/filters/typeorm-filter';
+import { HttpConfig } from 'src/config/interfaces/HttpConfig';
+import { TypeORMExceptionFilter } from 'src/shared/filters/typeorm-filter';
 
-const configureApp = (app: INestApplication) => {
+const configureApp = (app: INestApplication): void => {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new TypeORMExceptionFilter());
 
@@ -27,7 +27,7 @@ const getHttpConfig = (config: ConfigService): HttpConfig => {
   });
 };
 
-const listenCallback = (port: number, host: string) => {
+const listenCallback = (port: number, host: string): void => {
   const api = `http://${host}:${port}`;
   const graphQL = `${api}/graphql`;
 
@@ -38,7 +38,7 @@ const listenCallback = (port: number, host: string) => {
   );
 };
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
 
   // Setup pipes, middleware, etc..

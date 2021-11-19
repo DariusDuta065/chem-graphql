@@ -1,7 +1,7 @@
 export class RedisConfig {
-  static CONFIG_KEY = 'db.redis';
+  public static CONFIG_KEY = 'db.redis';
 
-  host: string;
-  port: number;
-  ttl: number;
+  public host: string;
+  public port: number;
+  public ttl: number;
 }

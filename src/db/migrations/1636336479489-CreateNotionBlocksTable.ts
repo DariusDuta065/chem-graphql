@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CreateNotionBlocksTable1636336479489
   implements MigrationInterface
 {
-  name = 'CreateNotionBlocksTable1636336479489';
+  public name = 'CreateNotionBlocksTable1636336479489';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

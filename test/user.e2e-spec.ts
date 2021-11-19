@@ -4,17 +4,17 @@ import { INestApplication } from '@nestjs/common';
 
 import { TestUtils, AuthUtils } from './utils';
 
-import { AppModule } from '../src/app/app.module';
-import { UserModule } from '../src/user/user.module';
-import { AuthModule } from '../src/auth/auth.module';
+import { AppModule } from 'src/app/app.module';
+import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/auth/auth.module';
 
-import { Role } from '../src/auth/enums/role.enum';
-import { NotionAPIProcessor } from '../src/notion/processors';
+import { Role } from 'src/auth/enums/role.enum';
+import { UserOutput } from 'src/user/dto/user.output';
+import { NotionAPIProcessor } from 'src/notion/processors';
+import { UpdateUserInput } from 'src/user/dto/update-user.input';
 
 import queries from './graphql/queries';
 import mutations from './graphql/mutations';
-import { UserOutput } from '../src/user/dto/user.output';
-import { UpdateUserInput } from '../src/user/dto/update-user.input';
 
 describe('UserResolver (e2e)', () => {
   let app: INestApplication;

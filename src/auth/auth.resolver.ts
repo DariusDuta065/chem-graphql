@@ -15,10 +15,10 @@ import {
   Int,
 } from '@nestjs/graphql';
 
-import { User } from '../user/user.entity';
+import { User } from 'src/user/user.entity';
 
 import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
+import { UserService } from 'src/user/user.service';
 
 import { TokenOutput } from './dto/token.output';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -29,7 +29,7 @@ import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
-import { UserData } from '../user/dto/user-data.output';
+import { UserData } from 'src/user/dto/user-data.output';
 import { UserRegisterInput } from './dto/user-register.input';
 
 @Resolver(() => TokenOutput)

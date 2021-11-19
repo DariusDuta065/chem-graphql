@@ -2,8 +2,8 @@ import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
-import { AppModule } from '../src/app/app.module';
-import { NotionAPIProcessor } from '../src/notion/processors';
+import { AppModule } from 'src/app/app.module';
+import { NotionAPIProcessor } from 'src/notion/processors';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

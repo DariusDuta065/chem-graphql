@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { UserData } from '../../user/dto/user-data.output';
-import { JwtConfigService } from '../../config/services/jwtConfigService';
+import { UserData } from 'src/user/dto/user-data.output';
+import { JwtConfigService } from 'src/config/services/jwtConfigService';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,14 +23,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * the data returned from here.
    */
   public validate(payload: UserData & TokenData): any {
-    const { iat, exp, ...rest } = payload;
-
-    return { userId: payload.sub, ...rest };
+    const res = Object.assign({ userId: payload.sub }, payload);
+    delete res.exp;
+    delete res.iat;
+    return res;
   }
 }
 
 export class TokenData {
   public sub: number;
-  public iat: number;
-  public exp: number;
+  public iat?: number;
+  public exp?: number;
 }

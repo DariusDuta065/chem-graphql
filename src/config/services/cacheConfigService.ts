@@ -12,7 +12,7 @@ import { RedisConfig } from '../interfaces/RedisConfig';
 export class CacheConfigService implements CacheOptionsFactory {
   constructor(private configService: ConfigService) {}
 
-  createCacheOptions(): CacheModuleOptions {
+  public createCacheOptions(): CacheModuleOptions {
     const dbConfig: RedisConfig = this.configService.get<RedisConfig>(
       RedisConfig.CONFIG_KEY,
       { infer: true },

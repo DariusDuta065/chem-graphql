@@ -1,6 +1,6 @@
 export class NotionConfig {
-  static CONFIG_KEY = 'notion';
+  public static CONFIG_KEY = 'notion';
 
-  integrationToken: string;
-  databaseID: string;
+  public integrationToken: string;
+  public databaseID: string;
 }

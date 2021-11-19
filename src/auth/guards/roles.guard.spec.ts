@@ -28,7 +28,7 @@ describe('GqlJwtAuthGuard', () => {
       },
       switchToHttp() {
         return {
-          getResponse() {
+          getResponse(): any {
             return {};
           },
         };

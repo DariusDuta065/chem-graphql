@@ -6,9 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotionAPIService, NotionBlockService } from './services';
 import { NotionAPIProcessor, NotionBlockProcessor } from './processors';
 
-import { QUEUES } from '../shared/queues';
+import { QUEUES } from 'src/shared/queues';
 import { NotionBlock } from './notion-block.entity';
-import { ContentModule } from '../content/content.module';
+import { ContentModule } from 'src/content/content.module';
 
 @Module({
   imports: [

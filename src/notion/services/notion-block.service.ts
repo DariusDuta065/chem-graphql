@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { NotionBlock } from '../notion-block.entity';
 import { isBlock, NotionBlockType } from '../types';
+import { NotionBlock } from '../notion-block.entity';
 
 @Injectable()
 export class NotionBlockService {

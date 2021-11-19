@@ -2,12 +2,13 @@ import { Repository } from 'typeorm';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { User } from '../user/user.entity';
 import { Content } from './content.entity';
-import { Role } from '../auth/enums/role.enum';
-import { isBlock, NotionBlockType } from '../notion/types';
-import { NotionBlock } from '../notion/notion-block.entity';
+import { User } from 'src/user/user.entity';
 import { Group } from 'src/group/group.entity';
+import { NotionBlock } from 'src/notion/notion-block.entity';
+
+import { Role } from 'src/auth/enums/role.enum';
+import { isBlock, NotionBlockType } from 'src/notion/types';
 
 @Injectable()
 export class ContentService {

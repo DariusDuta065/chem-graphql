@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Command, Option } from 'nestjs-command';
-import { CreateUserInput } from './dto/create-user.input';
-import { SeedDBService } from './seed.service';
 import { validate } from 'class-validator';
-import { Role } from '../../auth/enums/role.enum';
+import { Command, Option } from 'nestjs-command';
+import { Injectable, Logger } from '@nestjs/common';
+
+import { SeedDBService } from './seed.service';
+import { Role } from 'src/auth/enums/role.enum';
+import { CreateUserInput } from './dto/create-user.input';
 
 @Injectable()
 export class SeedDBCommand {
@@ -15,7 +16,7 @@ export class SeedDBCommand {
     command: 'create:user',
     describe: 'create an user',
   })
-  async createUser(
+  public async createUser(
     @Option({
       name: 'email',
       alias: 'e',
@@ -48,7 +49,7 @@ export class SeedDBCommand {
       default: Role.User,
     })
     role: string,
-  ) {
+  ): Promise<void> {
     if (typeof email !== 'string') {
       this.logger.error('Invalid username');
       return;

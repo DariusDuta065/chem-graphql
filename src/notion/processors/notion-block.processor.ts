@@ -3,12 +3,15 @@ import { Job, Queue } from 'bull';
 import { Logger } from '@nestjs/common';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 
-import { JOBS } from '../../shared/jobs';
-import { QUEUES } from '../../shared/queues';
+import {
+  JOBS,
+  AggregateContentBlocksJob,
+  CheckBlockFetchStatus,
+  UpdateNotionBlockJob,
+} from 'src/shared/jobs';
+import { QUEUES } from 'src/shared/queues';
 
 import { NotionBlockService } from '../services';
-import { CheckBlockFetchStatus, UpdateNotionBlockJob } from '../../shared/jobs';
-import { AggregateContentBlocksJob } from 'src/shared/jobs';
 import { NotionBlock } from '../notion-block.entity';
 
 @Processor(QUEUES.NOTION_BLOCKS)

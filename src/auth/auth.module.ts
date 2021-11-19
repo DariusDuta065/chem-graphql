@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 
-import { UserModule } from '../user/user.module';
+import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -13,7 +13,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard';
 import { GqlLocalAuthGuard } from './guards/gql-local-auth.guard';
 
-import { JwtConfigService } from '../config/services/jwtConfigService';
+import { JwtConfigService } from 'src/config/services/jwtConfigService';
 
 @Module({
   imports: [

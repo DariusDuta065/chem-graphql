@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { Group } from './group.entity';
-import { User } from '../user/user.entity';
+import { User } from 'src/user/user.entity';
 import { GroupService } from './group.service';
-import { Content } from '../content/content.entity';
+import { Content } from 'src/content/content.entity';
 
 import { CreateGroupInput } from './dto/create-group.input';
 import { UpdateGroupInput } from './dto/update-group.input';

@@ -1,7 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
-import { Group } from '../../group/group.entity';
-import { Role } from '../../auth/enums/role.enum';
+import { Group } from 'src/group/group.entity';
+import { Role } from 'src/auth/enums/role.enum';
 
 @ObjectType()
 export class UserOutput {

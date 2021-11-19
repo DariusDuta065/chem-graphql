@@ -6,16 +6,16 @@ import { Role } from '../enums/role.enum';
 export class UserRegisterInput {
   @Field()
   @IsEmail()
-  email: string;
+  public email: string;
 
   @Field()
   @Matches(/^[a-z ]+$/i)
-  firstName: string;
+  public firstName: string;
 
   @Field()
   @Matches(/^[a-z ]+$/i)
-  lastName: string;
+  public lastName: string;
 
-  role?: Role = Role.User;
-  password?: string;
+  public role?: Role = Role.User;
+  public password?: string;
 }

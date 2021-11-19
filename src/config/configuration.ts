@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
 
-export default () => {
+export default (): Record<string, any> => {
   const YAML_CONFIG_FILENAME = `files/config.${process.env.NODE_ENV}.yaml`;
 
   if (!process.env.NODE_ENV) {

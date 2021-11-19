@@ -1,11 +1,11 @@
 import * as faker from 'faker';
 import { Injectable } from '@nestjs/common';
 
-import { User } from '../../src/user/user.entity';
-import { Role } from '../../src/auth/enums/role.enum';
-import { AuthService } from '../../src/auth/auth.service';
-import { UserService } from '../../src/user/user.service';
-import { UserRegisterInput } from '../../src/auth/dto/user-register.input';
+import { User } from 'src/user/user.entity';
+import { Role } from 'src/auth/enums/role.enum';
+import { AuthService } from 'src/auth/auth.service';
+import { UserService } from 'src/user/user.service';
+import { UserRegisterInput } from 'src/auth/dto/user-register.input';
 
 @Injectable()
 export class AuthUtils {

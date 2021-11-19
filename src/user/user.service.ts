@@ -3,9 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './user.entity';
-import { Role } from '../auth/enums/role.enum';
-import { UserRegisterInput } from '../auth/dto/user-register.input';
+import { Role } from 'src/auth/enums/role.enum';
+
 import { UpdateUserInput } from './dto/update-user.input';
+import { UserRegisterInput } from 'src/auth/dto/user-register.input';
 
 @Injectable()
 export class UserService {

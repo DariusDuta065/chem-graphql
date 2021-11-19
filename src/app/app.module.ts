@@ -18,17 +18,17 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 import { AppController } from './app.controller';
 
-import { AuthModule } from '../auth/auth.module';
-import { UserModule } from '../user/user.module';
-import { GroupModule } from '../group/group.module';
-import { NotionModule } from '../notion/notion.module';
-import { SeedDBModule } from '../db/seeders/seed.module';
-import { ContentModule } from '../content/content.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { UserModule } from 'src/user/user.module';
+import { GroupModule } from 'src/group/group.module';
+import { NotionModule } from 'src/notion/notion.module';
+import { SeedDBModule } from 'src/db/seeders/seed.module';
+import { ContentModule } from 'src/content/content.module';
 
-import configuration from '../config/configuration';
-import { BullConfigService } from '../config/services/bullConfigService';
-import { CacheConfigService } from '../config/services/cacheConfigService';
-import { TypeOrmConfigService } from '../config/services/typeOrmConfigService';
+import configuration from 'src/config/configuration';
+import { BullConfigService } from 'src/config/services/bullConfigService';
+import { CacheConfigService } from 'src/config/services/cacheConfigService';
+import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
 
 @Module({
   imports: [

@@ -1,17 +1,16 @@
 import { EntityNotFoundError, TypeORMError } from 'typeorm';
+
 import { GqlExceptionFilter } from '@nestjs/graphql';
-import {
-  Catch,
-  ArgumentsHost,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Catch, Logger, NotFoundException } from '@nestjs/common';
 
 @Catch(TypeORMError)
 export class TypeORMExceptionFilter implements GqlExceptionFilter {
   private readonly logger = new Logger(TypeORMExceptionFilter.name);
 
-  catch(exception: TypeORMError, host: ArgumentsHost) {
+  public catch(
+    exception: TypeORMError,
+    // host: ArgumentsHost,
+  ): TypeORMError | NotFoundException {
     // const gqlHost = GqlArgumentsHost.create(host);
 
     if (exception instanceof EntityNotFoundError) {

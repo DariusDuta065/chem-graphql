@@ -3,14 +3,14 @@ import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { Process, Processor } from '@nestjs/bull';
 
-import { JOBS } from '../shared/jobs';
-import { QUEUES } from '../shared/queues';
+import { JOBS } from 'src/shared/jobs';
+import { QUEUES } from 'src/shared/queues';
 import {
   AggregateContentBlocksJob,
   CreateContentJob,
   DeleteContentJob,
   UpdateContentJob,
-} from '../shared/jobs';
+} from 'src/shared/jobs';
 import { ContentService } from './content.service';
 import { Content } from './content.entity';
 

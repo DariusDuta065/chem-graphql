@@ -3,24 +3,24 @@ import { Job, Queue } from 'bull';
 import { Logger } from '@nestjs/common';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 
-import { Content } from '../../content/content.entity';
-import { ContentService } from '../../content/content.service';
+import { Content } from 'src/content/content.entity';
+import { ContentService } from 'src/content/content.service';
 import { NotionAPIService, NotionBlockService } from '../services';
 
 import { NotionPage } from '../types';
-import { JOBS } from '../../shared/jobs';
-import { QUEUES } from '../../shared/queues';
+import { JOBS } from 'src/shared/jobs';
+import { QUEUES } from 'src/shared/queues';
 
 import {
   CreateContentJob,
   DeleteContentJob,
   UpdateContentJob,
-} from '../../shared/jobs';
+} from 'src/shared/jobs';
 import {
   CheckBlockFetchStatus,
   FetchNotionBlockJob,
   UpdateNotionBlockJob,
-} from '../../shared/jobs';
+} from 'src/shared/jobs';
 
 @Processor(QUEUES.NOTION_API)
 export class NotionAPIProcessor {

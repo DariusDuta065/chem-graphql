@@ -6,16 +6,17 @@ import { INestApplication } from '@nestjs/common';
 import { TestUtils } from './utils/test.utils';
 import { AuthUtils } from './utils/auth.utils';
 
-import { User } from '../src/user/user.entity';
-import { AppModule } from '../src/app/app.module';
-import { configureApp } from '../src/app/app.main';
-import { Role } from '../src/auth/enums/role.enum';
-import { AuthModule } from '../src/auth/auth.module';
-import { GroupModule } from '../src/group/group.module';
-import { UserModule } from '../src/user/user.module';
-import { TokenOutput } from '../src/auth/dto/token.output';
-import { UserData } from '../src/user/dto/user-data.output';
-import { NotionAPIProcessor } from '../src/notion/processors';
+import { AuthModule } from 'src/auth/auth.module';
+import { UserModule } from 'src/user/user.module';
+import { GroupModule } from 'src/group/group.module';
+
+import { User } from 'src/user/user.entity';
+import { AppModule } from 'src/app/app.module';
+import { configureApp } from 'src/app/app.main';
+import { Role } from 'src/auth/enums/role.enum';
+import { TokenOutput } from 'src/auth/dto/token.output';
+import { UserData } from 'src/user/dto/user-data.output';
+import { NotionAPIProcessor } from 'src/notion/processors';
 
 import queries from './graphql/queries';
 import mutations from './graphql/mutations';
