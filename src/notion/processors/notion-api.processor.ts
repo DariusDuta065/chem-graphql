@@ -1,4 +1,5 @@
 import { Job, Queue } from 'bull';
+import { EventBus } from '@nestjs/cqrs';
 
 import { Logger } from '@nestjs/common';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
@@ -7,26 +8,26 @@ import { Content } from 'src/content/content.entity';
 import { ContentService } from 'src/content/content.service';
 import { NotionAPIService, NotionBlockService } from '../services';
 
-import { NotionPage } from '../types';
-import { JOBS } from 'src/shared/jobs';
-import { QUEUES } from 'src/shared/queues';
-
 import {
-  CreateContentJob,
-  DeleteContentJob,
-  UpdateContentJob,
-} from 'src/shared/jobs';
+  NotionPageCreatedEvent,
+  NotionPageDeletedEvent,
+  NotionPageUpdatedEvent,
+} from '../events';
 import {
-  CheckBlockFetchStatus,
+  JOBS,
   FetchNotionBlockJob,
   UpdateNotionBlockJob,
 } from 'src/shared/jobs';
+import { NotionPage } from '../types';
+import { QUEUES } from 'src/shared/queues';
 
 @Processor(QUEUES.NOTION_API)
 export class NotionAPIProcessor {
   private readonly logger = new Logger(NotionAPIProcessor.name);
 
   constructor(
+    private eventBus: EventBus,
+
     private contentService: ContentService,
     private notionApiService: NotionAPIService,
 
@@ -34,8 +35,6 @@ export class NotionAPIProcessor {
     private apiQueue: Queue,
     @InjectQueue(QUEUES.NOTION_BLOCKS)
     private blocksQueue: Queue,
-    @InjectQueue(QUEUES.CONTENT)
-    private contentQueue: Queue,
   ) {}
 
   @Process(JOBS.SYNC_NOTION)
@@ -76,21 +75,13 @@ export class NotionAPIProcessor {
       const { last_edited_time } = await this.notionApiService.getBlockMetadata(
         blockID,
       );
-      const lastEditedAt: string =
-        last_edited_time instanceof Date
-          ? last_edited_time.toISOString()
-          : last_edited_time;
 
-      let updateNotionBlockJob: UpdateNotionBlockJob = {
+      await this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, {
         blockID,
-        lastEditedAt,
+        lastEditedAt: last_edited_time,
         isUpdating: true,
         childrenBlocks: [],
-      };
-      await this.blocksQueue.add(
-        JOBS.UPDATE_NOTION_BLOCK,
-        updateNotionBlockJob,
-      );
+      } as UpdateNotionBlockJob);
 
       const blockData = await this.notionApiService.getChildrenBlocks(blockID);
 
@@ -105,16 +96,12 @@ export class NotionAPIProcessor {
         );
       }
 
-      updateNotionBlockJob = {
+      await this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, {
         blockID,
-        lastEditedAt,
+        lastEditedAt: last_edited_time,
         isUpdating: false,
         childrenBlocks: blockData.childrenBlocks,
-      };
-      await this.blocksQueue.add(
-        JOBS.UPDATE_NOTION_BLOCK,
-        updateNotionBlockJob,
-      );
+      });
     } catch (error) {
       this.logger.error(`Error in ${JOBS.FETCH_NOTION_BLOCK} ${error}`);
       throw error;
@@ -138,7 +125,7 @@ export class NotionAPIProcessor {
         continue;
       }
 
-      this.handlePageCreation(notionBlock);
+      this.eventBus.publish(new NotionPageCreatedEvent(notionBlock));
     }
   }
 
@@ -159,7 +146,7 @@ export class NotionAPIProcessor {
         continue;
       }
 
-      this.handlePageDeletion(content);
+      this.eventBus.publish(new NotionPageDeletedEvent(content));
     }
   }
 
@@ -198,77 +185,7 @@ export class NotionAPIProcessor {
        *
        * Thus, we have to assume that every page block must be refetched whenever `SyncNotionJob` happens.
        */
-      this.handlePageUpdation(content, notionBlock);
+      this.eventBus.publish(new NotionPageUpdatedEvent(content, notionBlock));
     }
-  }
-
-  private handlePageCreation(notionBlock: NotionPage): void {
-    const createContentJob: CreateContentJob = {
-      blockID: notionBlock.id,
-      title: notionBlock.title,
-      type: notionBlock.type,
-      lastEditedAt: notionBlock.lastEditedAt,
-    };
-    const fetchNotionBlockJob: FetchNotionBlockJob = {
-      blockID: notionBlock.id,
-    };
-    const checkBlockFetchStatusJob: CheckBlockFetchStatus = {
-      blockID: notionBlock.id,
-    };
-
-    this.contentQueue.add(JOBS.CREATE_CONTENT, createContentJob);
-    this.apiQueue.add(
-      JOBS.FETCH_NOTION_BLOCK,
-      fetchNotionBlockJob,
-      JOBS.OPTIONS.RETRIED,
-    );
-    this.blocksQueue.add(
-      JOBS.CHECK_BLOCK_FETCH_STATUS,
-      checkBlockFetchStatusJob,
-      {
-        ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
-      },
-    );
-  }
-
-  private handlePageUpdation(content: Content, notionBlock: NotionPage): void {
-    const updateContentJob: UpdateContentJob = {
-      id: content.id,
-      blockID: notionBlock.id,
-      title: notionBlock.title,
-      type: notionBlock.type,
-      lastEditedAt: notionBlock.lastEditedAt,
-      blocks: content.blocks,
-    };
-    const fetchNotionBlockJob: FetchNotionBlockJob = {
-      blockID: notionBlock.id,
-    };
-    const checkBlockFetchStatusJob: CheckBlockFetchStatus = {
-      blockID: notionBlock.id,
-    };
-
-    this.contentQueue.add(JOBS.UPDATE_CONTENT, updateContentJob);
-    this.apiQueue.add(
-      JOBS.FETCH_NOTION_BLOCK,
-      fetchNotionBlockJob,
-      JOBS.OPTIONS.RETRIED,
-    );
-    this.blocksQueue.add(
-      JOBS.CHECK_BLOCK_FETCH_STATUS,
-      checkBlockFetchStatusJob,
-      {
-        ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
-      },
-    );
-  }
-
-  private handlePageDeletion(content: Content): void {
-    const deleteContentJob: DeleteContentJob = {
-      blockID: content.blockID,
-    };
-
-    this.contentQueue.add(JOBS.DELETE_CONTENT, deleteContentJob);
   }
 }

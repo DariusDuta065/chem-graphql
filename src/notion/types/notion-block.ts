@@ -55,8 +55,8 @@ export interface Block {
   id: string;
   type: BlockTypeEnum | string;
   object: 'block' | 'database' | 'page' | string;
-  created_time: Date | string;
-  last_edited_time: Date | string;
+  created_time: string;
+  last_edited_time: string;
   has_children: boolean;
   children?: NotionBlockType[];
 

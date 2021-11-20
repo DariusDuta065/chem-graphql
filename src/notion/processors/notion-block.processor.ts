@@ -5,9 +5,9 @@ import { InjectQueue, Process, Processor } from '@nestjs/bull';
 
 import {
   JOBS,
-  AggregateContentBlocksJob,
-  CheckBlockFetchStatus,
   UpdateNotionBlockJob,
+  CheckBlockFetchStatusJob,
+  AggregateContentBlocksJob,
 } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
 
@@ -40,7 +40,7 @@ export class NotionBlockProcessor {
   @Process(JOBS.CHECK_BLOCK_FETCH_STATUS)
   public async checkFetchStatusJob({
     data,
-  }: Job<CheckBlockFetchStatus>): Promise<any> {
+  }: Job<CheckBlockFetchStatusJob>): Promise<any> {
     try {
       await this.notionBlockService.checkBlockStatus(data.blockID);
     } catch (error) {

@@ -779,6 +779,11 @@
     tslib "2.3.1"
     uuid "8.3.2"
 
+"@nestjs/cqrs@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/cqrs/-/cqrs-8.0.0.tgz#ef5e8ddc9d50eae5ca18f0c86c8928e072ba1d93"
+  integrity sha512-6Fy0jgUZatRXirfAhDVy3Du2UYoBLrlT7yjK4ZX3L7rBMdfTYPqmn8wE2JH3kXW3yUqLDdnS9PotHf6Y0UzLxw==
+
 "@nestjs/event-emitter@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@nestjs/event-emitter/-/event-emitter-1.0.0.tgz#aac176e70ca683cec4e9516a0a2985e173e29464"

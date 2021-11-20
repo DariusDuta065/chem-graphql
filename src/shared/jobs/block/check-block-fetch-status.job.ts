@@ -1,3 +1,3 @@
-export interface CheckBlockFetchStatus {
+export interface CheckBlockFetchStatusJob {
   blockID: string;
 }
