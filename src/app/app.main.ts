@@ -2,11 +2,12 @@ import * as chalk from 'chalk';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 
-import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 
+import setupLogger from './logger';
 import { AppModule } from './app.module';
 import { HttpConfig } from 'src/config/interfaces/HttpConfig';
 import { TypeORMExceptionFilter } from 'src/shared/filters/typeorm-filter';
@@ -39,7 +40,9 @@ const listenCallback = (port: number, host: string): void => {
 };
 
 async function bootstrap(): Promise<void> {
-  const app: INestApplication = await NestFactory.create(AppModule);
+  const app: INestApplication = await NestFactory.create(AppModule, {
+    logger: setupLogger(),
+  });
 
   // Setup pipes, middleware, etc..
   configureApp(app);

@@ -35,6 +35,7 @@ export default async (): Promise<Config.InitialOptions> => {
       '!**/*.module.(t|j)s',
       '!**/migrations/*.(t|j)s',
       '!**/db/**',
+      '!**/logger.(t|j)s',
     ],
     coverageDirectory: './coverage',
   };
