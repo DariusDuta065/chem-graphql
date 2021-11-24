@@ -25,9 +25,9 @@ db:
     entities:
       - dist/**/*.entity{.ts,.js}
     migrations:
-      - dist/db/migrations/*{.ts,.js}
+      - dist/**/migrations/*{.ts,.js}
     subscribers:
-      - dist/db/subscribers/*{.ts,.js}
+      - dist/**/subscribers/*{.ts,.js}
     cli:
       entitiesDir: src/**/*.entity{.ts,.js}
       migrationsDir: src/db/migrations
