@@ -15,7 +15,7 @@ describe('configuration', () => {
     ({ envType }: { envType: string }) => {
       process.env.NODE_ENV = envType;
 
-      const fileName = join(__dirname, `files/config.${envType}.yaml`);
+      const fileName = join(__dirname, `../../config.${envType}.yaml`);
       const readFileSyncMock = jest.fn(() => `${envType} config`);
 
       const loadMock = jest.fn((configString: string) => `${configString} obj`);

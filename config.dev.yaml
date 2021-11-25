@@ -5,7 +5,7 @@ http:
 jwt:
   secret: secretKey
   signOptions:
-    expiresIn: 10m
+    expiresIn: 24h
 
 bull:
   redis:
@@ -15,7 +15,8 @@ bull:
 db:
   typeorm:
     type: mysql
-    database: graphql-test
+    host: localhost
+    database: graphql
     username: root
     password: password
 
@@ -23,13 +24,13 @@ db:
     keepConnectionAlive: false
 
     entities:
-      - src/**/*.entity{.ts,.js}
+      - dist/**/*.entity{.ts,.js}
     migrations:
-      - src/db/migrations/*{.ts,.js}
+      - dist/**/migrations/*{.ts,.js}
     subscribers:
-      - src/db/subscribers/*{.ts,.js}
+      - dist/**/subscribers/*{.ts,.js}
     cli:
-      entitiesDir: src/**/*.entity{.ts,.js},
+      entitiesDir: src/**/*.entity{.ts,.js}
       migrationsDir: src/db/migrations
       subscribersDir: src/db/subscribers
 
