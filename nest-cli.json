@@ -1,9 +1,4 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "compilerOptions": {
-    "assets": [
-      {"include": "config/files/*.yaml", "outDir": "./dist/src/"}
-    ]
-  }
+  "sourceRoot": "src"
 }

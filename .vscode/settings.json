@@ -8,6 +8,8 @@
     "yarn.lock": true,
     ".gitignore": true,
     ".prettierrc": true,
-    ".vscode": true
+    ".vscode": true,
+    "*-audit.json": true,
+    "*.log": true
   }
 }
