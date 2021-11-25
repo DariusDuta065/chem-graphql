@@ -22,6 +22,15 @@ const setupLogger = (): LoggerService => {
           maxSize: '20m',
           maxFiles: '7d',
         }),
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.ms(),
+            nestWinstonModuleUtilities.format.nestLike('GraphQL', {
+              prettyPrint: true,
+            }),
+          ),
+        }),
       );
       break;
     default:

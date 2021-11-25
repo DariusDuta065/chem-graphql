@@ -20,9 +20,6 @@ db:
     username: root
     password: password
 
-    synchronize: false
-    keepConnectionAlive: false
-
     entities:
       - dist/**/*.entity{.ts,.js}
     migrations:
