@@ -3,6 +3,8 @@ const QUEUES = {
   NOTION_BLOCKS: 'notion_blocks',
 
   CONTENT: 'content',
+
+  DISCORD: 'discord',
 };
 
 export { QUEUES };

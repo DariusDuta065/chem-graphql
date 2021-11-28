@@ -3,10 +3,11 @@ import { InjectQueue } from '@nestjs/bull';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 import {
-  CheckBlockFetchStatusJob,
+  JOBS,
   CreateContentJob,
   FetchNotionBlockJob,
-  JOBS,
+  SendDiscordMessageJob,
+  CheckBlockFetchStatusJob,
 } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
 import { NotionPageCreatedEvent } from 'src/notion/events';
@@ -22,12 +23,15 @@ export class NotionPageCreatedHandler
     private blocksQueue: Queue,
     @InjectQueue(QUEUES.CONTENT)
     private contentQueue: Queue,
+    @InjectQueue(QUEUES.DISCORD)
+    private discordQueue: Queue,
   ) {}
 
   public async handle(event: NotionPageCreatedEvent): Promise<void> {
     await this.enqueueCreateContentJob(event);
     await this.enqueueFetchNotionBlockJob(event);
     await this.enqueueCheckBlockFetchStatusJob(event);
+    await this.enqueueSendDiscordMessageJob(event);
   }
 
   private async enqueueCreateContentJob(
@@ -77,6 +81,20 @@ export class NotionPageCreatedHandler
         ...JOBS.OPTIONS.RETRIED,
         ...JOBS.OPTIONS.DELAYED,
       },
+    );
+  }
+
+  private async enqueueSendDiscordMessageJob(
+    event: NotionPageCreatedEvent,
+  ): Promise<void> {
+    const sendDiscordMessageJob: SendDiscordMessageJob = {
+      channel: 'channel',
+      message: `notion page created ${event.notionBlock.title}`,
+    };
+    await this.discordQueue.add(
+      JOBS.SEND_DISCORD_MESSAGE,
+      sendDiscordMessageJob,
+      JOBS.OPTIONS.RETRIED,
     );
   }
 }

@@ -32,6 +32,14 @@ import { ContentModule } from 'src/content/content.module';
       {
         name: QUEUES.CONTENT,
       },
+      {
+        name: QUEUES.DISCORD,
+        // https://discord.com/developers/docs/topics/rate-limits
+        limiter: {
+          max: 50, // max 50 req per sec
+          duration: 1000,
+        },
+      },
     ),
 
     ContentModule,

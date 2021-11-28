@@ -13,7 +13,6 @@ import {
   CACHE_MANAGER,
   OnModuleDestroy,
 } from '@nestjs/common';
-// import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 import { AppController } from './app.controller';
@@ -24,6 +23,7 @@ import { GroupModule } from 'src/group/group.module';
 import { NotionModule } from 'src/notion/notion.module';
 import { SeedDBModule } from 'src/db/seeders/seed.module';
 import { ContentModule } from 'src/content/content.module';
+import { DiscordModule } from 'src/discord/discord.module';
 
 import configuration from 'src/config/configuration';
 import { BullConfigService } from 'src/config/services/bullConfigService';
@@ -33,7 +33,6 @@ import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    // EventEmitterModule.forRoot(),
 
     ConfigModule.forRoot({
       cache: true,
@@ -69,6 +68,7 @@ import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
     GroupModule,
 
     NotionModule,
+    DiscordModule,
 
     SeedDBModule,
   ],

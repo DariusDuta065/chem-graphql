@@ -11,6 +11,8 @@ const JOBS = {
   DELETE_CONTENT: 'delete_content',
   AGGREGATE_CONTENT_BLOCKS: 'aggregate_content_blocks',
 
+  SEND_DISCORD_MESSAGE: 'send_discord_message',
+
   OPTIONS: {
     RETRIED: {
       attempts: 10,
@@ -35,3 +37,5 @@ export * from './content/aggregate-content-blocks.job';
 export * from './block/fetch-notion-block.job';
 export * from './block/update-notion-block.job';
 export * from './block/check-block-fetch-status.job';
+
+export * from './discord/send-discord-message.job';
