@@ -1,19 +1,18 @@
-FROM node:14.16-alpine As development
+FROM arm64v8/node:14.16 As development
 
 WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install
-# RUN npm i --only=development
+RUN yarn --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 # Production
-FROM node:14.16-alpine as production
+FROM arm64v8/node:14.16-alpine3.13 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -23,12 +22,9 @@ WORKDIR /usr/src/app
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install --prod
-# RUN npm ci --only=production
-
-COPY . .
-
+COPY --from=development /usr/src/app/ormconfig.js ./ormconfig.js
 COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/node_modules ./node_modules
 
 EXPOSE 3000
 CMD ["node", "dist/main"]
