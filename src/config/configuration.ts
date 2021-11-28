@@ -3,7 +3,7 @@ import * as yaml from 'js-yaml';
 import { join } from 'path';
 
 export default (): Record<string, any> => {
-  const YAML_CONFIG_FILENAME = `../../config.${process.env.NODE_ENV}.yaml`;
+  const YAML_CONFIG_FILENAME = `../../env.yaml`;
 
   if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV is not defined');

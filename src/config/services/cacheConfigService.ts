@@ -20,7 +20,6 @@ export class CacheConfigService implements CacheOptionsFactory {
 
     return {
       isGlobal: true,
-      ttl: dbConfig.ttl,
       host: dbConfig.host,
       port: dbConfig.port,
       store: redisStore,

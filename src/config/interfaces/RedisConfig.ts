@@ -3,5 +3,4 @@ export class RedisConfig {
 
   public host: string;
   public port: number;
-  public ttl: number;
 }

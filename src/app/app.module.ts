@@ -13,7 +13,7 @@ import {
   CACHE_MANAGER,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+// import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
 import { AppController } from './app.controller';
@@ -33,7 +33,7 @@ import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot(),
+    // EventEmitterModule.forRoot(),
 
     ConfigModule.forRoot({
       cache: true,
@@ -46,6 +46,7 @@ import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
       sortSchema: true,
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
 

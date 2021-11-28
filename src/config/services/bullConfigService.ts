@@ -3,20 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SharedBullConfigurationFactory } from '@nestjs/bull';
 
-import { BullConfig } from '../interfaces/BullConfig';
+import { RedisConfig } from '../interfaces/RedisConfig';
 
 @Injectable()
 export class BullConfigService implements SharedBullConfigurationFactory {
   constructor(private configService: ConfigService) {}
 
   public createSharedConfiguration(): QueueOptions {
-    const config: BullConfig = this.configService.get<BullConfig>(
-      BullConfig.CONFIG_KEY,
-      {
-        infer: true,
-      },
+    const config: RedisConfig = this.configService.get<RedisConfig>(
+      RedisConfig.CONFIG_KEY,
+      { infer: true },
     );
 
-    return config;
+    return {
+      redis: config,
+    };
   }
 }
