@@ -16,8 +16,6 @@ export class DiscordProcessor {
 
   @Process(JOBS.SEND_DISCORD_MESSAGE)
   public sendDiscordMessageJob({ data }: Job<SendDiscordMessageJob>): void {
-    console.log('[SEND_DISCORD_MESSAGE] ', data);
-
     this.discordService.sendMessage(data.channel, data.message);
   }
 }

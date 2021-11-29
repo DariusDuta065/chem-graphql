@@ -6,20 +6,16 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-
     "cli:dev": "NODE_ENV=dev CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:test": "NODE_ENV=test CLI_PATH=./dist/cli.js npx nestjs-command",
     "cli:production": "NODE_ENV=production CLI_PATH=./dist/cli.js npx nestjs-command",
-
     "typeorm:dev": "NODE_ENV=dev node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
     "typeorm:test": "NODE_ENV=test node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
     "typeorm:production": "NODE_ENV=production node --require ts-node/register ./node_modules/typeorm/cli.js --config ormconfig.js",
-
     "start": "NODE_ENV=dev nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
     "start:debug": "NODE_ENV=dev nest start --debug --watch",
     "start:production": "NODE_ENV=production node dist/main",
-
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -27,6 +23,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.4.4",
+    "@grpc/proto-loader": "^0.6.7",
     "@nestjs/bull": "^0.4.2",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.2",
@@ -49,8 +47,11 @@
     "class-validator": "^0.13.1",
     "compression": "^1.7.4",
     "faker": "^5.5.3",
+    "google-protobuf": "^3.19.1",
     "graphql": "^15.6.1",
     "graphql-tools": "^8.2.0",
+    "grpc-tools": "^1.11.2",
+    "grpc_tools_node_protoc_ts": "^5.3.2",
     "helmet": "^4.6.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",

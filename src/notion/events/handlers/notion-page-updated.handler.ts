@@ -4,9 +4,11 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 import {
   JOBS,
+  ChannelName,
   UpdateContentJob,
   FetchNotionBlockJob,
   CheckBlockFetchStatusJob,
+  SendDiscordMessageJob,
 } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
 import { NotionPageUpdatedEvent } from 'src/notion/events';
@@ -22,12 +24,15 @@ export class NotionPageUpdatedHandler
     private blocksQueue: Queue,
     @InjectQueue(QUEUES.CONTENT)
     private contentQueue: Queue,
+    @InjectQueue(QUEUES.DISCORD)
+    private discordQueue: Queue,
   ) {}
 
   public async handle(event: NotionPageUpdatedEvent): Promise<void> {
     await this.enqueueUpdateContentJob(event);
     await this.enqueueFetchNotionBlockJob(event);
     await this.enqueueCheckBlockFetchStatusJob(event);
+    await this.enqueueSendDiscordMessageJob(event);
   }
 
   private async enqueueUpdateContentJob(
@@ -76,6 +81,20 @@ export class NotionPageUpdatedHandler
         ...JOBS.OPTIONS.RETRIED,
         ...JOBS.OPTIONS.DELAYED,
       },
+    );
+  }
+
+  private async enqueueSendDiscordMessageJob(
+    event: NotionPageUpdatedEvent,
+  ): Promise<void> {
+    const sendDiscordMessageJob: SendDiscordMessageJob = {
+      channel: ChannelName.logging,
+      message: `**notion page updated** - ${event.content.title}`,
+    };
+    await this.discordQueue.add(
+      JOBS.SEND_DISCORD_MESSAGE,
+      sendDiscordMessageJob,
+      JOBS.OPTIONS.RETRIED,
     );
   }
 }

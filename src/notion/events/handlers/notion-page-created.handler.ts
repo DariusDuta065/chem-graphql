@@ -4,6 +4,7 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 import {
   JOBS,
+  ChannelName,
   CreateContentJob,
   FetchNotionBlockJob,
   SendDiscordMessageJob,
@@ -88,8 +89,8 @@ export class NotionPageCreatedHandler
     event: NotionPageCreatedEvent,
   ): Promise<void> {
     const sendDiscordMessageJob: SendDiscordMessageJob = {
-      channel: 'channel',
-      message: `notion page created ${event.notionBlock.title}`,
+      channel: ChannelName.logging,
+      message: `**notion page created** - ${event.notionBlock.title}`,
     };
     await this.discordQueue.add(
       JOBS.SEND_DISCORD_MESSAGE,

@@ -1,4 +1,10 @@
+export enum ChannelName {
+  general = 'general',
+  logging = 'logging',
+  events = 'events',
+}
+
 export interface SendDiscordMessageJob {
-  channel: string;
+  channel: ChannelName;
   message: string;
 }

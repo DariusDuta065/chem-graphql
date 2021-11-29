@@ -1,0 +1,17 @@
+syntax = "proto3";
+option go_package = "github.com/dduta065/chem-discord/chembuff";
+
+package chembuff;
+
+service DiscordBot {
+  rpc SendMessage (MessageRequest) returns (MessageReply) {}
+}
+
+message MessageRequest {
+  string channel = 1;
+  string message = 2;
+}
+
+message MessageReply {
+  string message = 1;
+}

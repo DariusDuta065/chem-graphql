@@ -4,7 +4,12 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 import { QUEUES } from 'src/shared/queues';
 import { NotionPageDeletedEvent } from 'src/notion/events';
-import { JOBS, DeleteContentJob, SendDiscordMessageJob } from 'src/shared/jobs';
+import {
+  JOBS,
+  ChannelName,
+  DeleteContentJob,
+  SendDiscordMessageJob,
+} from 'src/shared/jobs';
 
 @EventsHandler(NotionPageDeletedEvent)
 export class NotionPageDeletedHandler
@@ -37,8 +42,8 @@ export class NotionPageDeletedHandler
     event: NotionPageDeletedEvent,
   ): Promise<void> {
     const sendDiscordMessageJob: SendDiscordMessageJob = {
-      channel: 'channel',
-      message: `notion page deleted ${event.content.title}`,
+      channel: ChannelName.logging,
+      message: `**notion page deleted** - ${event.content.title}`,
     };
     await this.discordQueue.add(
       JOBS.SEND_DISCORD_MESSAGE,
