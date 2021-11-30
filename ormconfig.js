@@ -25,9 +25,12 @@ if (process.env.NODE_ENV === 'test') {
 
     database: 'graphql-test',
     synchronize: true,
+
+    // >> comment out these lines for typeorm
     entities: ['src/**/*.entity{.ts,.js}'],
     migrations: ['src/**/migrations/*{.ts,.js}'],
     subscribers: ['src/**/subscribers/*{.ts,.js}'],
+    // <<
   };
 }
 

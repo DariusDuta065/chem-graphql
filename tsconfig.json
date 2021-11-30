@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "strict": true,
-    "allowJs": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -10,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "rootDir": "src",
+    // "rootDir": "src",
     "outDir": "./dist",
     "baseUrl": ".",
     "incremental": true,

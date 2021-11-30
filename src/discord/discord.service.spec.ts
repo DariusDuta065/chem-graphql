@@ -1,22 +1,24 @@
+import { Observable } from 'rxjs';
+import { AxiosResponse } from 'axios';
+import { Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChannelName } from 'src/shared/jobs';
 
 import { DiscordService } from './discord.service';
-import * as grpc from '@grpc/grpc-js';
 
-// import { DiscordBotClient } from './proto/chembuff_grpc_pb';
-import * as services from './proto/chembuff_grpc_pb';
-import * as messages from './proto/chembuff_pb';
-
-import { MessageReply, MessageRequest } from './proto/chembuff_pb';
-import { Status } from '@grpc/grpc-js/build/src/constants';
-import { Logger } from '@nestjs/common';
+interface SendMessageResponse {
+  success: boolean;
+  error: string;
+}
 
 describe('DiscordService', () => {
   let module: TestingModule;
 
   let service: DiscordService;
+  let httpService: HttpService;
   let configService: ConfigService;
 
   beforeAll(async () => {
@@ -27,117 +29,81 @@ describe('DiscordService', () => {
           provide: ConfigService,
           useValue: {},
         },
+        {
+          provide: HttpService,
+          useValue: {},
+        },
       ],
     }).compile();
 
-    configService = module.get<ConfigService>(ConfigService);
+    httpService = module.get<HttpService>(HttpService);
     service = module.get<DiscordService>(DiscordService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should have a default value for the gRpc host', () => {
+  it('should send the message via the discord bot', () => {
     configService.get = jest.fn(() => {
-      return undefined;
+      return 'localhost:50051';
     });
-    const sendMessageMock = jest.fn((...args) => {
-      const messageRequest: MessageRequest = args[0];
-      const messageReply = new MessageReply();
-      messageReply.setMessage(messageRequest.getMessage());
-      args[1](null, messageReply);
+    httpService.post = jest.fn().mockImplementation(() => {
+      return new Observable<AxiosResponse<SendMessageResponse>>(
+        (subscriber) => {
+          subscriber.next({
+            data: {
+              success: true,
+              error: '',
+            },
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {},
+          });
+        },
+      );
     });
-    const handleMessageReply = jest
-      .spyOn(DiscordService.prototype as any, 'handleMessageReply')
-      .mockImplementationOnce((...args) => {
-        // const reply: MessageReply = args[1] as MessageReply;
-      });
-    jest
-      .spyOn(services.DiscordBotClient.prototype as any, 'sendMessage')
-      .mockImplementationOnce(sendMessageMock);
 
     service.sendMessage(ChannelName.general, `this is a message`);
 
-    const messageRequest = new MessageRequest();
-    messageRequest.setChannel(ChannelName.general);
-    messageRequest.setMessage(`this is a message`);
-    expect(sendMessageMock).toBeCalledWith(
-      messageRequest,
-      expect.any(Function),
+    expect(httpService.post).toBeCalledWith(
+      'http://localhost:50051/send-message',
+      {
+        channel: 'general',
+        message: 'this is a message',
+      },
     );
-
-    const messageReply = new MessageReply();
-    messageReply.setMessage(messageRequest.getMessage());
-    expect(handleMessageReply).toBeCalledWith(null, messageReply);
   });
 
-  it('should send the message via gRPC', () => {
+  it('should log out errors', () => {
     configService.get = jest.fn(() => {
       return 'localhost:50051';
     });
-    const sendMessageMock = jest.fn((...args) => {
-      const messageRequest: MessageRequest = args[0];
-      const messageReply = new MessageReply();
-      messageReply.setMessage(messageRequest.getMessage());
-      args[1](null, messageReply);
+    httpService.post = jest.fn().mockImplementation(() => {
+      return new Observable<AxiosResponse<SendMessageResponse>>(
+        (subscriber) => {
+          subscriber.error(new Error('axios error'));
+        },
+      );
     });
-    const handleMessageReply = jest
-      .spyOn(DiscordService.prototype as any, 'handleMessageReply')
-      .mockImplementationOnce((...args) => {
-        // const reply: MessageReply = args[1] as MessageReply;
-      });
-    jest
-      .spyOn(services.DiscordBotClient.prototype as any, 'sendMessage')
-      .mockImplementationOnce(sendMessageMock);
+    const loggerSpy = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation(jest.fn());
 
     service.sendMessage(ChannelName.general, `this is a message`);
 
-    const messageRequest = new MessageRequest();
-    messageRequest.setChannel(ChannelName.general);
-    messageRequest.setMessage(`this is a message`);
-    expect(sendMessageMock).toBeCalledWith(
-      messageRequest,
-      expect.any(Function),
+    expect(httpService.post).toBeCalledWith(
+      'http://localhost:50051/send-message',
+      {
+        channel: 'general',
+        message: 'this is a message',
+      },
     );
-
-    const messageReply = new MessageReply();
-    messageReply.setMessage(messageRequest.getMessage());
-    expect(handleMessageReply).toBeCalledWith(null, messageReply);
-  });
-
-  it('should handle MessageReply', async () => {
-    configService.get = jest.fn(() => {
-      return 'localhost:50051';
-    });
-
-    Logger.debug = jest.fn();
-    const messageReply = new MessageReply();
-    messageReply.setMessage(`this is a message`);
-
-    service.handleMessageReply.apply({ logger: Logger }, [null, messageReply]);
-
-    expect(Logger.debug).toBeCalledWith('Sent message: this is a message');
-  });
-
-  it('should log errors', async () => {
-    configService.get = jest.fn(() => {
-      return 'localhost:50051';
-    });
-
-    Logger.error = jest.fn();
-    const messageReply = new MessageReply();
-    messageReply.setMessage(`this is a message`);
-    const error: grpc.ServiceError = {
-      name: 'grpc error',
-      message: 'error with grpc',
-      code: Status.UNKNOWN,
-      details: 'grpc failed',
-      metadata: new grpc.Metadata(),
-    };
-
-    service.handleMessageReply.apply({ logger: Logger }, [error, messageReply]);
-
-    expect(Logger.error).toBeCalledWith('error with grpc');
+    expect(loggerSpy).toBeCalledWith(
+      'SendMessageRequest Error',
+      new Error('axios error'),
+    );
   });
 });

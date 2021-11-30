@@ -7,12 +7,11 @@
 yarn install
 
 # start app
-yarn start
 yarn start:dev
 yarn start:production
 ```
 
-## Test
+## Testing
 
 ```bash
 # unit tests
@@ -23,20 +22,6 @@ yarn test:e2e
 yarn test:cov
 ```
 
-## CLI commands
-
-```bash
-
-# run migrations
-typeorm migration:run
-
-# run seed command
-CLI_PATH=./dist/cli.js npx nestjs-command seed:db
-#  or
-export CLI_PATH=./dist/cli.js 
-yarn build && npx nestjs-command seed:pets -n 5
-```
-
 ## Quick start
 
 ```bash
@@ -44,17 +29,7 @@ yarn build && npx nestjs-command seed:pets -n 5
 typeorm schema:drop
 typeorm migration:run
 
-# seed database
-export CLI_PATH=./dist/cli.js
+# create admin user
 yarn build
-npx nestjs-command seed:db
+yarn cli:dev create:user -f Darius -l Duta -p password -e email@test.com -r admin
 ```
-
-## ToDos
-
-- GraphQL auth
-- Environment configuration
-- Queues
-- Events
-- Deployment to productionuction
-- Add explicit `public` access modifiers

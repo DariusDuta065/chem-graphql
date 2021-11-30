@@ -1,12 +1,22 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*", "tests/**/*", "**/chembuff*"],
+  "compilerOptions": {
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "**/chembuff*",
+    "../ormconfig.js",
+    "src/discord/proto/**",
+    "discord/proto/**"
+  ],
   "exclude": [
     "node_modules",
     "test",
     "dist",
     "**/*spec.ts",
     "jest.config.ts",
-    "coverage",
+    "coverage"
   ]
 }

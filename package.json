@@ -23,8 +23,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.4.4",
-    "@grpc/proto-loader": "^0.6.7",
+    "@nestjs/axios": "^0.0.3",
     "@nestjs/bull": "^0.4.2",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.2",
@@ -47,11 +46,8 @@
     "class-validator": "^0.13.1",
     "compression": "^1.7.4",
     "faker": "^5.5.3",
-    "google-protobuf": "^3.19.1",
     "graphql": "^15.6.1",
     "graphql-tools": "^8.2.0",
-    "grpc-tools": "^1.11.2",
-    "grpc_tools_node_protoc_ts": "^5.3.2",
     "helmet": "^4.6.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
