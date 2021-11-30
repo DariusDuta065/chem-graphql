@@ -13,15 +13,7 @@ export class DiscordService {
   private discordBotClient: services.DiscordBotClient;
   private readonly logger = new Logger(DiscordService.name);
 
-  constructor(private configService: ConfigService) {
-    const configHost = configService.get<string>('discordBot.host');
-    const gRpcHost = configHost ?? 'localhost:50051';
-
-    this.discordBotClient = new services.DiscordBotClient(
-      gRpcHost,
-      grpc.credentials.createInsecure(),
-    );
-  }
+  constructor(private configService: ConfigService) {}
 
   public sendMessage(channel: ChannelName, message: string): void {
     this.logger.log(`sending ${message} on chnl: ${channel}`);
@@ -30,13 +22,13 @@ export class DiscordService {
     request.setChannel(channel);
     request.setMessage(message);
 
-    this.discordBotClient.sendMessage(
+    this.getGrpcClient().sendMessage(
       request,
-      this.handleHelloReply.bind({ logger: this.logger }),
+      this.handleMessageReply.bind({ logger: this.logger }),
     );
   }
 
-  private handleHelloReply(
+  public handleMessageReply(
     err: grpc.ServiceError | null,
     response: messages.MessageReply,
   ): void {
@@ -44,5 +36,18 @@ export class DiscordService {
       this.logger.error(err.message);
     }
     this.logger.debug(`Sent message: ${response.getMessage()}`);
+  }
+
+  private getGrpcClient(): services.DiscordBotClient {
+    const configHost = this.configService.get<string>('discordBot.host');
+    const gRpcHost = configHost ?? 'localhost:50051';
+
+    if (!this.discordBotClient) {
+      this.discordBotClient = new services.DiscordBotClient(
+        gRpcHost,
+        grpc.credentials.createInsecure(),
+      );
+    }
+    return this.discordBotClient;
   }
 }

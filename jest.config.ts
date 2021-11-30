@@ -36,6 +36,7 @@ export default async (): Promise<Config.InitialOptions> => {
       '!**/migrations/*.(t|j)s',
       '!**/db/**',
       '!**/logger.(t|j)s',
+      '!**/discord/proto/**',
     ],
     coverageDirectory: './coverage',
   };
