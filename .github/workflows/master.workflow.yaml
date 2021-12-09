@@ -1,0 +1,20 @@
+name: Build Docker image
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: List files
+      run: ls -lah
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag chem-graphql:$(date +%s)
