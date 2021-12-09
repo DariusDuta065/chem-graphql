@@ -57,5 +57,8 @@ jobs:
         echo "Repository: $ECR_REPOSITORY"
         echo "Image tag: $IMAGE_TAG"
 
-#     - name: Build the Docker image
-#       run: docker buildx build --platform linux/arm64/v8 -t chem-graphql:$(date +%s) . --file Dockerfile
+    - name: Build the Docker image
+      run: |
+        echo "$IMAGE_TAG"
+        echo "building docker image"
+#         docker buildx build --platform linux/arm64/v8 -t chem-graphql:$(date +%s) . --file Dockerfile
