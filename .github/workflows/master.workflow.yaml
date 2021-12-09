@@ -29,3 +29,6 @@ jobs:
         echo "Status:    ${{ steps.buildx.outputs.status }}"
         echo "Flags:     ${{ steps.buildx.outputs.flags }}"
         echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+
+    - name: Build the Docker image
+      run: docker buildx build --platform linux/arm64/v8 -t chem-graphql:$(date +%s) . --file Dockerfile
