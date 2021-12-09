@@ -39,5 +39,6 @@ jobs:
         ECR_REPOSITORY: chem-graphql
         IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
       run: |
-        docker buildx build --platform linux/arm64/v8 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker buildx build --platform linux/arm64/v8 -t $ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG 590624982938.dkr.ecr.eu-west-2.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push 590624982938.dkr.ecr.eu-west-2.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
