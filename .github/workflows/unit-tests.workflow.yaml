@@ -7,9 +7,53 @@ on:
       - actions-test
 
 jobs:
-  unit-test:
+
+  build-and-lint:
     runs-on: ubuntu-latest
-    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: 17.2.0
+        cache: 'yarn'
+
+    - name: Install the dependencies
+      run: |
+        yarn --version
+        yarn --frozen-lockfile
+
+    - name: Build Nest.js app
+      run: yarn build
+
+    - name: Lint Nest.js app
+      run: yarn lint
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: 17.2.0
+        cache: 'yarn'
+
+    - name: Install the dependencies
+      run: |
+        yarn --version
+        yarn --frozen-lockfile
+
+    - name: Run unit tests
+      run: yarn test src/*
+
+  e2e-tests:
+    runs-on: ubuntu-latest
     services:
 
       mariadb:
@@ -37,7 +81,6 @@ jobs:
           - 6379:6379
 
     steps:
-
     - name: Checkout repository
       uses: actions/checkout@v2
 
@@ -51,9 +94,6 @@ jobs:
       run: |
         yarn --version
         yarn --frozen-lockfile
-
-    - name: Build the Nest.js app
-      run: yarn build
-
-    - name: Run the tests
-      run: yarn test
+      
+    - name: Run e2e tests
+      run: yarn test test/*
