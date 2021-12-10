@@ -9,6 +9,33 @@ on:
 jobs:
   unit-test:
     runs-on: ubuntu-latest
+    
+    services:
+
+      mariadb:
+        image: mariadb:10.7
+        env:
+            MYSQL_DATABASE: graphql-test
+            MYSQL_USER: root
+            MYSQL_ROOT_PASSWORD: password
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+            - 3306:3306
+
+      redis:
+        image: redis:6.2
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
     steps:
 
     - name: Checkout repository
@@ -28,5 +55,5 @@ jobs:
     - name: Build the Nest.js app
       run: yarn build
 
-#     - name: Run the tests
-#       run: npm test
+    - name: Run the tests
+      run: yarn test
