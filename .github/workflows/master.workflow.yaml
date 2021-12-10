@@ -15,6 +15,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: Set env to dev
+      run: |
+        echo "ENV=dev" >> $GITHUB_ENV
+
+    - name: Set env to prod
+      if: endsWith(github.ref, '/main')
+      run: |
+        echo "ENV=prod" >> $GITHUB_ENV
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -39,5 +48,8 @@ jobs:
         ECR_REPOSITORY: chem-graphql
         IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
       run: |
-        docker buildx build --platform linux/arm64/v8 --push \
-          --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
+        docker buildx build \
+          --platform linux/arm64/v8 \
+          --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+          --tag "$ECR_REGISTRY/$ECR_REPOSITORY-$ENV" \
+          --push .
