@@ -59,9 +59,11 @@ jobs:
         echo $ENV
         EC2_SERVERS=$(
           aws ec2 describe-instances \
-            --filter Name=tag:env,Values=dev \
+            --filter Name=tag:env,Values=$ENV \
             --filter Name=tag:project,Values=chem \
-            --filter Name=tag:instance-type,Values=graphql
+            --filter Name=tag:instance-type,Values=graphql |
+            jq '.Reservations[].Instances[].PublicIpAddress' |
+            tr -d '"'
           )
         echo "servers"
         echo $EC2_SERVERS
