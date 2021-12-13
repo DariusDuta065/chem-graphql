@@ -56,7 +56,7 @@ jobs:
 
     - name: Deploy to the EC2 servers
       run: |
-        echo $ENV
+        CURL_MAX_TIME=30 # seconds
         EC2_SERVERS=$(
           aws ec2 describe-instances \
             --filter Name=tag:env,Values=$ENV \
@@ -65,5 +65,10 @@ jobs:
             jq '.Reservations[].Instances[].PublicIpAddress' |
             tr -d '"'
           )
-        echo "servers"
-        echo $EC2_SERVERS
+
+        for server in $EC2_SERVERS; do
+          echo "Deploying on: $server"
+          curl "$server:8090/deploy" \
+            --fail \
+            --max-time $CURL_MAX_TIME
+        done
