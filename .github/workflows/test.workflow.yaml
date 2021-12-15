@@ -14,18 +14,21 @@ jobs:
           node-version: 17.2.0
           cache: 'yarn'
 
-      - name: Install the dependencies
+      # - name: Install the dependencies
+      #   run: |
+      #     yarn --version
+      #     yarn --frozen-lockfile
+
+      - name: Set env to dev
         run: |
-          yarn --version
-          yarn --frozen-lockfile
-
-      - name: pwd
-        run: pwd
-
-      - name: ls
-        run: ls -lah
+          echo "ENV=dev" >> $GITHUB_ENV
+          echo "MY_ENV=testing" >> $GITHUB_ENV
 
       - name: Run script
+        env:
+          PROJECT: chem
+          INSTANCE_TYPE: graphql
+          CURL_MAX_TIME: 60 # seconds
         run: ./.github/scripts/test.sh
 
       - name: Build Nest.js app
@@ -34,77 +37,77 @@ jobs:
       - name: Lint Nest.js app
         run: yarn lint
 
-  unit-tests:
-    needs: lint-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  # unit-tests:
+  #   needs: lint-build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 17.2.0
-          cache: 'yarn'
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 17.2.0
+  #         cache: 'yarn'
 
-      - name: Install the dependencies
-        run: |
-          yarn --version
-          yarn --frozen-lockfile
+  #     - name: Install the dependencies
+  #       run: |
+  #         yarn --version
+  #         yarn --frozen-lockfile
 
-      - name: Run unit tests
-        run: yarn test src/*
+  #     - name: Run unit tests
+  #       run: yarn test src/*
 
-  e2e-tests:
-    needs: lint-build
-    runs-on: ubuntu-latest
-    services:
-      mariadb:
-        image: mariadb:10.7
-        env:
-          MYSQL_DATABASE: graphql-test
-          MYSQL_USER: root
-          MYSQL_ROOT_PASSWORD: password
-        options: >-
-          --health-cmd "mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 3306:3306
+  # e2e-tests:
+  #   needs: lint-build
+  #   runs-on: ubuntu-latest
+  #   services:
+  #     mariadb:
+  #       image: mariadb:10.7
+  #       env:
+  #         MYSQL_DATABASE: graphql-test
+  #         MYSQL_USER: root
+  #         MYSQL_ROOT_PASSWORD: password
+  #       options: >-
+  #         --health-cmd "mysqladmin ping"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #       ports:
+  #         - 3306:3306
 
-      redis:
-        image: redis:6.2
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
+  #     redis:
+  #       image: redis:6.2
+  #       options: >-
+  #         --health-cmd "redis-cli ping"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #       ports:
+  #         - 6379:6379
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 17.2.0
-          cache: 'yarn'
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 17.2.0
+  #         cache: 'yarn'
 
-      - name: Install the dependencies
-        run: |
-          yarn --version
-          yarn --frozen-lockfile
+  #     - name: Install the dependencies
+  #       run: |
+  #         yarn --version
+  #         yarn --frozen-lockfile
 
-      - name: Run e2e tests
-        run: yarn test test/*
+  #     - name: Run e2e tests
+  #       run: yarn test test/*
 
-      - name: Run coverage checks
-        run: yarn test:cov
+  #     - name: Run coverage checks
+  #       run: yarn test:cov
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v1
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
