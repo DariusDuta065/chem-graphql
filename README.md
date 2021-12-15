@@ -1,5 +1,7 @@
 # NestJS GraphQL
 
+[![codecov](https://codecov.io/gh/dduta065/chem-graphql/branch/main/graph/badge.svg?token=1V3OYGGg2J)](https://codecov.io/gh/dduta065/chem-graphql)
+
 ## Running the app
 
 ```bash

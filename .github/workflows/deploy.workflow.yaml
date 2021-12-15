@@ -1,0 +1,79 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - actions-test
+
+jobs:
+
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 17.2.0
+          cache: 'yarn'
+
+      - name: Install the dependencies
+        run: |
+          yarn --version
+          yarn --frozen-lockfile
+
+      - name: Lint Nest.js app
+        run: yarn lint
+
+      - name: Run unit tests
+        run: yarn test src/*
+
+  build-deploy:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env to dev
+        run: |
+          echo "ENV=dev" >> $GITHUB_ENV
+
+      # - name: Set env to prod
+      #   if: endsWith(github.ref, '/main')
+      #   run: |
+      #     echo "ENV=prod" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build & push the Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: chem-graphql
+          IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+        run: ./.github/scripts/build-and-push.sh
+
+      - name: Deploy to the EC2 servers
+        env:
+          PROJECT: chem
+          INSTANCE_TYPE: graphql
+          CURL_MAX_TIME: 60 # seconds
+        run: ./.github/scripts/deploy.sh
