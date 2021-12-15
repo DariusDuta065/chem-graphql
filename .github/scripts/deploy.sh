@@ -1,3 +1,11 @@
+#!/bin/sh
+
+# needs the following from the env:
+# - ENV=dev/prod (dep on branch)
+# - PROJECT=chem
+# - INSTANCE_TYPE=graphql
+# - CURL_MAX_TIME=60
+
 EC2_SERVERS=$(
   aws ec2 describe-instances \
     --filter Name=tag:env,Values=$ENV \
