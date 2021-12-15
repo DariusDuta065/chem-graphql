@@ -4,10 +4,35 @@ on:
     branches:
       - master
       - dev
-      # - actions-test
+      - actions-test
 
 jobs:
+
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 17.2.0
+          cache: 'yarn'
+
+      - name: Install the dependencies
+        run: |
+          yarn --version
+          yarn --frozen-lockfile
+
+      - name: Lint Nest.js app
+        run: yarn lint
+
+      - name: Run unit tests
+        run: yarn test src/*
+
   build-and-deploy:
+    needs: lint-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,10 +41,10 @@ jobs:
         run: |
           echo "ENV=dev" >> $GITHUB_ENV
 
-      - name: Set env to prod
-        if: endsWith(github.ref, '/main')
-        run: |
-          echo "ENV=prod" >> $GITHUB_ENV
+      # - name: Set env to prod
+      #   if: endsWith(github.ref, '/main')
+      #   run: |
+      #     echo "ENV=prod" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
