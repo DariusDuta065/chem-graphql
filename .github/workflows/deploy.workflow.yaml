@@ -1,0 +1,74 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - actions-test
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env to dev
+        run: |
+          echo "ENV=dev" >> $GITHUB_ENV
+
+      - name: Set env to prod
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "ENV=prod" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build & push the Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: chem-graphql
+          IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+        run: |
+          docker buildx build \
+            --platform linux/arm64/v8 \
+            --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$ENV" \
+            --push .
+
+      - name: Deploy to the EC2 servers
+        env:
+          PROJECT: chem
+          INSTANCE_TYPE: graphql
+          CURL_MAX_TIME: 60 # seconds
+        run: |
+          EC2_SERVERS=$(
+            aws ec2 describe-instances \
+              --filter Name=tag:env,Values=$ENV \
+              --filter Name=tag:project,Values=$PROJECT \
+              --filter Name=tag:instance-type,Values=$INSTANCE_TYPE |
+              jq '.Reservations[].Instances[].PublicIpAddress' |
+              tr -d '"'
+            )
+
+          for server in $EC2_SERVERS; do
+            echo "Deploying on: $server"
+            curl "$server:8090/deploy" \
+              --fail \
+              --max-time $CURL_MAX_TIME
+          done
