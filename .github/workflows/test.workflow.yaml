@@ -19,6 +19,12 @@ jobs:
           yarn --version
           yarn --frozen-lockfile
 
+      - name: pwd
+        run: pwd
+
+      - name: ls
+        run: ls
+
       - name: Build Nest.js app
         run: yarn build
 
