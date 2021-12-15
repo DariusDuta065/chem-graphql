@@ -41,10 +41,10 @@ jobs:
       - name: ls
         run: ls -lah
 
-      # - name: Install the dependencies
-      #   run: |
-      #     yarn --version
-      #     yarn --frozen-lockfile
+      - name: Install the dependencies
+        run: |
+          yarn --version
+          yarn --frozen-lockfile
 
       - name: Run unit tests
         run: yarn test src/*
