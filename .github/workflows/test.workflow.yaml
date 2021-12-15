@@ -22,12 +22,6 @@ jobs:
       - name: Build Nest.js app
         run: yarn build
 
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: node_modules
-          path: node_modules
-
       - name: Lint Nest.js app
         run: yarn lint
 
@@ -43,12 +37,6 @@ jobs:
         with:
           node-version: 17.2.0
           cache: 'yarn'
-
-      - name: Download a single artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: node_modules
-          path: node_modules
 
       - name: ls
         run: ls -lah
