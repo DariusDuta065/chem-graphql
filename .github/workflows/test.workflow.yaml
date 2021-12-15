@@ -38,9 +38,6 @@ jobs:
           node-version: 17.2.0
           cache: 'yarn'
 
-      - name: ls
-        run: ls -lah
-
       - name: Install the dependencies
         run: |
           yarn --version
