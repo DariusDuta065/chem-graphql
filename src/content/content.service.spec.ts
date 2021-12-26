@@ -81,7 +81,7 @@ describe('ContentService', () => {
         lastEditedAt: new Date('2021-11-11 20:56:00'),
         title: 'Content 1',
         type: 'lesson',
-        blocks: '[...]',
+        blocks: '[]',
       };
       const group: Group = {
         id: 1,
@@ -105,7 +105,16 @@ describe('ContentService', () => {
 
       const res = await service.getContentsForUser(userID);
 
-      expect(res).toStrictEqual([content]);
+      expect(res).toStrictEqual([
+        {
+          id: 1,
+          blockID: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
+          lastEditedAt: new Date('2021-11-11 20:56:00'),
+          title: 'Content 1',
+          type: 'lesson',
+          blocks: [],
+        },
+      ]);
     });
 
     it(`throws error if user does not exist`, async () => {

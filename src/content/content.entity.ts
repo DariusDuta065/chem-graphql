@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Group } from '../group/group.entity';
@@ -26,7 +27,7 @@ export class Content {
   @Column({ type: 'datetime' })
   public lastEditedAt: Date;
 
-  @Field()
+  @Field(() => [GraphQLJSONObject])
   @Column({ type: 'text' })
   public blocks: string;
 

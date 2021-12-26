@@ -58,14 +58,14 @@ describe('ContentResolver (e2e)', () => {
         title: 'content title 1',
         type: 'content type 1',
         lastEditedAt: new Date('2021-11-11 20:56:00'),
-        blocks: 'content blocks 1',
+        blocks: '[{ "id": 1 }]',
       },
       {
         blockID: 'c45d8cde-a118-472b-a566-a7d0456405fd',
         title: 'content title 2',
         type: 'content type 2',
         lastEditedAt: new Date('2021-11-18 10:30:00'),
-        blocks: 'content blocks 2',
+        blocks: '[{ "id": 2 }]',
       },
     ] as Content[];
 
@@ -109,10 +109,12 @@ describe('ContentResolver (e2e)', () => {
     expect(fetchData.contents).toContainEqual({
       ...content[0],
       lastEditedAt: content[0].lastEditedAt.toISOString(),
+      blocks: [{ id: 1 }],
     });
     expect(fetchData.contents).toContainEqual({
       ...content[1],
       lastEditedAt: content[1].lastEditedAt.toISOString(),
+      blocks: [{ id: 2 }],
     });
   });
 
@@ -138,6 +140,7 @@ describe('ContentResolver (e2e)', () => {
     expect(fetchData.content).toStrictEqual({
       ...content[0],
       lastEditedAt: content[0].lastEditedAt.toISOString(),
+      blocks: [{ id: 1 }],
     });
   });
 
@@ -172,12 +175,14 @@ describe('ContentResolver (e2e)', () => {
     expect(fetchData.contents).toContainEqual({
       ...contents[0],
       lastEditedAt: contents[0].lastEditedAt.toISOString(),
+      blocks: [{ id: 1 }],
     });
 
     // `contents[1]` should not be available to the user
     expect(fetchData.contents).not.toContainEqual({
       ...contents[1],
       lastEditedAt: contents[1].lastEditedAt.toISOString(),
+      blocks: [{ id: 2 }],
     });
   });
 
@@ -228,6 +233,7 @@ describe('ContentResolver (e2e)', () => {
     expect(fetchData2.content).toStrictEqual({
       ...contents[1],
       lastEditedAt: contents[1].lastEditedAt.toISOString(),
+      blocks: [{ id: 2 }],
     });
   });
 });

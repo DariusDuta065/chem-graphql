@@ -30,12 +30,15 @@ export class ContentService {
    */
   public async getContentsForUser(userID: number): Promise<Content[]> {
     const user = await this.getUser(userID);
+    let content: Content[];
 
     if (user.role === Role.Admin) {
-      return this.contentRepository.find();
+      content = await this.contentRepository.find();
+    } else {
+      content = await this.getGroupContents(user.group);
     }
 
-    return this.getGroupContents(user.group);
+    return this.serializeContents(content);
   }
 
   /**
@@ -130,5 +133,18 @@ export class ContentService {
       return [];
     }
     return group.contents;
+  }
+
+  private serializeContents(contents: Content[]): Content[] {
+    if (!contents || contents.length === 0) {
+      return [];
+    }
+
+    return contents.map((c) => {
+      return {
+        ...c,
+        blocks: JSON.parse(c.blocks),
+      };
+    });
   }
 }
