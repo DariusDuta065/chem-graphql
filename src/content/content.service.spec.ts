@@ -54,7 +54,7 @@ describe('ContentService', () => {
     it(`returns all content for admins`, async () => {
       const userID = 1;
       const user: User = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first name',
         lastName: 'last name',
@@ -93,7 +93,7 @@ describe('ContentService', () => {
         contents: Promise.resolve([content]),
       };
       const user: User = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first name',
         lastName: 'last name',
@@ -130,7 +130,7 @@ describe('ContentService', () => {
       const userID = 1;
 
       const user: User = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first name',
         lastName: 'last name',

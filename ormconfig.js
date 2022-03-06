@@ -11,11 +11,11 @@ let typeormConfig = {
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/**/migrations/*{.ts,.js}'],
   subscribers: ['dist/**/subscribers/*{.ts,.js}'],
-  cli: {
-    entitiesDir: 'src/**/*.entity{.ts,.js}',
-    migrationsDir: 'src/**/migrations',
-    subscribersDir: 'src/**/subscribers',
-  },
+  // cli: {
+  //   entitiesDir: 'src/**/*.entity{.ts,.js}',
+  //   migrationsDir: 'src/**/migrations',
+  //   subscribersDir: 'src/**/subscribers',
+  // },
 };
 
 // fix for issues with jest 'test' environment

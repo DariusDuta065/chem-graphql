@@ -56,7 +56,7 @@ const queries: {
             grade
             notes
             users {
-              userId
+              id
             }
             contents {
               id
@@ -77,7 +77,7 @@ const queries: {
             scheduleHour
             scheduleMinute
             users {
-              userId
+              id
             }
             contents {
               id
@@ -93,7 +93,7 @@ const queries: {
       query: `
         query Users {
           users {
-            userId
+            id
             email
             firstName
             lastName
@@ -115,7 +115,7 @@ const queries: {
       query: `
         query User($userId: Int!) {
           user(userId: $userId) {
-            userId
+            id
             email
             firstName
             lastName

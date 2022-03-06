@@ -51,7 +51,7 @@ describe('UserService', () => {
   describe('updateUser', () => {
     it(`updates an existing user`, async () => {
       const user: User = {
-        userId: 1,
+        id: 1,
         role: Role.User,
         email: 'email@test.com',
         firstName: 'first name',
@@ -81,7 +81,7 @@ describe('UserService', () => {
 
     describe('updates only the provided fields', () => {
       const user: User = {
-        userId: 1,
+        id: 1,
         role: Role.User,
         email: 'email@test.com',
         firstName: 'first name',
@@ -161,7 +161,7 @@ describe('UserService', () => {
   describe('deleteUser', () => {
     it(`returns true if user was successfully deleted`, async () => {
       const user: User = {
-        userId: 1,
+        id: 1,
         role: Role.User,
         email: 'email@test.com',
         firstName: 'first name',
@@ -261,7 +261,7 @@ describe('UserService', () => {
   describe('updateUserPassword', () => {
     it('should save the new password for user', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         password: 'old password',
         firstName: 'first',
@@ -271,9 +271,9 @@ describe('UserService', () => {
       userRepository.findOneOrFail = jest.fn(async () => user);
       userRepository.save = jest.fn();
 
-      await service.updateUserPassword(user.userId, 'new password');
+      await service.updateUserPassword(user.id, 'new password');
 
-      expect(userRepository.findOneOrFail).toBeCalledWith(user.userId);
+      expect(userRepository.findOneOrFail).toBeCalledWith(user.id);
       expect(userRepository.save).toBeCalledWith({
         ...user,
         password: 'new password',
@@ -282,7 +282,7 @@ describe('UserService', () => {
 
     it('should throw error if userID not found', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         password: 'old password',
         firstName: 'first',
@@ -295,7 +295,7 @@ describe('UserService', () => {
       userRepository.save = jest.fn();
 
       expect(
-        service.updateUserPassword(user.userId, 'new password'),
+        service.updateUserPassword(user.id, 'new password'),
       ).rejects.toThrowError(EntityNotFoundError);
     });
   });

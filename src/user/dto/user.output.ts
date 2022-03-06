@@ -6,7 +6,7 @@ import { Role } from 'src/auth/enums/role.enum';
 @ObjectType()
 export class UserOutput {
   @Field(() => Int)
-  public userId: number;
+  public id: number;
 
   @Field()
   public email: string;

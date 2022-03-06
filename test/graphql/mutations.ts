@@ -56,7 +56,7 @@ const mutations: {
       query: `
         mutation RegisterMutation($userRegisterInput: UserRegisterInput!) {
           register(userRegisterInput: $userRegisterInput) {
-            userId
+            id
             email
             password
             firstName
@@ -71,7 +71,7 @@ const mutations: {
       query: `
         mutation ResetPasswordMutation($userID: Int!) {
           resetPassword(userID: $userID) {
-            userId
+            id
             email
             password
             firstName
@@ -95,7 +95,7 @@ const mutations: {
             scheduleHour
             scheduleMinute
             users {
-              userId
+              id
             }
             contents {
               id
@@ -116,7 +116,7 @@ const mutations: {
             scheduleHour
             scheduleMinute
             users {
-              userId
+              id
               email
             }
             contents {
@@ -143,7 +143,7 @@ const mutations: {
       query: `
         mutation UpdateUser($updateUserInput: UpdateUserInput!) {
           updateUser(updateUserInput: $updateUserInput) {
-            userId
+            id
             email
             firstName
             lastName

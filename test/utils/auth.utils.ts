@@ -50,7 +50,6 @@ export class AuthUtils {
     }
 
     const tokens = await this.authService.login({
-      id: user.userId,
       ...user,
     });
 

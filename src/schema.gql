@@ -94,10 +94,10 @@ input UpdateUserInput {
 type User {
   email: String!
   firstName: String!
+  id: Int!
   lastName: String!
   password: String!
   role: UserRole!
-  userId: Int!
 }
 
 type UserData {
@@ -112,9 +112,9 @@ type UserOutput {
   email: String!
   firstName: String!
   group: Group
+  id: Int!
   lastName: String!
   role: UserRole!
-  userId: Int!
 }
 
 input UserRegisterInput {

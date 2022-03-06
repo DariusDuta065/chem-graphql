@@ -63,7 +63,7 @@ describe('AuthService', () => {
   describe('validateUser', () => {
     it('should call usersService', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         firstName: 'first',
         lastName: 'last',
         email: 'email@email.com',
@@ -89,7 +89,7 @@ describe('AuthService', () => {
 
     it(`should return null if input pasword does not match user's`, async () => {
       const user = {
-        userId: 1,
+        id: 1,
         firstName: 'first',
         lastName: 'last',
         email: 'email@email.com',
@@ -212,7 +212,7 @@ describe('AuthService', () => {
       };
 
       const userData: User = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first',
         lastName: 'last',
@@ -240,7 +240,7 @@ describe('AuthService', () => {
       };
 
       const userData: User = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first',
         lastName: 'last',
@@ -270,7 +270,7 @@ describe('AuthService', () => {
         .mockImplementation(() => 'hashed new password');
 
       const user = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         firstName: 'first',
         lastName: 'last',
@@ -282,11 +282,11 @@ describe('AuthService', () => {
         ...user,
       }));
 
-      const res = await authService.resetPassword(user.userId);
+      const res = await authService.resetPassword(user.id);
 
       expect(res.password).toBe('cleartext new password');
       expect(userService.updateUserPassword).toBeCalledWith(
-        user.userId,
+        user.id,
         'hashed new password',
       );
     });

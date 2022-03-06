@@ -30,7 +30,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;

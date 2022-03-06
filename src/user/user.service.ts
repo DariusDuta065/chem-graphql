@@ -27,7 +27,7 @@ export class UserService {
   }
 
   public async getUserByID(userId: number | string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ userId: Number(userId) });
+    return this.usersRepository.findOne({ id: Number(userId) });
   }
 
   public async updateUser(input: UpdateUserInput): Promise<User> {

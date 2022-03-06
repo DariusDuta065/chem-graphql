@@ -179,7 +179,7 @@ describe('AuthResolver (e2e)', () => {
       expect(TestUtils.isJwt(tokenOutput.accesstoken)).toBeTruthy();
       expect(tokenOutput.refreshToken).toEqual(expect.any(String));
       expect(tokenOutput.userData).toStrictEqual({
-        id: user.userId,
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -210,9 +210,9 @@ describe('AuthResolver (e2e)', () => {
           },
         });
 
-      const { password, userId, ...rest } = body.data.register;
+      const { password, id, ...rest } = body.data.register;
       expect(password).toEqual(expect.any(String));
-      expect(userId).toEqual(expect.any(Number));
+      expect(id).toEqual(expect.any(Number));
 
       expect(rest).toStrictEqual({
         email: userRegisterInput.email,
@@ -257,7 +257,7 @@ describe('AuthResolver (e2e)', () => {
       const oldPassword = user.password;
 
       const variables = {
-        userID: user.userId,
+        userID: user.id,
       };
 
       const { body } = await request(app.getHttpServer())
@@ -286,7 +286,7 @@ describe('AuthResolver (e2e)', () => {
         });
 
       expect(body.data.profile).toStrictEqual({
-        id: user.userId,
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

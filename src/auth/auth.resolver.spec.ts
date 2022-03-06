@@ -153,7 +153,7 @@ describe('AuthResolver', () => {
       } as UserRegisterInput;
 
       const user = {
-        userId: 1,
+        id: 1,
         password: 'password',
         ...userRegisterInput,
       } as User;
@@ -195,7 +195,7 @@ describe('AuthResolver', () => {
 
     it('should return the user entity with its new cleartext password', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         email: 'email@test.com',
         password: 'password',
         firstName: 'first',
@@ -204,9 +204,9 @@ describe('AuthResolver', () => {
       } as User;
       authService.resetPassword = jest.fn().mockReturnValue(user);
 
-      const res = await authResolver.resetPassword(user.userId);
+      const res = await authResolver.resetPassword(user.id);
 
-      expect(authService.resetPassword).toBeCalledWith(user.userId);
+      expect(authService.resetPassword).toBeCalledWith(user.id);
       expect(res).toStrictEqual(user);
     });
   });
@@ -214,7 +214,7 @@ describe('AuthResolver', () => {
   describe('profile', () => {
     it('should call the users service to fetch details about the user', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         role: Role.User,
         firstName: 'first',
         lastName: 'last',
@@ -229,12 +229,12 @@ describe('AuthResolver', () => {
       const res = await authResolver.profile(user);
 
       expect(res).toStrictEqual(UserData.fromUser(user));
-      expect(userService.getUserByID).toBeCalledWith(user.userId);
+      expect(userService.getUserByID).toBeCalledWith(user.id);
     });
 
     it('should throw 401 if the user cannot be found', async () => {
       const user = {
-        userId: 1,
+        id: 1,
         role: Role.User,
         firstName: 'first',
         lastName: 'last',

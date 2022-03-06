@@ -258,7 +258,7 @@ describe('GroupResolver (e2e)', () => {
 
     // Load users into DB
     const users = await loadUsers();
-    const userIDs = users.map((u) => u.userId);
+    const userIDs = users.map((u) => u.id);
 
     // Update group to associate these users to it
     const updateGroupInput: UpdateGroupInput = {
@@ -295,8 +295,8 @@ describe('GroupResolver (e2e)', () => {
       scheduleMinute: updateGroupInput.scheduleMinute,
       contents: [],
       users: [
-        { userId: users[0].userId, email: users[0].email },
-        { userId: users[1].userId, email: users[1].email },
+        { id: users[0].id, email: users[0].email },
+        { id: users[1].id, email: users[1].email },
       ],
     });
   });

@@ -28,7 +28,7 @@ export class UserData {
 
   public static fromUser(user: User): UserData {
     return new UserData({
-      id: user.userId,
+      id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,

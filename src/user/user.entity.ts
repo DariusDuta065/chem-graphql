@@ -15,7 +15,7 @@ export class User {
 
   @PrimaryGeneratedColumn()
   @Field(() => Int)
-  public userId: number;
+  public id: number;
 
   @Column({ nullable: false })
   @Field()

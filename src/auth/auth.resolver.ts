@@ -119,7 +119,7 @@ export class AuthResolver {
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => UserData)
-  public async profile(@CurrentUser() { userId }: User): Promise<UserData> {
+  public async profile(@CurrentUser() { id: userId }: User): Promise<UserData> {
     const user = await this.userService.getUserByID(userId);
 
     if (!user) {

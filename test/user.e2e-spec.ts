@@ -71,16 +71,16 @@ describe('UserResolver (e2e)', () => {
       });
 
     const users: UserOutput[] = body.data.users;
-    const userIDs = users.map((u) => u.userId);
+    const userIDs = users.map((u) => u.id);
 
     // Admins are not returned by this resolver
-    expect(userIDs).not.toContain(adminUser.userId);
+    expect(userIDs).not.toContain(adminUser.id);
 
-    expect(userIDs).toContain(newUser1.userId);
-    expect(userIDs).toContain(newUser2.userId);
+    expect(userIDs).toContain(newUser1.id);
+    expect(userIDs).toContain(newUser2.id);
 
     expect(users).toContainEqual({
-      userId: newUser1.userId,
+      id: newUser1.id,
       email: newUser1.email,
       firstName: newUser1.firstName,
       lastName: newUser1.lastName,
@@ -88,7 +88,7 @@ describe('UserResolver (e2e)', () => {
       group: null,
     });
     expect(users).toContainEqual({
-      userId: newUser2.userId,
+      id: newUser2.id,
       email: newUser2.email,
       firstName: newUser2.firstName,
       lastName: newUser2.lastName,
@@ -112,12 +112,12 @@ describe('UserResolver (e2e)', () => {
       .send({
         ...queries.users.user,
         variables: {
-          userId: newUser.userId,
+          userId: newUser.id,
         },
       });
 
     expect(body.data.user).toStrictEqual({
-      userId: newUser.userId,
+      id: newUser.id,
       email: newUser.email,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
@@ -144,13 +144,13 @@ describe('UserResolver (e2e)', () => {
       .send({
         ...queries.users.user,
         variables: {
-          userId: newUser.userId,
+          userId: newUser.id,
         },
       });
 
     const user: UserOutput = createData.user;
     expect(user).toStrictEqual({
-      userId: newUser.userId,
+      id: newUser.id,
       email: newUser.email,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
@@ -160,7 +160,7 @@ describe('UserResolver (e2e)', () => {
 
     // Update user & check for new data
     const updateUserInput: UpdateUserInput = {
-      id: user.userId,
+      id: user.id,
       email: 'new_email@test.com',
       firstName: 'new first name',
       lastName: 'new last name',
@@ -180,7 +180,7 @@ describe('UserResolver (e2e)', () => {
 
     const updatedUser: UserOutput = updateData.updateUser;
     expect(updatedUser).toStrictEqual({
-      userId: user.userId,
+      id: user.id,
       email: updateUserInput.email,
       firstName: updateUserInput.firstName,
       lastName: updateUserInput.lastName,
@@ -206,13 +206,13 @@ describe('UserResolver (e2e)', () => {
       .send({
         ...queries.users.user,
         variables: {
-          userId: newUser.userId,
+          userId: newUser.id,
         },
       });
 
     const user: UserOutput = createData.user;
     expect(user).toStrictEqual({
-      userId: newUser.userId,
+      id: newUser.id,
       email: newUser.email,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
@@ -229,7 +229,7 @@ describe('UserResolver (e2e)', () => {
       .send({
         ...mutations.users.deleteUser,
         variables: {
-          userId: user.userId,
+          userId: user.id,
         },
       });
 
@@ -244,7 +244,7 @@ describe('UserResolver (e2e)', () => {
       .send({
         ...queries.users.user,
         variables: {
-          userId: user.userId,
+          userId: user.id,
         },
       });
 
