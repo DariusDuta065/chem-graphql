@@ -46,5 +46,6 @@ export class User {
     nullable: true,
     onDelete: 'SET NULL',
   })
+  @Field(() => Group, { nullable: true })
   public group?: Promise<Group>;
 }

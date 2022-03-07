@@ -64,7 +64,7 @@ type Query {
   publicRoute: String!
   user(userId: Int!): UserOutput
   userRoute: String!
-  users: [UserOutput!]!
+  users: [User!]!
 }
 
 type TokenOutput {
@@ -94,6 +94,7 @@ input UpdateUserInput {
 type User {
   email: String!
   firstName: String!
+  group: Group
   id: Int!
   lastName: String!
   password: String!

@@ -17,7 +17,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class UserResolver {
   constructor(private userService: UserService) {}
 
-  @Query(() => [UserOutput])
+  @Query(() => [User])
   public async users(): Promise<User[]> {
     return this.userService.getUsers();
   }
