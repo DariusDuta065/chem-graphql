@@ -28,7 +28,7 @@ export class Content {
   public lastEditedAt: Date;
 
   @Field(() => [GraphQLJSONObject])
-  @Column({ type: 'text' })
+  @Column({ type: 'longtext' })
   public blocks: string;
 
   @Field(() => [Group], { nullable: true })

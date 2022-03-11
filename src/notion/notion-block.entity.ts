@@ -11,6 +11,6 @@ export class NotionBlock {
   @Column({ type: 'datetime', nullable: false })
   public lastEditedAt: Date;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'longtext' })
   public childrenBlocks: string;
 }
