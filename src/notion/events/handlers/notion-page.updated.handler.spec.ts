@@ -124,7 +124,6 @@ describe('NotionPageUpdatedHandler', () => {
     expect(apiQueue.add).toBeCalledWith(
       JOBS.FETCH_NOTION_BLOCK,
       fetchNotionBlockJob,
-      JOBS.OPTIONS.RETRIED,
     );
   });
 

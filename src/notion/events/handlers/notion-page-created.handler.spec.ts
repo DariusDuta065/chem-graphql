@@ -12,9 +12,8 @@ import {
 } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
 import { NotionPage } from 'src/notion/types';
-import { NotionPageCreatedEvent, NotionPageDeletedEvent } from '..';
+import { NotionPageCreatedEvent } from '..';
 import { NotionPageCreatedHandler } from './notion-page-created.handler';
-import { Content } from 'src/content/content.entity';
 
 describe('NotionPageCreatedHandler', () => {
   let handler: NotionPageCreatedHandler;
@@ -106,7 +105,6 @@ describe('NotionPageCreatedHandler', () => {
     expect(apiQueue.add).toBeCalledWith(
       JOBS.FETCH_NOTION_BLOCK,
       fetchNotionBlockJob,
-      JOBS.OPTIONS.RETRIED,
     );
   });
 

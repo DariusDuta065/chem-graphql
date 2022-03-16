@@ -75,7 +75,7 @@ export class NotionPageUpdatedHandler
       checkBlockFetchStatusJob,
       {
         ...JOBS.OPTIONS.RETRIED,
-        delay: 3000,
+        ...JOBS.OPTIONS.DELAYED,
       },
     );
   }

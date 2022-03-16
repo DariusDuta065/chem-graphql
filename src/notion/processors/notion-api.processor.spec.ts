@@ -11,7 +11,6 @@ import { ContentService } from '../../content/content.service';
 
 import { JOBS } from '../../shared/jobs';
 import { QUEUES } from '../../shared/queues';
-import { FetchNotionBlockJob } from '../../shared/jobs';
 import {
   NotionPageCreatedEvent,
   NotionPageDeletedEvent,
@@ -372,16 +371,12 @@ describe('NotionAPIProcessor', () => {
 
       await processor.fetchNotionBlockJob(job);
 
-      expect(apiQueue.add).toBeCalledWith(
-        JOBS.FETCH_NOTION_BLOCK,
-        { blockID: 'parent block 1' },
-        JOBS.OPTIONS.RETRIED,
-      );
-      expect(apiQueue.add).toBeCalledWith(
-        JOBS.FETCH_NOTION_BLOCK,
-        { blockID: 'parent block 2' },
-        JOBS.OPTIONS.RETRIED,
-      );
+      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
+        blockID: 'parent block 1',
+      });
+      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
+        blockID: 'parent block 2',
+      });
     });
 
     it(`throws error & fails job if any error is caught`, async () => {

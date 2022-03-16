@@ -22,7 +22,7 @@ const JOBS = {
       },
     },
     DELAYED: {
-      delay: 1000,
+      delay: 3000,
     },
   },
 };
