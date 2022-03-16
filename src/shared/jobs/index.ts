@@ -15,10 +15,10 @@ const JOBS = {
 
   OPTIONS: {
     RETRIED: {
-      attempts: 10,
+      attempts: 4,
       backoff: {
-        type: 'exponential',
-        delay: 2000,
+        type: 'fixed',
+        delay: 5000,
       },
     },
     DELAYED: {

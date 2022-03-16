@@ -8,8 +8,8 @@ import { AppModule } from 'src/app/app.module';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 
+import { User } from 'src/user/user.entity';
 import { Role } from 'src/auth/enums/role.enum';
-import { UserOutput } from 'src/user/dto/user.output';
 import { NotionAPIProcessor } from 'src/notion/processors';
 import { UpdateUserInput } from 'src/user/dto/update-user.input';
 
@@ -70,7 +70,7 @@ describe('UserResolver (e2e)', () => {
         ...queries.users.users,
       });
 
-    const users: UserOutput[] = body.data.users;
+    const users: User[] = body.data.users;
     const userIDs = users.map((u) => u.id);
 
     // Admins are not returned by this resolver
@@ -148,7 +148,7 @@ describe('UserResolver (e2e)', () => {
         },
       });
 
-    const user: UserOutput = createData.user;
+    const user: User = createData.user;
     expect(user).toStrictEqual({
       id: newUser.id,
       email: newUser.email,
@@ -178,7 +178,7 @@ describe('UserResolver (e2e)', () => {
         },
       });
 
-    const updatedUser: UserOutput = updateData.updateUser;
+    const updatedUser: User = updateData.updateUser;
     expect(updatedUser).toStrictEqual({
       id: user.id,
       email: updateUserInput.email,
@@ -210,7 +210,7 @@ describe('UserResolver (e2e)', () => {
         },
       });
 
-    const user: UserOutput = createData.user;
+    const user: User = createData.user;
     expect(user).toStrictEqual({
       id: newUser.id,
       email: newUser.email,

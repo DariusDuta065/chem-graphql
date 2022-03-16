@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { UserOutput } from './dto/user.output';
 import { UpdateUserInput } from './dto/update-user.input';
 
 import { User } from './user.entity';
@@ -13,7 +12,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @UseGuards(RolesGuard)
 @Roles(Role.Admin)
-@Resolver(() => UserOutput)
+@Resolver(() => User)
 export class UserResolver {
   constructor(private userService: UserService) {}
 
@@ -22,14 +21,14 @@ export class UserResolver {
     return this.userService.getUsers();
   }
 
-  @Query(() => UserOutput, { nullable: true })
+  @Query(() => User, { nullable: true })
   public async user(
     @Args('userId', { type: () => Int }) userID: number,
   ): Promise<User | undefined> {
     return this.userService.getUserByID(userID);
   }
 
-  @Mutation(() => UserOutput)
+  @Mutation(() => User)
   public async updateUser(
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ): Promise<User> {

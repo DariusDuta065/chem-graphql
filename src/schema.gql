@@ -51,7 +51,7 @@ type Mutation {
   register(userRegisterInput: UserRegisterInput!): User!
   resetPassword(userID: Int!): User!
   updateGroup(updateGroupInput: UpdateGroupInput!): Group!
-  updateUser(updateUserInput: UpdateUserInput!): UserOutput!
+  updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Query {
@@ -62,7 +62,7 @@ type Query {
   groups: [Group!]!
   profile: UserData!
   publicRoute: String!
-  user(userId: Int!): UserOutput
+  user(userId: Int!): User
   userRoute: String!
   users: [User!]!
 }
@@ -107,15 +107,6 @@ type UserData {
   id: Int!
   lastName: String!
   role: String!
-}
-
-type UserOutput {
-  email: String!
-  firstName: String!
-  group: Group
-  id: Int!
-  lastName: String!
-  role: UserRole!
 }
 
 input UserRegisterInput {

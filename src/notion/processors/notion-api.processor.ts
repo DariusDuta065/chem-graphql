@@ -89,11 +89,7 @@ export class NotionAPIProcessor {
         const fetchNotionBlockJob: FetchNotionBlockJob = {
           blockID,
         };
-        await this.apiQueue.add(
-          JOBS.FETCH_NOTION_BLOCK,
-          fetchNotionBlockJob,
-          JOBS.OPTIONS.RETRIED,
-        );
+        await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
       }
 
       await this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, {

@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 
 import { Content } from './content.entity';
 import { User } from 'src/user/user.entity';
@@ -12,6 +12,8 @@ import { isBlock, NotionBlockType } from 'src/notion/types';
 
 @Injectable()
 export class ContentService {
+  private readonly logger = new Logger(ContentService.name);
+
   constructor(
     @InjectRepository(Content) private contentRepository: Repository<Content>,
     @InjectRepository(NotionBlock)
@@ -102,15 +104,20 @@ export class ContentService {
       blockID,
     });
 
-    const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
+    try {
+      const parsedBlocks: NotionBlockType[] = JSON.parse(childrenBlocks);
 
-    for (const block of parsedBlocks) {
-      if (isBlock(block) && block.has_children) {
-        block.children = JSON.parse(await this.getChildrenBlocks(block.id));
+      for (const block of parsedBlocks) {
+        if (isBlock(block) && block.has_children) {
+          block.children = JSON.parse(await this.getChildrenBlocks(block.id));
+        }
       }
-    }
 
-    return JSON.stringify(parsedBlocks);
+      return JSON.stringify(parsedBlocks);
+    } catch (error) {
+      this.logger.error(error);
+      return JSON.stringify({});
+    }
   }
 
   private async getUser(userID: number): Promise<User> {
@@ -141,10 +148,18 @@ export class ContentService {
     }
 
     return contents.map((c) => {
-      return {
-        ...c,
-        blocks: JSON.parse(c.blocks),
-      };
+      try {
+        return {
+          ...c,
+          blocks: JSON.parse(c.blocks),
+        };
+      } catch (error) {
+        this.logger.error(error);
+        return {
+          ...c,
+          blocks: [],
+        };
+      }
     });
   }
 }

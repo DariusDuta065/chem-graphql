@@ -59,11 +59,7 @@ export class NotionPageCreatedHandler
       blockID: notionBlock.id,
     };
 
-    await this.apiQueue.add(
-      JOBS.FETCH_NOTION_BLOCK,
-      fetchNotionBlockJob,
-      JOBS.OPTIONS.RETRIED,
-    );
+    await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
   }
 
   private async enqueueCheckBlockFetchStatusJob(
@@ -80,7 +76,7 @@ export class NotionPageCreatedHandler
       checkBlockFetchStatusJob,
       {
         ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
+        delay: 3000,
       },
     );
   }
