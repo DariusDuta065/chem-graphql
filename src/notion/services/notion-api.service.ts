@@ -2,10 +2,10 @@ import { Queue } from 'bull';
 import { Client as NotionClient } from '@notionhq/client';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
+import { Cron } from '@nestjs/schedule';
 import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { JOBS } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
@@ -30,7 +30,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(`*/2 * * * *`) // every two minutes
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;

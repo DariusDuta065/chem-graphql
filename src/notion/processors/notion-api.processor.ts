@@ -88,6 +88,7 @@ export class NotionAPIProcessor {
       for (const blockID of blockData.parentBlocks) {
         const fetchNotionBlockJob: FetchNotionBlockJob = {
           blockID,
+          isChild: true,
         };
         await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
       }
@@ -98,6 +99,19 @@ export class NotionAPIProcessor {
         isUpdating: false,
         childrenBlocks: blockData.childrenBlocks,
       });
+
+      if (!data.isChild) {
+        await this.blocksQueue.add(
+          JOBS.CHECK_BLOCK_FETCH_STATUS,
+          {
+            blockID,
+          },
+          {
+            ...JOBS.OPTIONS.RETRIED,
+            ...JOBS.OPTIONS.DELAYED,
+          },
+        );
+      }
     } catch (error) {
       this.logger.error(`Error in ${JOBS.FETCH_NOTION_BLOCK} ${error}`);
       throw error;

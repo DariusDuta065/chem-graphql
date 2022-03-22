@@ -127,38 +127,6 @@ describe('NotionPageUpdatedHandler', () => {
     );
   });
 
-  it(`enqueues CheckBlockFetchStatusJob`, async () => {
-    const content: Content = {
-      id: 1,
-      blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
-      lastEditedAt: new Date('2021-11-02T03:02:55.000Z'),
-      type: 'lesson',
-      title: 'Title One',
-      blocks: '[...]',
-    };
-    const notionBlock: NotionPage = {
-      id: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
-      lastEditedAt: '2021-11-07T14:51:00.000Z',
-      type: 'exercise',
-      title: 'Title Two',
-    };
-    const event = new NotionPageUpdatedEvent(content, notionBlock);
-
-    await handler.handle(event);
-
-    const checkBlockFetchStatusJob: CheckBlockFetchStatusJob = {
-      blockID: '0c73cdcb-ad0c-4f47-842d-bde407cbb81e',
-    };
-    expect(blocksQueue.add).toBeCalledWith(
-      JOBS.CHECK_BLOCK_FETCH_STATUS,
-      checkBlockFetchStatusJob,
-      {
-        ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
-      },
-    );
-  });
-
   it(`enqueues SendDiscordMessageJob `, async () => {
     const content: Content = {
       id: 1,

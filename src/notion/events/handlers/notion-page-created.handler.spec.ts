@@ -108,30 +108,6 @@ describe('NotionPageCreatedHandler', () => {
     );
   });
 
-  it(`enqueues CheckBlockFetchStatusJob`, async () => {
-    const notionBlock: NotionPage = {
-      id: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-      lastEditedAt: '2021-11-07T14:51:00.000Z',
-      type: 'exercise',
-      title: 'Title Two',
-    };
-    const event = new NotionPageCreatedEvent(notionBlock);
-
-    await handler.handle(event);
-
-    const checkBlockFetchStatusJob: CheckBlockFetchStatusJob = {
-      blockID: '9dd90a4c-58bc-436d-8a7f-adca881c3215',
-    };
-    expect(blocksQueue.add).toBeCalledWith(
-      JOBS.CHECK_BLOCK_FETCH_STATUS,
-      checkBlockFetchStatusJob,
-      {
-        ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
-      },
-    );
-  });
-
   it(`enqueues SendDiscordMessageJob `, async () => {
     const notionBlock: NotionPage = {
       id: '9dd90a4c-58bc-436d-8a7f-adca881c3215',

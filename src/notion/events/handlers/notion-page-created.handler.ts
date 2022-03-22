@@ -8,7 +8,6 @@ import {
   CreateContentJob,
   FetchNotionBlockJob,
   SendDiscordMessageJob,
-  CheckBlockFetchStatusJob,
 } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
 import { NotionPageCreatedEvent } from 'src/notion/events';
@@ -31,7 +30,6 @@ export class NotionPageCreatedHandler
   public async handle(event: NotionPageCreatedEvent): Promise<void> {
     await this.enqueueCreateContentJob(event);
     await this.enqueueFetchNotionBlockJob(event);
-    await this.enqueueCheckBlockFetchStatusJob(event);
     await this.enqueueSendDiscordMessageJob(event);
   }
 
@@ -60,25 +58,6 @@ export class NotionPageCreatedHandler
     };
 
     await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
-  }
-
-  private async enqueueCheckBlockFetchStatusJob(
-    event: NotionPageCreatedEvent,
-  ): Promise<void> {
-    const { notionBlock } = event;
-
-    const checkBlockFetchStatusJob: CheckBlockFetchStatusJob = {
-      blockID: notionBlock.id,
-    };
-
-    await this.blocksQueue.add(
-      JOBS.CHECK_BLOCK_FETCH_STATUS,
-      checkBlockFetchStatusJob,
-      {
-        ...JOBS.OPTIONS.RETRIED,
-        ...JOBS.OPTIONS.DELAYED,
-      },
-    );
   }
 
   private async enqueueSendDiscordMessageJob(

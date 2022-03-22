@@ -356,6 +356,33 @@ describe('NotionAPIProcessor', () => {
       });
     });
 
+    it(`enqueues checkBlockFetchStatusJob if block is not a child`, async () => {
+      const job = { data: { blockID: 'block ID', isChild: false } } as any;
+
+      notionApiService.getBlockMetadata = jest.fn().mockReturnValue({
+        last_edited_time: '2021-11-11 20:56:00',
+      });
+      notionApiService.getChildrenBlocks = jest.fn().mockReturnValue({
+        childrenBlocks: 'children blocks',
+        parentBlocks: [],
+      });
+      blocksQueue.add = jest.fn();
+      apiQueue.add = jest.fn();
+
+      await processor.fetchNotionBlockJob(job);
+
+      expect(blocksQueue.add).toBeCalledWith(
+        JOBS.CHECK_BLOCK_FETCH_STATUS,
+        {
+          blockID: 'block ID',
+        },
+        {
+          ...JOBS.OPTIONS.RETRIED,
+          ...JOBS.OPTIONS.DELAYED,
+        },
+      );
+    });
+
     it(`enqueues separate fetchNotionBlock jobs for children blocks`, async () => {
       const job = { data: { blockID: 'block ID' } } as any;
 
@@ -373,9 +400,11 @@ describe('NotionAPIProcessor', () => {
 
       expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
         blockID: 'parent block 1',
+        isChild: true,
       });
       expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
         blockID: 'parent block 2',
+        isChild: true,
       });
     });
 
