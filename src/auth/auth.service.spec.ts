@@ -167,7 +167,7 @@ describe('AuthService', () => {
 
       expect(cacheManager.set).toBeCalled();
       expect(cacheManager.set).toBeCalledWith(
-        Buffer.from('refreshToken').toString('base64'),
+        `token::${Buffer.from('refreshToken').toString('base64')}`,
         userData.id,
         { ttl: 30 * 24 * 60 * 60 }, // 30 days
       );
@@ -184,8 +184,8 @@ describe('AuthService', () => {
 
       await authService.logout(refreshToken);
 
-      expect(cacheManager.get).toBeCalledWith(refreshToken);
-      expect(cacheManager.del).toBeCalledWith(refreshToken);
+      expect(cacheManager.get).toBeCalledWith(`token::${refreshToken}`);
+      expect(cacheManager.del).toBeCalledWith(`token::${refreshToken}`);
     });
 
     it('should throw an error if token is not found in cache', async () => {
@@ -196,7 +196,7 @@ describe('AuthService', () => {
 
       await expect(authService.logout(refreshToken)).rejects.toThrowError();
 
-      expect(cacheManager.get).toBeCalledWith(refreshToken);
+      expect(cacheManager.get).toBeCalledWith(`token::${refreshToken}`);
       expect(cacheManager.del).not.toBeCalled();
     });
   });

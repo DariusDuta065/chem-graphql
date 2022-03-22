@@ -7,7 +7,6 @@ import { NotionPageUpdatedEvent } from '..';
 import { Content } from 'src/content/content.entity';
 import {
   ChannelName,
-  CheckBlockFetchStatusJob,
   FetchNotionBlockJob,
   JOBS,
   SendDiscordMessageJob,

@@ -71,7 +71,9 @@ export class AuthService {
    * @throws {Error}
    */
   public async logout(refreshToken: string): Promise<void> {
-    const userID = await this.cacheManager.get<number>(refreshToken);
+    const userID = await this.cacheManager.get<number>(
+      `token::${refreshToken}`,
+    );
 
     if (!userID) {
       throw Error('refresh token not found');
@@ -221,7 +223,9 @@ export class AuthService {
    * @throws {Error}
    */
   private async getRefreshTokenUserID(refreshToken: string): Promise<number> {
-    const userID = await this.cacheManager.get<number>(refreshToken);
+    const userID = await this.cacheManager.get<number>(
+      `token::${refreshToken}`,
+    );
 
     if (!userID) {
       throw new Error('Could not find refresh token in Redis');
@@ -234,13 +238,13 @@ export class AuthService {
     refreshToken: string,
     userID: number,
   ): Promise<void> {
-    await this.cacheManager.set(refreshToken, userID, {
+    await this.cacheManager.set(`token::${refreshToken}`, userID, {
       ttl: 30 * 24 * 60 * 60, // 30 days
     });
   }
 
   private async deleteRefreshToken(refreshToken: string): Promise<void> {
-    await this.cacheManager.del(refreshToken);
+    await this.cacheManager.del(`token::${refreshToken}`);
   }
 
   /**

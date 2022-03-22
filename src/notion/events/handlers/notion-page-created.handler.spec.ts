@@ -6,7 +6,6 @@ import {
   JOBS,
   CreateContentJob,
   FetchNotionBlockJob,
-  CheckBlockFetchStatusJob,
   SendDiscordMessageJob,
   ChannelName,
 } from 'src/shared/jobs';
