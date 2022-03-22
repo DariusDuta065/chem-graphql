@@ -15,8 +15,11 @@ import { DiscordProcessor } from './discord.processor';
       name: QUEUES.DISCORD,
       // https://discord.com/developers/docs/topics/rate-limits
       limiter: {
-        max: 50, // max 50 req per sec
+        max: 10, // max 50 req per sec
         duration: 1000,
+      },
+      defaultJobOptions: {
+        removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
       },
     }),
   ],

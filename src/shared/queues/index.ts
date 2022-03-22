@@ -5,6 +5,8 @@ const QUEUES = {
   CONTENT: 'content',
 
   DISCORD: 'discord',
+
+  MAX_ITEMS_IN_QUEUE: 100,
 };
 
 export { QUEUES };

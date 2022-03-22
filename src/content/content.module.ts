@@ -17,6 +17,9 @@ import { ContentResolver } from './content.resolver';
     TypeOrmModule.forFeature([Content, NotionBlock, User]),
     BullModule.registerQueue({
       name: QUEUES.CONTENT,
+      defaultJobOptions: {
+        removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
+      },
     }),
   ],
   providers: [ContentService, ContentProcessor, ContentResolver],

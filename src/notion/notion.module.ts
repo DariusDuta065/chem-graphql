@@ -25,19 +25,31 @@ import { ContentModule } from 'src/content/content.module';
           max: 3, // max 3 req per sec
           duration: 1000,
         },
+        defaultJobOptions: {
+          removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
+        },
       },
       {
         name: QUEUES.NOTION_BLOCKS,
+        defaultJobOptions: {
+          removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
+        },
       },
       {
         name: QUEUES.CONTENT,
+        defaultJobOptions: {
+          removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
+        },
       },
       {
         name: QUEUES.DISCORD,
         // https://discord.com/developers/docs/topics/rate-limits
         limiter: {
-          max: 50, // max 50 req per sec
+          max: 10, // max 50 req per sec
           duration: 1000,
+        },
+        defaultJobOptions: {
+          removeOnComplete: QUEUES.MAX_ITEMS_IN_QUEUE,
         },
       },
     ),
