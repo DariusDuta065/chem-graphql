@@ -1,7 +1,7 @@
 import * as winston from 'winston';
-import 'winston-daily-rotate-file';
 import * as Transport from 'winston-transport';
 import { LoggerService } from '@nestjs/common';
+import * as WinstonCloudWatch from 'winston-cloudwatch';
 import {
   WinstonModule,
   utilities as nestWinstonModuleUtilities,
@@ -15,13 +15,6 @@ const setupLogger = (): LoggerService => {
       // Production environment
 
       transports.push(
-        new winston.transports.DailyRotateFile({
-          filename: 'graphql-%DATE%.log',
-          datePattern: 'YYYY-MM-DD-HH',
-          zippedArchive: false,
-          maxSize: '20m',
-          maxFiles: '7d',
-        }),
         new winston.transports.Console({
           format: winston.format.combine(
             winston.format.timestamp(),
@@ -51,6 +44,20 @@ const setupLogger = (): LoggerService => {
       );
       break;
   }
+
+  transports.push(
+    new WinstonCloudWatch({
+      logGroupName: 'GraphQL',
+      logStreamName: (): string => {
+        const date = new Date().toISOString().split('T')[0];
+        const env = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+
+        return `${env}-${date}`;
+      },
+      awsRegion: 'eu-west-2',
+      level: 'debug',
+    }),
+  );
 
   return WinstonModule.createLogger({
     level: 'debug',
