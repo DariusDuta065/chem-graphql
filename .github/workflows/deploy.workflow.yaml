@@ -7,8 +7,7 @@ on:
       - actions-test
 
 jobs:
-
-  lint-test:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,7 +30,7 @@ jobs:
       - name: Run unit tests
         run: yarn test src/*
 
-  build-deploy:
+  build:
     needs: lint-test
     runs-on: ubuntu-latest
     steps:
@@ -70,10 +69,3 @@ jobs:
           ECR_REPOSITORY: chem-graphql
           IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
         run: ./.github/scripts/build-and-push.sh
-
-      - name: Deploy to the EC2 servers
-        env:
-          PROJECT: chem
-          INSTANCE_TYPE: graphql
-          CURL_MAX_TIME: 60 # seconds
-        run: ./.github/scripts/deploy.sh
