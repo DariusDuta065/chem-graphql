@@ -47,7 +47,7 @@ describe('DiscordService', () => {
 
   it('should send the message via the discord bot', () => {
     configService.get = jest.fn(() => {
-      return 'localhost:50051';
+      return 'http://localhost:50051/send-message';
     });
     httpService.post = jest.fn().mockImplementation(() => {
       return new Observable<AxiosResponse<SendMessageResponse>>(
@@ -79,12 +79,19 @@ describe('DiscordService', () => {
 
   it('should log out errors', () => {
     configService.get = jest.fn(() => {
-      return 'localhost:50051';
+      return 'http://localhost:50051/send-message';
     });
+
+    const err = {
+      response: {
+        status: 429,
+      },
+    };
+
     httpService.post = jest.fn().mockImplementation(() => {
       return new Observable<AxiosResponse<SendMessageResponse>>(
         (subscriber) => {
-          subscriber.error(new Error('axios error'));
+          subscriber.error(err);
         },
       );
     });
@@ -102,8 +109,7 @@ describe('DiscordService', () => {
       },
     );
     expect(loggerSpy).toBeCalledWith(
-      'SendMessageRequest Error',
-      new Error('axios error'),
+      `Error sending message ${err.response?.status || ''}`,
     );
   });
 });

@@ -2,6 +2,7 @@ import { map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
+import { AxiosError } from 'axios';
 
 import { ChannelName } from 'src/shared/jobs';
 
@@ -15,11 +16,10 @@ export class DiscordService {
   ) {}
 
   public sendMessage(channel: ChannelName, message: string): void {
-    const discordBotHost = this.configService.get<string>(
+    const discordBotEndpoint = this.configService.get<string>(
       'discordBot.host',
-      'localhost:50051',
+      '',
     );
-    const endpointURL = `http://${discordBotHost}/send-message`;
 
     const sendMessageRequest: SendMessageRequest = {
       channel,
@@ -27,14 +27,16 @@ export class DiscordService {
     };
 
     this.httpService
-      .post<SendMessageResponse>(endpointURL, sendMessageRequest)
+      .post<SendMessageResponse>(discordBotEndpoint, sendMessageRequest)
       .pipe(map((response) => response.data))
       .subscribe({
-        // next: (res: SendMessageResponse) => {
-        //   this.logger.debug(res);
-        // },
-        error: (err) => {
-          this.logger.error('SendMessageRequest Error', err);
+        complete: () => {
+          this.logger.debug('Sent message to Discord');
+        },
+        error: (err: AxiosError) => {
+          this.logger.error(
+            `Error sending message ${err.response?.status || ''}`,
+          );
         },
       });
   }
