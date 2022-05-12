@@ -31,7 +31,7 @@ jobs:
         run: yarn test src/*
 
   build:
-    needs: lint-test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
