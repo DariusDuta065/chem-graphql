@@ -41,7 +41,7 @@ jobs:
           echo "ENV=dev" >> $GITHUB_ENV
 
       - name: Set env to prod
-        if: endsWith(github.ref, '/main')
+        if: endsWith(github.ref, '/master')
         run: |
           echo "ENV=prod" >> $GITHUB_ENV
 
@@ -69,3 +69,33 @@ jobs:
           ECR_REPOSITORY: chem-graphql
           IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
         run: ./.github/scripts/build-and-push.sh
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env to dev
+        run: |
+          echo "ENV=dev" >> $GITHUB_ENV
+
+      - name: Set env to prod
+        if: endsWith(github.ref, '/master')
+        run: |
+          echo "ENV=prod" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ECS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.ECS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: eu-west-2
+
+      - name: Deploy ECS `graphql` service
+        env:
+          ECS_SERVICE: graphql
+          ECS_REGION: eu-west-2
+        run: |
+          CLUSTER_ARN=`aws ecs list-clusters --region $ECS_REGION | jq -r '.clusterArns[0]'`
+          aws ecs update-service --cluster $CLUSTER_ARN --service $ECS_SERVICE --force-new-deployment --region $ECS_REGION
