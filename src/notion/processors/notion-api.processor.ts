@@ -58,6 +58,7 @@ export class NotionAPIProcessor {
       this.updatePages(common, contents, notionBlocks);
     } catch (error) {
       this.logger.error(`Error in ${JOBS.SYNC_NOTION} ${error}`);
+      // console.error(error);
       throw error;
     }
   }

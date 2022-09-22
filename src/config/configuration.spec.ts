@@ -1,7 +1,3 @@
-import * as fs from 'fs';
-import * as jsyaml from 'js-yaml';
-import { join } from 'path';
-
 import * as configuration from './configuration';
 
 describe('configuration', () => {
@@ -15,20 +11,9 @@ describe('configuration', () => {
     ({ envType }: { envType: string }) => {
       process.env.NODE_ENV = envType;
 
-      const fileName = join(__dirname, `../../env.yaml`);
-      const readFileSyncMock = jest.fn(() => `${envType} config`);
-
-      const loadMock = jest.fn((configString: string) => `${configString} obj`);
-
-      jest.spyOn(fs, 'readFileSync').mockImplementation(readFileSyncMock);
-      jest.spyOn(jsyaml, 'load').mockImplementation(loadMock);
-
       const res = configuration.default();
 
-      expect(readFileSyncMock).toBeCalledWith(fileName, 'utf8');
-      expect(loadMock).toBeCalledWith(`${envType} config`);
-
-      expect(res).toStrictEqual(`${envType} config obj`);
+      expect(res).toBeInstanceOf(Object);
     },
   );
 

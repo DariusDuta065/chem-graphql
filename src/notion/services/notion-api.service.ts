@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Queue } from 'bull';
 import { Client as NotionClient } from '@notionhq/client';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
@@ -22,7 +24,9 @@ export class NotionAPIService {
 
     @InjectQueue(QUEUES.NOTION_API)
     private apiQueue: Queue,
-  ) {}
+  ) {
+    // this.getClient();
+  }
 
   /**
    * Runs reguraly in order to keep DB in sync with
@@ -30,7 +34,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(`*/2 * * * *`) // every two minutes
+  @Cron(`*/1 * * * *`) // every two minutes
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
@@ -63,7 +67,7 @@ export class NotionAPIService {
    * @returns {Promise<Block>}
    */
   public async getBlockMetadata(blockID: string): Promise<Block> {
-    const data = await this.getClient().blocks.retrieve({
+    const data: any = await this.getClient().blocks.retrieve({
       block_id: blockID,
     });
 
@@ -129,11 +133,12 @@ export class NotionAPIService {
         auth: this.getConfig().integrationToken,
       });
     }
+
     return this.client;
   }
 
   private parsePageResults(pages: QueryDatabaseResponse): NotionPage[] {
-    const parsedPages = pages.results.map((page) => {
+    const parsedPages = pages.results.map((page: any) => {
       const pg = {
         id: page.id,
         lastEditedAt: page.last_edited_time,

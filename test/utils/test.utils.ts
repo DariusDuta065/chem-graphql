@@ -64,7 +64,7 @@ export class TestUtils {
       await repo
         .createQueryBuilder(entityName)
         .insert()
-        .values(entities)
+        .values(entities as any)
         .execute();
     } catch (error) {
       throw new Error(`Could not load all entities: ${error}`);

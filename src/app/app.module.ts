@@ -38,7 +38,7 @@ import { TypeOrmConfigService } from 'src/config/services/typeOrmConfigService';
       cache: true,
       isGlobal: true,
       load: [configuration],
-      envFilePath: `env/${process.env.NODE_ENV}.env`,
+      envFilePath: `${process.env.NODE_ENV}.env`,
     }),
 
     GraphQLModule.forRoot({

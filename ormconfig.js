@@ -1,9 +1,9 @@
-const yaml = require('js-yaml');
-const { join } = require('path');
-const { readFileSync } = require('fs');
 const { SnakeNamingStrategy } = require('typeorm-naming-strategies');
 
-const config = yaml.load(readFileSync(join(__dirname, 'env.yaml'), 'utf8'));
+const loadConfiguration = require('./dist/config/configuration.js').default;
+
+// const config = yaml.load(readFileSync(join(__dirname, 'env.yaml'), 'utf8'));
+const config = loadConfiguration();
 
 let typeormConfig = {
   ...config.db.typeorm,
