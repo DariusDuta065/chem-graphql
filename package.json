@@ -36,7 +36,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/schedule": "^1.0.1",
     "@nestjs/typeorm": "^8.0.2",
-    "@notionhq/client": "^0.4.5",
+    "@notionhq/client": "^2.2.0",
     "apollo-server-express": "^3.3.0",
     "bcrypt": "^5.0.1",
     "bull": "^3.29.3",

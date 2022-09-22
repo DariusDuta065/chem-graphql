@@ -104,6 +104,7 @@ describe(`NotionAPIService`, () => {
           {
             id: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
             last_edited_time: '2021-11-02T20:14:00.000Z',
+            parent: {},
             properties: {
               content_type: {
                 type: 'select',
@@ -152,6 +153,7 @@ describe(`NotionAPIService`, () => {
         {
           id: '0c73cdcb-ad0b-4f47-842d-bde407cbb81e',
           last_edited_time: '2021-11-02T20:14:00.000Z',
+          parent: {},
           properties: {
             content_type: {
               type: 'select',

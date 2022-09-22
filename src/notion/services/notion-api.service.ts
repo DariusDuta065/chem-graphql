@@ -1,13 +1,18 @@
-// @ts-nocheck
+// // @ts-nocheck
 
 import { Queue } from 'bull';
 import { Client as NotionClient } from '@notionhq/client';
-import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
 import { Cron } from '@nestjs/schedule';
 import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Logger } from '@nestjs/common';
+import {
+  PartialPageObjectResponse,
+  QueryDatabaseResponse,
+} from '@notionhq/client/build/src/api-endpoints';
+
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 import { JOBS } from 'src/shared/jobs';
 import { QUEUES } from 'src/shared/queues';
@@ -34,7 +39,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(`*/1 * * * *`) // every two minutes
+  @Cron(`*/2 * * * *`) // every two minutes
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
@@ -138,7 +143,15 @@ export class NotionAPIService {
   }
 
   private parsePageResults(pages: QueryDatabaseResponse): NotionPage[] {
-    const parsedPages = pages.results.map((page: any) => {
+    const {
+      results,
+    }: { results: (PageObjectResponse | PartialPageObjectResponse)[] } = pages;
+
+    const parsedPages = results.map((page) => {
+      if (!('parent' in page)) {
+        return undefined;
+      }
+
       const pg = {
         id: page.id,
         lastEditedAt: page.last_edited_time,
@@ -146,7 +159,7 @@ export class NotionAPIService {
 
       for (const [k, v] of Object.entries(page.properties)) {
         if (k.toLowerCase().includes('content_title')) {
-          if (v.type === 'title' && v.title) {
+          if ('title' in v) {
             pg.title = v.title[0].plain_text;
           }
         }
