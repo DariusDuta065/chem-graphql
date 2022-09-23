@@ -89,6 +89,9 @@ jobs:
           yarn --version
           yarn --frozen-lockfile
 
+      - name: Build Nest.js app
+        run: yarn build
+
       - name: Run e2e tests
         run: yarn test test/*
 
