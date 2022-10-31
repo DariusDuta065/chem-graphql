@@ -171,7 +171,17 @@ describe('GroupService', () => {
         ...updateGroupInput,
       });
       groupRepository.save = jest.fn();
-      contentRepository.findByIds = jest.fn();
+      contentRepository.findByIds = jest.fn().mockReturnValue([
+        {
+          id: 1,
+        },
+        {
+          id: 2,
+        },
+        {
+          id: 3,
+        },
+      ]);
 
       await service.updateGroup(updateGroupInput);
 

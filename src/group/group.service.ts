@@ -55,7 +55,14 @@ export class GroupService {
       const contents: Content[] = await this.getContentsFromArray(
         input.contents,
       );
-      group.contents = Promise.resolve(contents);
+
+      const tmp = input.contents
+        .map((cID) => contents.find((c) => c.id === cID))
+        .filter((c): c is Content => !!c);
+
+      group.contents = Promise.resolve([]);
+      await this.groupRepository.save(group);
+      group.contents = Promise.resolve(tmp);
     }
 
     return this.groupRepository.save(group);
