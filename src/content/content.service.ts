@@ -1,4 +1,6 @@
+import { Queue } from 'bull';
 import { Repository } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 
@@ -7,7 +9,9 @@ import { User } from 'src/user/user.entity';
 import { Group } from 'src/group/group.entity';
 import { NotionBlock } from 'src/notion/notion-block.entity';
 
+import { QUEUES } from 'src/shared/queues';
 import { Role } from 'src/auth/enums/role.enum';
+import { JOBS, RefreshContentJob } from 'src/shared/jobs';
 import { isBlock, NotionBlockType } from 'src/notion/types';
 
 @Injectable()
@@ -15,6 +19,9 @@ export class ContentService {
   private readonly logger = new Logger(ContentService.name);
 
   constructor(
+    @InjectQueue(QUEUES.NOTION_API)
+    private apiQueue: Queue,
+
     @InjectRepository(Content) private contentRepository: Repository<Content>,
     @InjectRepository(NotionBlock)
     private blocksRepository: Repository<NotionBlock>,
@@ -68,6 +75,30 @@ export class ContentService {
 
   public async getContentByBlockID(blockID: string): Promise<Content> {
     return this.contentRepository.findOneOrFail({ blockID });
+  }
+
+  public async refreshContent(contentID: number): Promise<boolean> {
+    this.logger.log(`Refreshing content ID: ${contentID}`);
+
+    const content = await this.contentRepository.findOne(contentID);
+
+    if (!content) {
+      this.logger.error(`Content ID ${contentID} was not found`);
+      return false;
+    }
+
+    const refreshContentJob: RefreshContentJob = {
+      content,
+    };
+    this.apiQueue.add(JOBS.REFRESH_CONTENT, refreshContentJob);
+
+    return true;
+  }
+
+  public async refreshContents(): Promise<boolean> {
+    this.logger.log('Refreshing all content...');
+    this.apiQueue.add(JOBS.SYNC_NOTION);
+    return true;
   }
 
   public async insertContent(content: Content): Promise<Content> {

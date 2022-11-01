@@ -15,6 +15,7 @@ import {
 } from '../events';
 import {
   JOBS,
+  RefreshContentJob,
   FetchNotionBlockJob,
   UpdateNotionBlockJob,
 } from 'src/shared/jobs';
@@ -91,7 +92,11 @@ export class NotionAPIProcessor {
           blockID,
           isChild: true,
         };
-        await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
+        await this.apiQueue.add(
+          JOBS.FETCH_NOTION_BLOCK,
+          fetchNotionBlockJob,
+          JOBS.OPTIONS.RETRIED,
+        );
       }
 
       await this.blocksQueue.add(JOBS.UPDATE_NOTION_BLOCK, {
@@ -117,6 +122,24 @@ export class NotionAPIProcessor {
       this.logger.error(`Error in ${JOBS.FETCH_NOTION_BLOCK} ${error}`);
       throw error;
     }
+  }
+
+  @Process(JOBS.REFRESH_CONTENT)
+  public async refreshContent({ data }: Job<RefreshContentJob>): Promise<void> {
+    const content = data.content;
+    const notionBlocks = await this.notionApiService.getPagesMetadata();
+
+    const notionBlock = notionBlocks.find((b) => b.id === content.blockID);
+
+    if (!notionBlock || !content) {
+      this.logger.error(
+        `Refreshing content ${content.id} failed; block ${content.blockID} not found`,
+      );
+      return;
+    }
+
+    this.logger.error('Refreshing content', data.content.id);
+    this.eventBus.publish(new NotionPageUpdatedEvent(content, notionBlock));
   }
 
   /**

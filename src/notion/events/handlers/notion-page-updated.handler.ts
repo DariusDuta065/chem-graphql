@@ -57,7 +57,11 @@ export class NotionPageUpdatedHandler
     const fetchNotionBlockJob: FetchNotionBlockJob = {
       blockID: notionBlock.id,
     };
-    await this.apiQueue.add(JOBS.FETCH_NOTION_BLOCK, fetchNotionBlockJob);
+    await this.apiQueue.add(
+      JOBS.FETCH_NOTION_BLOCK,
+      fetchNotionBlockJob,
+      JOBS.OPTIONS.RETRIED,
+    );
   }
 
   private async enqueueSendDiscordMessageJob(

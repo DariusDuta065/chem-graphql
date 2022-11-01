@@ -1,5 +1,5 @@
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
-import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { Content } from './content.entity';
 import { ContentService } from './content.service';
@@ -35,5 +35,23 @@ export class ContentResolver {
     }
 
     return this.contentService.getContentForUser(user.id, contentID);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Mutation(() => String)
+  public async refreshContents(): Promise<string> {
+    this.contentService.refreshContents();
+    return 'ok';
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Mutation(() => String)
+  public async refreshContent(
+    @Args('contentId', { type: () => Int }) contentID: number,
+  ): Promise<string> {
+    this.contentService.refreshContent(contentID);
+    return 'ok';
   }
 }

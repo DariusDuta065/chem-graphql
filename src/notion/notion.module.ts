@@ -22,7 +22,7 @@ import { ContentModule } from 'src/content/content.module';
         name: QUEUES.NOTION_API,
         // https://developers.notion.com/reference/errors#rate-limits
         limiter: {
-          max: 3, // max 3 req per sec
+          max: 2, // max 2 req per sec
           duration: 1000,
         },
         defaultJobOptions: {

@@ -8,6 +8,8 @@ const config = loadConfiguration();
 let typeormConfig = {
   ...config.db.typeorm,
 
+  // logging: 'all', // uncomment to view raw SQL produced by TypeORM
+
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/**/migrations/*{.ts,.js}'],
   subscribers: ['dist/**/subscribers/*{.ts,.js}'],

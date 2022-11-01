@@ -9,6 +9,7 @@ const JOBS = {
   CREATE_CONTENT: 'create_content',
   UPDATE_CONTENT: 'update_content',
   DELETE_CONTENT: 'delete_content',
+  REFRESH_CONTENT: 'refresh_content',
   AGGREGATE_CONTENT_BLOCKS: 'aggregate_content_blocks',
 
   SEND_DISCORD_MESSAGE: 'send_discord_message',
@@ -31,6 +32,7 @@ export { JOBS };
 
 export * from './content/create-content.job';
 export * from './content/update-content.job';
+export * from './content/refresh-content.job';
 export * from './content/delete-content.job';
 export * from './content/aggregate-content-blocks.job';
 

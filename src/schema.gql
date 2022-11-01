@@ -47,6 +47,8 @@ type Mutation {
   deleteUser(userId: Int!): Boolean!
   login(password: String!, username: String!): TokenOutput!
   logout(refreshToken: String!): String!
+  refreshContent(contentId: Int!): String!
+  refreshContents: String!
   refreshToken(refreshToken: String!): TokenOutput!
   register(userRegisterInput: UserRegisterInput!): User!
   resetPassword(userID: Int!): User!

@@ -1,15 +1,17 @@
 import { Repository } from 'typeorm';
+import { getQueueToken } from '@nestjs/bull';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 
 import { User } from '../user/user.entity';
 import { Content } from './content.entity';
+import { Group } from '../group/group.entity';
 import { Role } from '../auth/enums/role.enum';
 import { NotionBlock } from '../notion/notion-block.entity';
 
 import { ContentService } from './content.service';
-import { UnauthorizedException } from '@nestjs/common';
-import { Group } from '../group/group.entity';
+import { QUEUES } from 'src/shared/queues';
 
 describe('ContentService', () => {
   let service: ContentService;
@@ -32,6 +34,10 @@ describe('ContentService', () => {
         {
           provide: getRepositoryToken(User),
           useClass: Repository,
+        },
+        {
+          provide: getQueueToken(QUEUES.NOTION_API),
+          useValue: {},
         },
       ],
     }).compile();

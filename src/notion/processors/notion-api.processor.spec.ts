@@ -398,14 +398,22 @@ describe('NotionAPIProcessor', () => {
 
       await processor.fetchNotionBlockJob(job);
 
-      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
-        blockID: 'parent block 1',
-        isChild: true,
-      });
-      expect(apiQueue.add).toBeCalledWith(JOBS.FETCH_NOTION_BLOCK, {
-        blockID: 'parent block 2',
-        isChild: true,
-      });
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        {
+          blockID: 'parent block 1',
+          isChild: true,
+        },
+        JOBS.OPTIONS.RETRIED,
+      );
+      expect(apiQueue.add).toBeCalledWith(
+        JOBS.FETCH_NOTION_BLOCK,
+        {
+          blockID: 'parent block 2',
+          isChild: true,
+        },
+        JOBS.OPTIONS.RETRIED,
+      );
     });
 
     it(`throws error & fails job if any error is caught`, async () => {
