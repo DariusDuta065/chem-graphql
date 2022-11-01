@@ -1,5 +1,3 @@
-// // @ts-nocheck
-
 import { Queue } from 'bull';
 import { Client as NotionClient } from '@notionhq/client';
 
@@ -39,7 +37,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(`*/2 * * * *`) // every two minutes
+  @Cron(`0 2 * * *`) // every night at 2AM
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
