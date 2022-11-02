@@ -37,7 +37,7 @@ export class NotionAPIService {
    *
    * Fires up {SyncNotionJob} asynchronously.
    */
-  @Cron(`30 * * * *`) // every half an hour
+  @Cron(`0,15,30,45 * * * *`) // every 15 minutes
   public syncNotionTask(): void {
     if (process.env.NODE_ENV === 'test') {
       return;
